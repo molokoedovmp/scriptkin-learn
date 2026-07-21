@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { QuestSceneFrame } from "@/lib/types";
 import { Button } from "./Button";
 import { RichText } from "./RichText";
@@ -26,6 +26,111 @@ export function SceneView({
   onFinish: () => void;
 }) {
   const [index, setIndex] = useState(0);
+  const imageUrls = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          frames
+            .map((sceneFrame) => sceneFrame.imageUrl)
+            .filter((url): url is string => Boolean(url))
+        )
+      ),
+    [frames]
+  );
+  const preloadedImages = useRef<HTMLImageElement[]>([]);
+  const [loadedImages, setLoadedImages] = useState(0);
+  const [imagesReady, setImagesReady] = useState(imageUrls.length === 0);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    let cancelled = false;
+    preloadedImages.current = [];
+    setLoadedImages(0);
+    setFailedImages(new Set());
+
+    if (imageUrls.length === 0) {
+      setImagesReady(true);
+      return;
+    }
+
+    setImagesReady(false);
+
+    const loadImage = (url: string) =>
+      new Promise<void>((resolve) => {
+        const image = new window.Image();
+        preloadedImages.current.push(image);
+
+        const finish = (loaded: boolean) => {
+          if (!cancelled) {
+            if (!loaded) {
+              setFailedImages((current) => new Set(current).add(url));
+            }
+            setLoadedImages((current) => current + 1);
+          }
+          resolve();
+        };
+
+        image.onload = () => {
+          // decode() дожидается не только сети, но и готовности картинки
+          // к отрисовке — при смене реплики старый кадр не задерживается.
+          image.decode().then(() => finish(true)).catch(() => finish(true));
+        };
+        image.onerror = () => finish(false);
+        image.src = url;
+      });
+
+    Promise.all(imageUrls.map(loadImage)).then(() => {
+      if (!cancelled) setImagesReady(true);
+    });
+
+    return () => {
+      cancelled = true;
+      preloadedImages.current = [];
+    };
+  }, [imageUrls]);
+
+  if (!imagesReady) {
+    const progress = Math.round((loadedImages / imageUrls.length) * 100);
+
+    return (
+      <div
+        className={`relative flex w-full items-center justify-center bg-night-ink text-paper-white ${
+          isFullscreen
+            ? "h-screen"
+            : "aspect-video max-h-[70vh] overflow-hidden rounded-xl border-2 border-night-ink"
+        }`}
+        role="status"
+        aria-live="polite"
+      >
+        {isFullscreen && (
+          <button
+            type="button"
+            onClick={onToggleFullscreen}
+            title="Выйти из полноэкранного режима"
+            aria-label="Выйти из полноэкранного режима"
+            className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-xl border-2 border-paper-white/60 bg-night-ink/60 text-[18px] font-bold text-paper-white hover:bg-night-ink/80"
+          >
+            ✕
+          </button>
+        )}
+
+        <div className="w-full max-w-sm px-8 text-center">
+          <div className="mx-auto mb-5 h-12 w-12 animate-spin rounded-full border-4 border-paper-white/25 border-t-eager-green" />
+          <p className="text-heading-sm font-bold">Загружаем сцену…</p>
+          <p className="mt-2 text-caption font-medium text-paper-white/70">
+            Иллюстрации: {loadedImages} из {imageUrls.length}
+          </p>
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-paper-white/20">
+            <div
+              className="h-full rounded-full bg-eager-green transition-[width] duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const frame = frames[index];
   const isLast = index === frames.length - 1;
 
@@ -42,9 +147,10 @@ export function SceneView({
         className={`absolute inset-0 ${isLast ? "" : "cursor-pointer"}`}
         onClick={() => !isLast && setIndex(index + 1)}
       >
-        {frame.imageUrl ? (
+        {frame.imageUrl && !failedImages.has(frame.imageUrl) ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
+            key={frame.imageUrl}
             src={frame.imageUrl}
             alt=""
             className="h-full w-full object-cover"

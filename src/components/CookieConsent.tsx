@@ -27,7 +27,7 @@ export function CookieConsent() {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4">
+    <div className="fixed inset-x-0 bottom-[calc(68px+env(safe-area-inset-bottom))] z-[60] px-4 pb-4 md:bottom-0">
       <div className="mx-auto flex max-w-[800px] flex-col items-start gap-3 rounded-xl border-2 border-charcoal bg-paper-white p-4 sm:flex-row sm:items-center">
         <p className="grow text-caption font-medium leading-relaxed text-pencil-gray">
           🍪 Мы используем cookie, необходимые для входа в аккаунт и работы

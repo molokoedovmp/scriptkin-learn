@@ -75,6 +75,31 @@ export function QuestPlayer({
   );
   /** Сцены, которые игрок уже открывал, — их можно пересматривать с карты */
   const [watchedScenes, setWatchedScenes] = useState<Set<number>>(new Set());
+  const sceneImageCache = useRef<Map<string, HTMLImageElement>>(new Map());
+
+  // Готовим ближайшую сцену заранее: пролог — пока игрок на карте,
+  // следующую сцену — пока он читает задание и пишет SQL.
+  useEffect(() => {
+    const afterStep =
+      typeof view === "number"
+        ? view
+        : current === 1 && !prologueSeen
+          ? 0
+          : null;
+
+    if (afterStep === null) return;
+
+    for (const frame of scenesBy.get(afterStep) ?? []) {
+      if (!frame.imageUrl || sceneImageCache.current.has(frame.imageUrl)) {
+        continue;
+      }
+
+      const image = new window.Image();
+      image.decoding = "async";
+      image.src = frame.imageUrl;
+      sceneImageCache.current.set(frame.imageUrl, image);
+    }
+  }, [current, prologueSeen, scenesBy, view]);
 
   function playScene(afterStep: number, next: View) {
     setWatchedScenes((prev) => new Set(prev).add(afterStep));

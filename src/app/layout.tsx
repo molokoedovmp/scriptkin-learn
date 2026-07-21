@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body
-        className={`${nunito.variable} flex min-h-screen flex-col antialiased`}
+        className={`${nunito.variable} flex min-h-screen flex-col pb-[calc(68px+env(safe-area-inset-bottom))] antialiased md:pb-0`}
       >
         {children}
         <CookieConsent />
