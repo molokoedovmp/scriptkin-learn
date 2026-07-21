@@ -38,7 +38,7 @@ export async function POST(req: Request) {
   }
 
   const email = (body.email ?? "").trim().toLowerCase();
-  const name = (body.name ?? "").trim();
+  const name = (body.name ?? "").trim().replace(/\s+/g, " ");
   const password = body.password ?? "";
 
   if (!EMAIL_RE.test(email)) {
@@ -47,9 +47,9 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
-  if (name.length < 2) {
+  if (name.length < 2 || name.length > 40) {
     return NextResponse.json(
-      { ok: false, error: "Имя должно быть не короче 2 символов." },
+      { ok: false, error: "Никнейм должен содержать от 2 до 40 символов." },
       { status: 400 }
     );
   }
@@ -97,8 +97,15 @@ export async function POST(req: Request) {
     );
     return res;
   } catch (err) {
-    // 23505 — нарушение уникальности (email уже занят)
-    if ((err as { code?: string }).code === "23505") {
+    // 23505 — нарушение уникальности никнейма или email
+    const dbError = err as { code?: string; constraint?: string };
+    if (dbError.code === "23505") {
+      if (dbError.constraint === "users_name_unique") {
+        return NextResponse.json(
+          { ok: false, error: "Этот никнейм уже занят." },
+          { status: 409 }
+        );
+      }
       return NextResponse.json(
         { ok: false, error: "Этот email уже зарегистрирован." },
         { status: 409 }

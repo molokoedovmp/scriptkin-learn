@@ -40,18 +40,18 @@ export function ProfileEditorForm({ user }: { user: SessionUser }) {
         <span className="mx-auto flex h-24 w-24 items-center justify-center rounded-[24px] bg-eager-green font-feather text-heading font-black shadow-[0_8px_0_#3e9900]">
           {initials}
         </span>
-        <p className="mt-5 text-subheading font-black">{name.trim() || "Ваше имя"}</p>
+        <p className="mt-5 text-subheading font-black">{name.trim() || "Ваш никнейм"}</p>
         <p className="mt-1 break-all text-caption font-medium text-[#aeb5dc]">{user.email}</p>
         <p className="mt-5 rounded-xl bg-paper-white/5 p-3 text-[13px] font-medium leading-relaxed text-[#cbd0ec]">
-          Имя и описание видны другим пользователям на странице профиля.
+          Никнейм и описание видны другим пользователям на странице профиля.
         </p>
       </aside>
 
       <form onSubmit={submit} className="rounded-[20px] border-2 border-[#e6e7eb] bg-paper-white p-5 sm:p-7">
         <div>
-          <label htmlFor="profile-name" className="text-caption font-extrabold uppercase text-charcoal">Имя</label>
-          <input id="profile-name" value={name} onChange={(event) => setName(event.target.value)} minLength={2} maxLength={80} required className="mt-2 w-full rounded-xl border-2 border-[#dedede] bg-paper-white px-4 py-3 text-body font-bold text-charcoal outline-none focus:border-spark-blue" />
-          <p className="mt-2 text-caption font-medium text-faded-gray">Так вас будут видеть в друзьях, публикациях и сообществе.</p>
+          <label htmlFor="profile-name" className="text-caption font-extrabold uppercase text-charcoal">Никнейм</label>
+          <input id="profile-name" value={name} onChange={(event) => setName(event.target.value)} minLength={2} maxLength={40} required className="mt-2 w-full rounded-xl border-2 border-[#dedede] bg-paper-white px-4 py-3 text-body font-bold text-charcoal outline-none focus:border-spark-blue" />
+          <p className="mt-2 text-caption font-medium text-faded-gray">Уникальный никнейм виден в друзьях, публикациях и сообществе.</p>
         </div>
 
         <div className="mt-6">

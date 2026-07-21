@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { SessionUser } from "@/lib/types";
 import { LogoutButton } from "./LogoutButton";
+import { Button } from "./Button";
 
 export function AccountHero({ user }: { user: SessionUser }) {
   return (
@@ -30,9 +31,9 @@ export function AccountHero({ user }: { user: SessionUser }) {
           </div>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Link href="/account/profile" className="rounded-xl bg-eager-green px-5 py-3 text-caption font-extrabold uppercase text-paper-white hover:bg-[#4cb002]">
+          <Button href="/account/profile">
             Редактировать профиль
-          </Link>
+          </Button>
           <LogoutButton />
         </div>
       </div>

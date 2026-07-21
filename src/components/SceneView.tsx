@@ -59,23 +59,31 @@ export function SceneView({
       new Promise<void>((resolve) => {
         const image = new window.Image();
         preloadedImages.current.push(image);
+        let finished = false;
+        const timeout = window.setTimeout(() => finish("timeout"), 12000);
 
-        const finish = (loaded: boolean) => {
+        function finish(result: "loaded" | "failed" | "timeout") {
+          if (finished) return;
+          finished = true;
+          window.clearTimeout(timeout);
           if (!cancelled) {
-            if (!loaded) {
+            if (result === "failed") {
               setFailedImages((current) => new Set(current).add(url));
             }
             setLoadedImages((current) => current + 1);
           }
           resolve();
-        };
+        }
 
         image.onload = () => {
           // decode() дожидается не только сети, но и готовности картинки
           // к отрисовке — при смене реплики старый кадр не задерживается.
-          image.decode().then(() => finish(true)).catch(() => finish(true));
+          image
+            .decode()
+            .then(() => finish("loaded"))
+            .catch(() => finish("loaded"));
         };
-        image.onerror = () => finish(false);
+        image.onerror = () => finish("failed");
         image.src = url;
       });
 
@@ -96,8 +104,8 @@ export function SceneView({
       <div
         className={`relative flex w-full items-center justify-center bg-night-ink text-paper-white ${
           isFullscreen
-            ? "h-screen"
-            : "aspect-video max-h-[70vh] overflow-hidden rounded-xl border-2 border-night-ink"
+            ? "h-[100dvh]"
+            : "min-h-[360px] overflow-hidden rounded-xl border-2 border-night-ink sm:aspect-video sm:min-h-0 sm:max-h-[70vh]"
         }`}
         role="status"
         aria-live="polite"
@@ -136,15 +144,19 @@ export function SceneView({
 
   return (
     <div
-      className={`relative w-full bg-night-ink ${
+      className={`relative flex w-full flex-col overflow-hidden bg-night-ink sm:block ${
         isFullscreen
-          ? "h-screen"
-          : "aspect-video max-h-[70vh] overflow-hidden rounded-xl border-2 border-night-ink"
+          ? "h-[100dvh]"
+          : "rounded-xl border-2 border-night-ink sm:aspect-video sm:max-h-[70vh]"
       }`}
     >
       {/* Иллюстрация; клик по ней листает вперёд */}
       <div
-        className={`absolute inset-0 ${isLast ? "" : "cursor-pointer"}`}
+        className={`${
+          isFullscreen
+            ? "relative min-h-0 flex-1"
+            : "relative aspect-[4/3] shrink-0"
+        } sm:absolute sm:inset-0 sm:aspect-auto ${isLast ? "" : "cursor-pointer"}`}
         onClick={() => !isLast && setIndex(index + 1)}
       >
         {frame.imageUrl && !failedImages.has(frame.imageUrl) ? (
@@ -153,7 +165,7 @@ export function SceneView({
             key={frame.imageUrl}
             src={frame.imageUrl}
             alt=""
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain sm:object-cover"
           />
         ) : (
           <div
@@ -179,8 +191,8 @@ export function SceneView({
       )}
 
       {/* Окно реплики внизу блока */}
-      <div className="absolute inset-x-0 bottom-0 flex justify-center p-3 md:p-6">
-        <div className="w-full max-w-[900px] rounded-xl border-2 border-charcoal bg-paper-white p-4 md:p-5">
+      <div className="relative z-10 flex shrink-0 justify-center p-3 sm:absolute sm:inset-x-0 sm:bottom-0 md:p-6">
+        <div className="w-full max-w-[900px] rounded-xl border-2 border-charcoal bg-paper-white p-3.5 sm:p-4 md:p-5">
           <div className="mb-2 flex items-center justify-between gap-3">
             {frame.speaker ? (
               <span className="inline-block rounded-full bg-spark-blue px-3 py-1 text-caption font-bold uppercase tracking-wide text-paper-white">
@@ -196,16 +208,16 @@ export function SceneView({
             </span>
           </div>
 
-          <div className="max-h-[32vh] overflow-y-auto">
+          <div className="max-h-[26dvh] overflow-y-auto sm:max-h-[32vh]">
             <RichText
               text={frame.text}
-              className="text-body font-medium leading-relaxed text-charcoal"
+              className="text-[15px] font-medium leading-relaxed text-charcoal sm:text-body"
             />
           </div>
 
-          <div className="mt-3 flex items-center justify-between gap-4">
+          <div className="mt-3 flex items-center justify-between gap-2 sm:gap-4">
             {/* Навигация по кадрам: назад + кликабельные точки */}
-            <span className="flex items-center gap-2">
+            <span className="flex min-w-0 items-center gap-2">
               <button
                 type="button"
                 disabled={index === 0}
@@ -219,7 +231,7 @@ export function SceneView({
               >
                 ‹
               </button>
-              <span className="flex items-center gap-1.5">
+              <span className="flex min-w-0 items-center gap-1.5 overflow-x-auto py-1">
                 {frames.map((_, i) => (
                   <button
                     key={i}

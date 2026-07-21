@@ -53,13 +53,14 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       {mode === "register" && (
         <div className="mb-4">
           <label htmlFor="name" className={labelCls}>
-            Имя
+            Никнейм
           </label>
           <input
             id="name"
             type="text"
             required
             minLength={2}
+            maxLength={40}
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Капитан Немо"

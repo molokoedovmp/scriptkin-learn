@@ -74,6 +74,43 @@ ALTER TABLE users DROP CONSTRAINT IF EXISTS users_bio_check;
 ALTER TABLE users ADD CONSTRAINT users_bio_check
   CHECK (bio IS NULL OR char_length(bio) <= 500);
 
+-- Никнеймы уникальны без учёта регистра, пробелов по краям и нескольких
+-- пробелов подряд. Advisory lock закрывает гонку двух одновременных
+-- регистраций. Старые дубликаты не ломают миграцию, но изменить или заново
+-- зарегистрировать такой ник уже нельзя.
+CREATE OR REPLACE FUNCTION enforce_unique_user_name()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  normalized_name text := lower(
+    regexp_replace(btrim(NEW.name), '[[:space:]]+', ' ', 'g')
+  );
+BEGIN
+  PERFORM pg_advisory_xact_lock(hashtextextended(normalized_name, 0));
+
+  IF EXISTS (
+    SELECT 1
+      FROM users
+     WHERE id <> NEW.id
+       AND lower(regexp_replace(btrim(name), '[[:space:]]+', ' ', 'g'))
+           = normalized_name
+  ) THEN
+    RAISE EXCEPTION USING
+      ERRCODE = '23505',
+      CONSTRAINT = 'users_name_unique',
+      MESSAGE = 'nickname already exists';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS users_name_unique_trigger ON users;
+CREATE TRIGGER users_name_unique_trigger
+BEFORE INSERT OR UPDATE OF name ON users
+FOR EACH ROW EXECUTE FUNCTION enforce_unique_user_name();
+
 -- Серверные сессии: httpOnly-cookie хранит только случайный токен.
 CREATE TABLE IF NOT EXISTS sessions (
   token      text PRIMARY KEY,

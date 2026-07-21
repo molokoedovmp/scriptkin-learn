@@ -15,10 +15,10 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ ok: false, error: "Некорректный запрос." }, { status: 400 });
   }
 
-  const name = (body.name ?? "").trim();
+  const name = (body.name ?? "").trim().replace(/\s+/g, " ");
   const bio = (body.bio ?? "").trim();
-  if (name.length < 2 || name.length > 80) {
-    return NextResponse.json({ ok: false, error: "Имя должно содержать от 2 до 80 символов." }, { status: 400 });
+  if (name.length < 2 || name.length > 40) {
+    return NextResponse.json({ ok: false, error: "Никнейм должен содержать от 2 до 40 символов." }, { status: 400 });
   }
   if (bio.length > 500) {
     return NextResponse.json({ ok: false, error: "Описание не должно превышать 500 символов." }, { status: 400 });
@@ -39,6 +39,13 @@ export async function PATCH(req: Request) {
     );
     return NextResponse.json({ ok: true, user: rows[0] });
   } catch (error) {
+    const dbError = error as { code?: string; constraint?: string };
+    if (dbError.code === "23505" && dbError.constraint === "users_name_unique") {
+      return NextResponse.json(
+        { ok: false, error: "Этот никнейм уже занят." },
+        { status: 409 }
+      );
+    }
     console.error("Profile update failed:", error);
     return NextResponse.json({ ok: false, error: "Не удалось сохранить профиль." }, { status: 500 });
   }

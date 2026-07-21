@@ -4,11 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AccountDashboard } from "@/components/AccountDashboard";
 import { getSessionUser } from "@/lib/auth";
-import {
-  calculateQuestStats,
-  getAccountProgress,
-  getAvailableQuestsCount,
-} from "@/lib/account";
+import { getAccountProgress } from "@/lib/account";
 import { getSocialDashboard, type SocialDashboardData } from "@/lib/social";
 
 export const metadata: Metadata = {
@@ -30,16 +26,13 @@ export default async function AccountPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
 
-  const [progress, availableQuests, social] = await Promise.all([
+  const [progress, social] = await Promise.all([
     getAccountProgress(user.id),
-    getAvailableQuestsCount(),
     getSocialDashboard(user.id).catch((error) => {
       console.error("Failed to load social account data:", error);
       return EMPTY_SOCIAL;
     }),
   ]);
-
-  const { completedQuests, solvedSteps } = calculateQuestStats(progress);
 
   return (
     <>
@@ -48,7 +41,6 @@ export default async function AccountPage() {
         <AccountDashboard
           user={user}
           progress={progress}
-          stats={{ completedQuests, solvedSteps, availableQuests }}
           initialSocial={social}
         />
       </main>

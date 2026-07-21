@@ -12,30 +12,6 @@ export const metadata: Metadata = {
     "Осваивай SQL через сюжетные квесты и банк заданий: настоящий PostgreSQL, подсказки, автоматическая проверка и практика от SELECT до оконных функций.",
 };
 
-const topics = [
-  {
-    level: "Начни с основ",
-    number: "01",
-    color: "text-eager-green",
-    surface: "bg-[#f2ffe9] border-[#cceeb4]",
-    items: ["SELECT и WHERE", "ORDER BY и LIMIT", "CASE и работа со строками"],
-  },
-  {
-    level: "Связывай данные",
-    number: "02",
-    color: "text-spark-blue",
-    surface: "bg-[#eef9ff] border-[#c6eafa]",
-    items: ["JOIN и LEFT JOIN", "GROUP BY и HAVING", "Подзапросы и EXISTS"],
-  },
-  {
-    level: "Решай сложное",
-    number: "03",
-    color: "text-night-ink",
-    surface: "bg-[#f1f2f8] border-[#d9dbea]",
-    items: ["CTE и WITH", "Оконные функции", "Даты, интервалы и аналитика"],
-  },
-];
-
 export default function HowItWorksPage() {
   return (
     <>
@@ -123,7 +99,8 @@ export default function HowItWorksPage() {
             <a href="#quest" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">1. Выбери историю</a>
             <a href="#editor" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">2. Напиши SQL</a>
             <a href="#check" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">3. Получи ответ</a>
-            <a href="#practice" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">4. Закрепи навык</a>
+            <a href="#progress" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">4. Сохрани прогресс</a>
+            <a href="#practice" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">5. Закрепи навык</a>
           </div>
         </nav>
 
@@ -229,10 +206,38 @@ export default function HowItWorksPage() {
           </div>
         </section>
 
+        <section id="progress" className="mx-auto max-w-[1200px] scroll-mt-20 px-6 py-20 sm:py-28">
+          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+            <ScreenshotFrame
+              src="/how-it-works/quest-progress.webp"
+              alt="Карта прогресса SQL-квеста"
+              title="Прогресс всегда перед глазами"
+            >
+              <ProgressMockup />
+            </ScreenshotFrame>
+            <div>
+              <StepLabel number="04" label="Твой прогресс" />
+              <h2 className="mb-4 font-feather text-heading-sm font-black text-charcoal">
+                Возвращайся с того же места
+              </h2>
+              <p className="mb-6 text-body font-medium leading-relaxed text-pencil-gray">
+                С аккаунтом прогресс квестов хранится между устройствами. В
+                банке заданий решённые упражнения отмечаются автоматически,
+                поэтому всегда понятно, что уже освоено и куда двигаться дальше.
+              </p>
+              <FeatureList items={[
+                "Карта открытых глав квеста",
+                "Отдельный прогресс каждой тренировочной базы",
+                "Можно тренироваться без регистрации",
+              ]} />
+            </div>
+          </div>
+        </section>
+
         <section id="practice" className="scroll-mt-20 bg-night-ink py-20 text-paper-white sm:py-28">
           <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <div>
-              <StepLabel number="04" label="Банк заданий" dark />
+              <StepLabel number="05" label="Банк заданий" dark />
               <h2 className="mb-5 font-feather text-heading-sm font-black sm:text-heading">
                 Сюжет закончился —
                 <span className="block text-eager-green">практика продолжается</span>
@@ -262,75 +267,6 @@ export default function HowItWorksPage() {
             >
               <TaskBankMockup />
             </ScreenshotFrame>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
-          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-            <ScreenshotFrame
-              src="/how-it-works/quest-progress.webp"
-              alt="Карта прогресса SQL-квеста"
-              title="Прогресс всегда перед глазами"
-            >
-              <ProgressMockup />
-            </ScreenshotFrame>
-            <div>
-              <StepLabel number="05" label="Твой прогресс" />
-              <h2 className="mb-4 font-feather text-heading-sm font-black text-charcoal">
-                Возвращайся с того же места
-              </h2>
-              <p className="mb-6 text-body font-medium leading-relaxed text-pencil-gray">
-                С аккаунтом прогресс квестов хранится между устройствами. В
-                банке заданий решённые упражнения отмечаются автоматически,
-                поэтому всегда понятно, что уже освоено и куда двигаться дальше.
-              </p>
-              <FeatureList items={[
-                "Карта открытых глав квеста",
-                "Отдельный прогресс каждой тренировочной базы",
-                "Можно тренироваться без регистрации",
-              ]} />
-            </div>
-          </div>
-        </section>
-
-        <section className="border-y-2 border-[#ececec] bg-paper-white py-20 sm:py-24">
-          <div className="mx-auto max-w-[1200px] px-6">
-            <div className="mb-10 max-w-[680px]">
-              <p className="mb-3 text-caption font-extrabold uppercase tracking-[0.12em] text-spark-blue">Программа обучения</p>
-              <h2 className="font-feather text-heading-sm font-black text-charcoal sm:text-heading">Растёшь вместе со сложностью запросов</h2>
-            </div>
-            <div className="grid gap-5 md:grid-cols-3">
-              {topics.map((topic) => (
-                <article key={topic.level} className={`rounded-[20px] border-2 p-6 ${topic.surface}`}>
-                  <p className={`mb-8 text-heading-sm font-black ${topic.color}`}>{topic.number}</p>
-                  <h3 className="mb-4 text-subheading font-extrabold text-charcoal">{topic.level}</h3>
-                  <ul className="space-y-3">
-                    {topic.items.map((item) => (
-                      <li key={item} className="flex gap-2 text-[15px] font-bold text-pencil-gray">
-                        <span className={topic.color}>✓</span> {item}
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
-          <div className="rounded-[24px] bg-storybook-green px-6 py-12 text-center sm:px-12 sm:py-16">
-            <p className="mb-3 text-caption font-extrabold uppercase tracking-[0.12em] text-[#3f9900]">Попробуй сейчас</p>
-            <h2 className="mx-auto mb-4 max-w-[720px] font-feather text-heading-sm font-black text-charcoal sm:text-heading">
-              Первый запрос можно выполнить через минуту
-            </h2>
-            <p className="mx-auto mb-8 max-w-[620px] text-body font-medium text-charcoal">
-              Начни с истории или сразу открой свободную практику. Установка
-              PostgreSQL и регистрация для старта не нужны.
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/quests/midnight-express" className="rounded-xl bg-eager-green px-6 py-3 text-nav-label font-extrabold uppercase text-paper-white hover:bg-[#4cb002]">Начать квест</Link>
-              <Link href="/practice" className="rounded-xl border-2 border-[#9dcc79] bg-paper-white px-6 py-3 text-nav-label font-extrabold uppercase text-spark-blue hover:border-spark-blue">Банк заданий</Link>
-            </div>
           </div>
         </section>
       </main>

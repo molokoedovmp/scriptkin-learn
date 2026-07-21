@@ -4,24 +4,16 @@ import { useMemo } from "react";
 import type { ActivityDay } from "@/lib/social";
 
 export function AccountActivityView({ activity }: { activity: ActivityDay[] }) {
-  const { cells, total, activeDays, streak } = useMemo(
-    () => buildCalendar(activity),
-    [activity]
-  );
+  const cells = useMemo(() => buildCalendar(activity), [activity]);
   return (
-    <>
-      <div className="mb-5 grid grid-cols-3 gap-3">
-        <Metric value={total} label="вкладов за год" />
-        <Metric value={activeDays} label="активных дней" />
-        <Metric value={streak} label="дней подряд" />
-      </div>
-      <section className="rounded-[20px] border-2 border-[#e6e7eb] bg-paper-white p-5 sm:p-7">
+    <div className="min-w-0 max-w-full">
+      <section className="min-w-0 max-w-full overflow-hidden rounded-[20px] border-2 border-[#e6e7eb] bg-paper-white p-4 sm:p-7">
         <div className="mb-6">
           <p className="text-caption font-extrabold uppercase tracking-wide text-eager-green">Последние 365 дней</p>
           <h2 className="mt-1 text-heading-sm font-black text-charcoal">Календарь активности</h2>
           <p className="mt-2 text-[15px] font-medium text-pencil-gray">Зелёная клетка появляется за решённый шаг квеста или упражнение банка.</p>
         </div>
-        <div className="overflow-x-auto pb-3">
+        <div className="w-full max-w-full overflow-x-auto overscroll-x-contain pb-3">
           <div className="min-w-[780px]">
             <div className="mb-2 flex justify-between pl-8 text-[11px] font-bold text-faded-gray">
               {["авг", "сен", "окт", "ноя", "дек", "янв", "фев", "мар", "апр", "май", "июн", "июл"].map((month) => <span key={month}>{month}</span>)}
@@ -42,17 +34,8 @@ export function AccountActivityView({ activity }: { activity: ActivityDay[] }) {
           Больше
         </div>
       </section>
-      <section className="mt-5 rounded-[20px] bg-storybook-green p-6">
-        <p className="text-caption font-extrabold uppercase tracking-wide text-[#3f9900]">Как увеличить активность</p>
-        <h2 className="mt-2 text-subheading font-black text-charcoal">Решай хотя бы одно задание каждый день</h2>
-        <p className="mt-2 text-[15px] font-medium text-[#53723d]">Повторное решение того же упражнения не дублирует вклад — календарь показывает реальное продвижение.</p>
-      </section>
-    </>
+    </div>
   );
-}
-
-function Metric({ value, label }: { value: number; label: string }) {
-  return <div className="rounded-[18px] border-2 border-[#e6e7eb] bg-paper-white p-4"><p className="text-heading-sm font-black text-eager-green">{value}</p><p className="text-caption font-extrabold uppercase text-pencil-gray">{label}</p></div>;
 }
 
 function buildCalendar(activity: ActivityDay[]) {
@@ -66,14 +49,7 @@ function buildCalendar(activity: ActivityDay[]) {
     cells.push({ date, count: counts.get(date) ?? 0 });
   }
   while (cells.length % 7) cells.push(null);
-  const activeDays = activity.filter((day) => day.count > 0).length;
-  const total = activity.reduce((sum, day) => sum + day.count, 0);
-  const active = new Set(activity.filter((day) => day.count > 0).map((day) => day.date));
-  const cursor = new Date(end);
-  if (!active.has(cursor.toISOString().slice(0, 10))) cursor.setUTCDate(cursor.getUTCDate() - 1);
-  let streak = 0;
-  while (active.has(cursor.toISOString().slice(0, 10))) { streak++; cursor.setUTCDate(cursor.getUTCDate() - 1); }
-  return { cells, total, activeDays, streak };
+  return cells;
 }
 
 function color(count: number) {
