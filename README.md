@@ -33,6 +33,27 @@ npm run db:seed
 npm run dev   # http://localhost:3000
 ```
 
+## Автоматический запуск в Dokploy
+
+Production-контейнер перед запуском сайта автоматически создаёт схему,
+загружает стартовые данные основной базы, создаёт read-only роль песочницы
+и импортирует мир «Полуночного экспресса». SQL-файлы применяются повторно
+только при изменении их содержимого; выполненные версии записываются в
+`scriptkin_migrations`.
+
+В Environment приложения нужны:
+
+```env
+DATABASE_URL=postgresql://пользователь:пароль@внутренний-хост-main:5432/sqlquest
+SANDBOX_ADMIN_DATABASE_URL=postgresql://администратор:пароль@внутренний-хост-sandbox:5432/sqlquest_sandbox
+SANDBOX_PLAYER_PASSWORD=отдельный-сложный-пароль-не-короче-24-символов
+SITE_URL=https://scriptkin.ru
+```
+
+`SANDBOX_DATABASE_URL` вручную задавать не нужно: entrypoint формирует её
+для роли `sqlquest_player` после миграций. Административные реквизиты
+удаляются из окружения перед запуском Next.js.
+
 ### Вариант без Docker (Postgres.app)
 
 Если Docker Hub недоступен, подойдёт установленный Postgres.app —
