@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sqlquest-postgres
+    environment:
+      POSTGRES_USER: sqlquest
+      POSTGRES_PASSWORD: sqlquest
+      POSTGRES_DB: sqlquest
+    ports:
+      - "5432:5432"
+    volumes:
+      - sqlquest_pgdata:/var/lib/postgresql/data
+      # Вторая база — песочница для запросов игроков
+      - ./db/init-sandbox.sh:/docker-entrypoint-initdb.d/init-sandbox.sh
+
+volumes:
+  sqlquest_pgdata:

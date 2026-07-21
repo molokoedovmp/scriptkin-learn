@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#20263f"/>
+  <rect x="0" y="340" width="800" height="60" fill="#171c30"/>
+  <rect x="290" y="40" width="220" height="310" rx="10" fill="#0b1035"/>
+  <rect x="290" y="40" width="220" height="310" rx="10" fill="none" stroke="#39406e" stroke-width="10"/>
+  <g fill="#f5f3ce" opacity="0.85">
+    <circle cx="340" cy="90" r="2"/><circle cx="420" cy="70" r="2"/><circle cx="470" cy="120" r="2"/>
+    <circle cx="380" cy="150" r="2"/><circle cx="450" cy="180" r="2"/>
+  </g>
+  <circle cx="440" cy="100" r="22" fill="#f5f3ce"/>
+  <circle cx="430" cy="93" r="19" fill="#0b1035"/>
+  <rect x="300" y="240" width="200" height="6" fill="#ffd76a" opacity="0.5"/>
+  <rect x="300" y="280" width="200" height="4" fill="#ffd76a" opacity="0.3"/>
+  <rect x="510" y="40" width="26" height="310" fill="#2b3157"/>
+  <circle cx="527" cy="200" r="9" fill="#8890b5"/>
+  <rect x="180" y="60" width="80" height="290" rx="8" fill="#2b3157"/>
+  <rect x="196" y="80" width="48" height="120" rx="6" fill="#39406e"/>
+  <g stroke="#ffd76a" stroke-width="3" opacity="0.7">
+    <path d="M320 330 l40 -14" fill="none"/>
+    <path d="M370 336 l36 -12" fill="none"/>
+  </g>
+  <text x="120" y="210" text-anchor="middle" font-family="monospace" font-size="20" fill="#8890b5" transform="rotate(-90 120 210)" letter-spacing="4">ТАМБУР · ВАГОН 4</text>
+</svg>
