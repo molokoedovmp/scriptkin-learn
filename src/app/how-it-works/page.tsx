@@ -7,7 +7,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Как это работает — Скрипткин",
+  title: "Как это работает | Скрипткин",
   description:
     "Осваивай SQL через сюжетные квесты и банк заданий: настоящий PostgreSQL, подсказки, автоматическая проверка и практика от SELECT до оконных функций.",
 };
@@ -20,7 +20,7 @@ export default function HowItWorksPage() {
         <section className="relative bg-night-ink text-paper-white">
           <div className="absolute -left-32 -top-32 h-80 w-80 rounded-full bg-eager-green/15 blur-3xl" />
           <div className="absolute -bottom-40 right-0 h-96 w-96 rounded-full bg-spark-blue/15 blur-3xl" />
-          <div className="relative mx-auto grid max-w-[1200px] items-center gap-12 px-6 py-16 lg:grid-cols-[1.02fr_0.98fr] lg:py-24">
+          <div className="relative mx-auto grid max-w-[1400px] items-center gap-10 px-6 py-16 lg:grid-cols-[0.86fr_1.14fr] lg:py-24">
             <div>
               <p className="mb-5 inline-flex rounded-full border border-[#303665] bg-[#121744] px-4 py-2 text-caption font-extrabold uppercase tracking-[0.12em] text-fresh-leaf">
                 SQL-квесты + свободная практика
@@ -48,61 +48,21 @@ export default function HowItWorksPage() {
                   Открыть банк заданий
                 </Link>
               </div>
-              <div className="mt-10 flex flex-wrap gap-x-8 gap-y-4 text-caption font-bold uppercase tracking-wide text-[#9ca3cd]">
-                <span><b className="mr-2 text-xl text-paper-white">50</b> заданий</span>
-                <span><b className="mr-2 text-xl text-paper-white">5</b> таблиц</span>
-                <span><b className="mr-2 text-xl text-paper-white">0 ₽</b> для старта</span>
-              </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-[560px]">
-              <div className="absolute -inset-4 rotate-2 rounded-[24px] border border-[#3a4176] bg-[#111642]" />
-              <div className="relative overflow-hidden rounded-[20px] border-2 border-[#3a4176] bg-[#080c32] shadow-2xl">
-                <div className="flex items-center justify-between border-b border-[#343a6b] px-4 py-3">
-                  <div className="flex gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#ff6b6b]" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#ffd76a]" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-eager-green" />
-                  </div>
-                  <span className="text-caption font-bold uppercase text-[#8d94be]">
-                    Дело №13
-                  </span>
-                </div>
-                <Image
-                  src="/quests/midnight-express/prew.png"
-                  alt="Ночной поезд из квеста Полночный экспресс"
-                  width={900}
-                  height={450}
-                  priority
-                  className="aspect-[2/1] w-full object-cover"
-                />
-                <div className="grid grid-cols-[1fr_auto] items-center gap-4 p-5">
-                  <div>
-                    <p className="text-caption font-extrabold uppercase tracking-wide text-fresh-leaf">
-                      Полночный экспресс
-                    </p>
-                    <p className="mt-1 font-mono text-[14px] text-[#dfe3ff]">
-                      SELECT * FROM clues WHERE time = &apos;03:12&apos;
-                    </p>
-                  </div>
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-eager-green text-xl font-black">
-                    →
-                  </span>
-                </div>
-              </div>
+            <div className="mx-auto w-full max-w-[780px] lg:-mr-8">
+              <Image
+                src="/quest-prew.png"
+                alt="Интерфейс квеста Полночный экспресс"
+                width={1920}
+                height={1440}
+                priority
+                sizes="(max-width: 1023px) 100vw, 58vw"
+                className="h-auto w-full"
+              />
             </div>
           </div>
         </section>
-
-        <nav className="border-b-2 border-[#ececec] bg-paper-white">
-          <div className="mx-auto flex max-w-[1200px] gap-2 overflow-x-auto px-6 py-4 text-caption font-extrabold uppercase text-pencil-gray">
-            <a href="#quest" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">1. Выбери историю</a>
-            <a href="#editor" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">2. Напиши SQL</a>
-            <a href="#check" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">3. Получи ответ</a>
-            <a href="#progress" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">4. Сохрани прогресс</a>
-            <a href="#practice" className="whitespace-nowrap rounded-full px-4 py-2 hover:bg-[#f3f3f3] hover:text-charcoal">5. Закрепи навык</a>
-          </div>
-        </nav>
 
         <section className="mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
           <div className="mx-auto mb-16 max-w-[720px] text-center">
@@ -203,43 +163,41 @@ export default function HowItWorksPage() {
                 <CheckMockup />
               </div>
             </article>
-          </div>
-        </section>
 
-        <section id="progress" className="mx-auto max-w-[1200px] scroll-mt-20 px-6 py-20 sm:py-28">
-          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-            <ScreenshotFrame
-              src="/how-it-works/quest-progress.webp"
-              alt="Карта прогресса SQL-квеста"
-              title="Прогресс всегда перед глазами"
-            >
-              <ProgressMockup />
-            </ScreenshotFrame>
-            <div>
-              <StepLabel number="04" label="Твой прогресс" />
-              <h2 className="mb-4 font-feather text-heading-sm font-black text-charcoal">
-                Возвращайся с того же места
-              </h2>
-              <p className="mb-6 text-body font-medium leading-relaxed text-pencil-gray">
-                С аккаунтом прогресс квестов хранится между устройствами. В
-                банке заданий решённые упражнения отмечаются автоматически,
-                поэтому всегда понятно, что уже освоено и куда двигаться дальше.
-              </p>
-              <FeatureList items={[
-                "Карта открытых глав квеста",
-                "Отдельный прогресс каждой тренировочной базы",
-                "Можно тренироваться без регистрации",
-              ]} />
-            </div>
+            <article id="progress" className="grid scroll-mt-24 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+              <ScreenshotFrame
+                src="/how-it-works/quest-progress.webp"
+                alt="Карта прогресса SQL-квеста"
+                title="Прогресс всегда перед глазами"
+              >
+                <ProgressMockup />
+              </ScreenshotFrame>
+              <div>
+                <StepLabel number="04" label="Твой прогресс" />
+                <h2 className="mb-4 font-feather text-heading-sm font-black text-charcoal">
+                  Возвращайся с того же места
+                </h2>
+                <p className="mb-6 text-body font-medium leading-relaxed text-pencil-gray">
+                  С аккаунтом прогресс квестов хранится между устройствами. В
+                  банке заданий решённые упражнения отмечаются автоматически,
+                  поэтому всегда понятно, что уже освоено и куда двигаться дальше.
+                </p>
+                <FeatureList items={[
+                  "Карта открытых глав квеста",
+                  "Отдельный прогресс каждой тренировочной базы",
+                  "Можно тренироваться без регистрации",
+                ]} />
+              </div>
+            </article>
           </div>
         </section>
 
         <section id="practice" className="scroll-mt-20 bg-night-ink py-20 text-paper-white sm:py-28">
-          <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+          <div className="mx-auto grid max-w-[1400px] items-center gap-10 px-6 lg:grid-cols-[0.72fr_1.28fr] lg:gap-12">
             <div>
               <StepLabel number="05" label="Банк заданий" dark />
               <h2 className="mb-5 font-feather text-heading-sm font-black sm:text-heading">
-                Сюжет закончился —
+                Сюжет закончился
                 <span className="block text-eager-green">практика продолжается</span>
               </h2>
               <p className="mb-7 text-body font-medium leading-relaxed text-[#c8ccea]">
@@ -247,11 +205,6 @@ export default function HowItWorksPage() {
                 квестов. Для «Полуночного экспресса» доступно 50 упражнений —
                 от простых фильтров до CTE и оконных функций.
               </p>
-              <div className="mb-8 grid grid-cols-3 gap-3">
-                <Stat value="16" label="лёгких" />
-                <Stat value="18" label="средних" />
-                <Stat value="16" label="сложных" />
-              </div>
               <Link
                 href="/practice"
                 className="inline-flex items-center justify-center rounded-xl bg-eager-green px-6 py-3 text-nav-label font-extrabold uppercase text-paper-white transition-colors hover:bg-[#4cb002]"
@@ -259,14 +212,14 @@ export default function HowItWorksPage() {
                 Выбрать базу →
               </Link>
             </div>
-            <ScreenshotFrame
-              src="/how-it-works/task-bank.webp"
+            <Image
+              src="/bank-prew.png"
               alt="Банк заданий Скрипткина"
-              title="50 заданий на базе квеста"
-              dark
-            >
-              <TaskBankMockup />
-            </ScreenshotFrame>
+              width={1920}
+              height={1440}
+              sizes="(max-width: 1023px) 100vw, 64vw"
+              className="h-auto w-full"
+            />
           </div>
         </section>
       </main>
@@ -383,32 +336,6 @@ function CheckMockup() {
   );
 }
 
-function TaskBankMockup() {
-  const tasks = [
-    ["01", "Соседи по вагону", "Легко", "bg-eager-green"],
-    ["17", "Поиск по журналу", "Легко", "bg-eager-green"],
-    ["33", "Пары соседей", "Средне", "bg-spark-blue"],
-    ["45", "Длинные паузы", "Сложно", "bg-[#7a82b5]"],
-  ];
-  return (
-    <div className="bg-[#080c32] p-5 sm:p-6">
-      <div className="mb-5 flex items-center justify-between">
-        <div><p className="text-caption font-extrabold uppercase text-fresh-leaf">Полночный экспресс</p><p className="mt-1 text-subheading font-extrabold text-paper-white">Выбери задание</p></div>
-        <span className="rounded-full bg-[#1b214f] px-3 py-1 text-caption font-bold text-[#bbc1e5]">12 / 50</span>
-      </div>
-      <div className="space-y-2">
-        {tasks.map(([number, title, level, color], index) => (
-          <div key={number} className={`flex items-center gap-3 rounded-xl border p-3 ${index === 0 ? "border-eager-green bg-[#17233a]" : "border-[#2d3466] bg-[#111642]"}`}>
-            <span className={`flex h-9 w-9 items-center justify-center rounded-full ${color} text-caption font-black text-paper-white`}>{number}</span>
-            <span className="grow text-[14px] font-extrabold text-paper-white">{title}</span>
-            <span className="text-caption font-bold text-[#949bc6]">{level}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function ProgressMockup() {
   return (
     <div className="bg-[#f8f8f8] p-6 sm:p-8">
@@ -426,15 +353,6 @@ function ProgressMockup() {
       </div>
       <div className="mt-7 h-2 overflow-hidden rounded-full bg-[#dfdfdf]"><div className="h-full w-1/2 rounded-full bg-eager-green" /></div>
       <p className="mt-2 text-right text-caption font-bold text-pencil-gray">3 из 8 улик найдено</p>
-    </div>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="rounded-xl border border-[#303665] bg-[#111642] p-3 text-center">
-      <p className="text-heading-sm font-black text-paper-white">{value}</p>
-      <p className="text-caption font-bold text-[#9ca3cd]">{label}</p>
     </div>
   );
 }

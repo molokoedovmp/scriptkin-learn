@@ -32,12 +32,6 @@ export function Header() {
             >
               Сообщество
             </Link>
-            <Link
-              href="/how-it-works"
-              className="hidden rounded-xl px-3 py-2.5 text-nav-label font-bold uppercase text-pencil-gray hover:text-charcoal lg:block"
-            >
-              Как это работает
-            </Link>
             <AuthNav />
           </nav>
         </div>
