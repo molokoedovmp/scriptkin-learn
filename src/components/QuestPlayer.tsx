@@ -272,6 +272,11 @@ export function QuestPlayer({
           key={scenePlaying.afterStep}
           frames={scenesBy.get(scenePlaying.afterStep) ?? []}
           isFullscreen={isFullscreen}
+          textBackgroundUrl={
+            quest.slug === "midnight-express"
+              ? "/quests/midnight-express/background.png"
+              : undefined
+          }
           onToggleFullscreen={toggleFullscreen}
           onFinish={() => {
             const next = scenePlaying.next;

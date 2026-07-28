@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   title: "Скрипткин — учи SQL, проходя квесты",
   description:
     "Скрипткин — интерактивная платформа для обучения SQL: выбирай квест с сюжетом и продвигай историю настоящими SQL-запросами прямо в браузере.",
+  icons: {
+    icon: [{ url: "/logo.png", type: "image/png" }],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

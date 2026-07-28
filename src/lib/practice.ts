@@ -19,8 +19,8 @@ const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
   tables: [
     {
       name: "passengers",
-      description: "12 пассажиров поезда",
-      columns: ["id", "name", "age", "occupation", "wagon", "compartment"],
+      description: "13 пассажиров поезда",
+      columns: ["id", "name", "age", "occupation", "wagon", "coupe"],
     },
     {
       name: "tickets",
@@ -57,13 +57,13 @@ const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
       title: "Соседи по вагону",
       difficulty: "easy",
       description:
-        "Выведи имена и номера купе всех пассажиров вагона №4. Назови колонки `name` и `compartment`, отсортируй сначала по купе, затем по имени.",
+        "Выведи имена и номера купе всех пассажиров вагона №4. Назови колонки `name` и `coupe`, отсортируй сначала по купе, затем по имени.",
       hint: "Нужны WHERE wagon = 4 и ORDER BY по двум колонкам.",
       starterSql: "SELECT\n  \nFROM passengers",
       solution:
-        "SELECT name, compartment\nFROM passengers\nWHERE wagon = 4\nORDER BY compartment, name",
+        "SELECT name, coupe\nFROM passengers\nWHERE wagon = 4\nORDER BY coupe, name",
       expectedSql:
-        "SELECT name, compartment FROM passengers WHERE wagon = 4 ORDER BY compartment, name",
+        "SELECT name, coupe FROM passengers WHERE wagon = 4 ORDER BY coupe, name",
       orderMatters: true,
     },
     {
@@ -118,14 +118,14 @@ const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
       title: "Безбилетный пассажир",
       difficulty: "medium",
       description:
-        "Найди пассажиров, которым не соответствует ни одного билета. Верни `name`, `wagon`, `compartment` по алфавиту.",
+        "Найди пассажиров, которым не соответствует ни одного билета. Верни `name`, `wagon`, `coupe` по алфавиту.",
       hint: "Сохрани всех пассажиров через LEFT JOIN, затем найди строки, где билет отсутствует.",
       starterSql:
         "SELECT\n  \nFROM passengers AS p\nLEFT JOIN tickets AS t ON ...",
       solution:
-        "SELECT p.name, p.wagon, p.compartment\nFROM passengers AS p\nLEFT JOIN tickets AS t ON t.passenger_id = p.id\nWHERE t.id IS NULL\nORDER BY p.name",
+        "SELECT p.name, p.wagon, p.coupe\nFROM passengers AS p\nLEFT JOIN tickets AS t ON t.passenger_id = p.id\nWHERE t.id IS NULL\nORDER BY p.name",
       expectedSql:
-        "SELECT p.name, p.wagon, p.compartment FROM passengers AS p LEFT JOIN tickets AS t ON t.passenger_id = p.id WHERE t.id IS NULL ORDER BY p.name",
+        "SELECT p.name, p.wagon, p.coupe FROM passengers AS p LEFT JOIN tickets AS t ON t.passenger_id = p.id WHERE t.id IS NULL ORDER BY p.name",
       orderMatters: true,
     },
     {
@@ -380,13 +380,13 @@ const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
       title: "Крайние вагоны",
       difficulty: "easy",
       description:
-        "Покажи пассажиров первого и пятого вагонов. Верни `name`, `wagon`, `compartment`, сортировка — по вагону, купе и имени.",
+        "Покажи пассажиров первого и пятого вагонов. Верни `name`, `wagon`, `coupe`, сортировка — по вагону, купе и имени.",
       hint: "Условие можно записать через IN (1, 5).",
-      starterSql: "SELECT name, wagon, compartment\nFROM passengers",
+      starterSql: "SELECT name, wagon, coupe\nFROM passengers",
       solution:
-        "SELECT name, wagon, compartment\nFROM passengers\nWHERE wagon IN (1, 5)\nORDER BY wagon, compartment, name",
+        "SELECT name, wagon, coupe\nFROM passengers\nWHERE wagon IN (1, 5)\nORDER BY wagon, coupe, name",
       expectedSql:
-        "SELECT name, wagon, compartment FROM passengers WHERE wagon IN (1, 5) ORDER BY wagon, compartment, name",
+        "SELECT name, wagon, coupe FROM passengers WHERE wagon IN (1, 5) ORDER BY wagon, coupe, name",
       orderMatters: true,
     },
     {

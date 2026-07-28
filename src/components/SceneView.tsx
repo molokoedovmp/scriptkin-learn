@@ -17,11 +17,13 @@ import { RichText } from "./RichText";
 export function SceneView({
   frames,
   isFullscreen,
+  textBackgroundUrl,
   onToggleFullscreen,
   onFinish,
 }: {
   frames: QuestSceneFrame[];
   isFullscreen: boolean;
+  textBackgroundUrl?: string;
   onToggleFullscreen: () => void;
   onFinish: () => void;
 }) {
@@ -144,10 +146,10 @@ export function SceneView({
 
   return (
     <div
-      className={`relative flex w-full flex-col overflow-hidden bg-night-ink sm:block ${
+      className={`relative flex w-full flex-col overflow-hidden bg-night-ink sm:block lg:grid lg:grid-cols-2 ${
         isFullscreen
           ? "h-[100dvh]"
-          : "rounded-xl border-2 border-night-ink sm:aspect-video sm:max-h-[70vh]"
+          : "rounded-xl border-2 border-night-ink sm:aspect-video sm:max-h-[70vh] lg:h-[min(760px,calc(100dvh-150px))] lg:min-h-[600px] lg:aspect-auto lg:max-h-none"
       }`}
     >
       {/* Иллюстрация; клик по ней листает вперёд */}
@@ -156,7 +158,9 @@ export function SceneView({
           isFullscreen
             ? "relative min-h-0 flex-1"
             : "relative aspect-[4/3] shrink-0"
-        } sm:absolute sm:inset-0 sm:aspect-auto ${isLast ? "" : "cursor-pointer"}`}
+        } sm:absolute sm:inset-0 sm:aspect-auto lg:relative lg:inset-auto ${
+          isLast ? "" : "cursor-pointer"
+        }`}
         onClick={() => !isLast && setIndex(index + 1)}
       >
         {frame.imageUrl && !failedImages.has(frame.imageUrl) ? (
@@ -190,9 +194,20 @@ export function SceneView({
         </button>
       )}
 
-      {/* Окно реплики внизу блока */}
-      <div className="relative z-10 flex shrink-0 justify-center p-3 sm:absolute sm:inset-x-0 sm:bottom-0 md:p-6">
-        <div className="w-full max-w-[900px] rounded-xl border-2 border-charcoal bg-paper-white p-3.5 sm:p-4 md:p-5">
+      {/* На ПК текст занимает правую половину, background.png лежит под ним. */}
+      <div className="relative z-10 flex shrink-0 justify-center p-3 sm:absolute sm:inset-x-0 sm:bottom-0 md:p-6 lg:relative lg:inset-auto lg:h-full lg:items-stretch lg:p-6">
+        <div
+          className="absolute inset-0 hidden bg-cover bg-center lg:block"
+          style={
+            textBackgroundUrl
+              ? { backgroundImage: `url("${textBackgroundUrl}")` }
+              : undefined
+          }
+          aria-hidden
+        />
+        <div className="absolute inset-0 hidden bg-night-ink/50 lg:block" aria-hidden />
+
+        <div className="relative z-10 w-full max-w-[900px] rounded-xl border-2 border-charcoal bg-paper-white p-3.5 sm:p-4 md:p-5 lg:flex lg:h-full lg:max-w-none lg:flex-col lg:border-paper-white/25 lg:bg-night-ink/65 lg:p-6">
           <div className="mb-2 flex items-center justify-between gap-3">
             {frame.speaker ? (
               <span className="inline-block rounded-full bg-spark-blue px-3 py-1 text-caption font-bold uppercase tracking-wide text-paper-white">
@@ -208,10 +223,10 @@ export function SceneView({
             </span>
           </div>
 
-          <div className="max-h-[26dvh] overflow-y-auto sm:max-h-[32vh]">
+          <div className="max-h-[26dvh] overflow-y-auto sm:max-h-[32vh] lg:min-h-0 lg:max-h-none lg:flex-1">
             <RichText
               text={frame.text}
-              className="text-[15px] font-medium leading-relaxed text-charcoal sm:text-body"
+              className="text-[15px] font-medium leading-relaxed text-charcoal sm:text-body lg:text-paper-white"
             />
           </div>
 

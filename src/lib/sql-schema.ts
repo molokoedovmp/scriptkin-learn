@@ -6,7 +6,7 @@
  */
 export const QUEST_SQL_SCHEMAS: Record<string, Record<string, string[]>> = {
   "midnight-express": {
-    passengers: ["id", "name", "age", "occupation", "wagon", "compartment"],
+    passengers: ["id", "name", "age", "occupation", "wagon", "coupe"],
     tickets: [
       "id",
       "passenger_id",
