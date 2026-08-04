@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
  *  - `код` — инлайновый код;
  *  - ``` ... ``` — блок кода;
  *  - строки, начинающиеся с "- ", собираются в список.
+ *  - строки вида | колонка | колонка | собираются в таблицу.
  */
 export function RichText({
   text,
@@ -21,7 +22,22 @@ export function RichText({
 type Block =
   | { type: "para"; text: string }
   | { type: "code"; text: string }
-  | { type: "list"; items: string[] };
+  | { type: "list"; items: string[] }
+  | { type: "table"; headers: string[]; rows: string[][] };
+
+function parseTableRow(line: string): string[] {
+  return line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((cell) => cell.trim());
+}
+
+function isTableDivider(line: string): boolean {
+  const cells = parseTableRow(line);
+  return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
+}
 
 function splitBlocks(text: string): Block[] {
   const lines = text.split("\n");
@@ -42,7 +58,8 @@ function splitBlocks(text: string): Block[] {
     listBuffer = null;
   };
 
-  for (const line of lines) {
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+    const line = lines[lineIndex];
     if (codeBuffer !== null) {
       if (line.trim().startsWith("```")) {
         blocks.push({ type: "code", text: codeBuffer.join("\n") });
@@ -56,6 +73,27 @@ function splitBlocks(text: string): Block[] {
       flushPara();
       flushList();
       codeBuffer = [];
+      continue;
+    }
+    if (
+      line.trim().startsWith("|") &&
+      lineIndex + 1 < lines.length &&
+      isTableDivider(lines[lineIndex + 1])
+    ) {
+      flushPara();
+      flushList();
+      const headers = parseTableRow(line);
+      const rows: string[][] = [];
+      lineIndex += 2;
+      while (
+        lineIndex < lines.length &&
+        lines[lineIndex].trim().startsWith("|")
+      ) {
+        rows.push(parseTableRow(lines[lineIndex]));
+        lineIndex += 1;
+      }
+      lineIndex -= 1;
+      blocks.push({ type: "table", headers, rows });
       continue;
     }
     if (/^\s*-\s+/.test(line)) {
@@ -102,6 +140,40 @@ function parseBlocks(text: string, className: string): ReactNode[] {
             </li>
           ))}
         </ul>
+      );
+    }
+    if (block.type === "table") {
+      return (
+        <div key={i} className="mb-3 overflow-x-auto rounded-xl border-2 border-[#e5e5e5] last:mb-0">
+          <table className="w-full min-w-max border-collapse text-left text-caption">
+            <thead className="bg-[#f4f4f4]">
+              <tr>
+                {block.headers.map((header, columnIndex) => (
+                  <th
+                    key={columnIndex}
+                    className="border-b-2 border-[#e5e5e5] px-3 py-2 font-bold text-charcoal"
+                  >
+                    {parseInline(header)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.rows.map((row, rowIndex) => (
+                <tr key={rowIndex} className="even:bg-[#fafafa]">
+                  {block.headers.map((_, columnIndex) => (
+                    <td
+                      key={columnIndex}
+                      className="border-b border-[#eeeeee] px-3 py-2 font-medium text-pencil-gray last:border-b-0"
+                    >
+                      {parseInline(row[columnIndex] ?? "")}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       );
     }
     return (

@@ -15,7 +15,7 @@ const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
   title: "Полночный экспресс",
   emoji: "🚂",
   description:
-    "Пять связанных таблиц ночного поезда: пассажиры, билеты, багаж, маршрут и журнал проводника. Задания не меняют прогресс квеста — здесь можно спокойно экспериментировать.",
+    "Шесть связанных таблиц ночного поезда: пассажиры, билеты, багаж, маршрут, журнал проводника и контрольная перекличка. Задания не меняют прогресс квеста — здесь можно спокойно экспериментировать.",
   tables: [
     {
       name: "passengers",
@@ -48,6 +48,11 @@ const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
       name: "luggage",
       description: "Зарегистрированный багаж",
       columns: ["id", "passenger_id", "description", "weight_kg"],
+    },
+    {
+      name: "onboard_check",
+      description: "Повторная именная перекличка",
+      columns: ["passenger_id", "wagon", "checked_at"],
     },
   ],
   tasks: [
@@ -411,12 +416,13 @@ const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
       difficulty: "easy",
       description:
         "Покажи станции с прибытием не раньше 03:00. Верни `name` и `arrival_time` по времени.",
-      hint: "Сравни arrival_time с литералом TIME '03:00'.",
+      hint:
+        "Сравни arrival_time с полной отметкой TIMESTAMP '2026-07-18 03:00:00'.",
       starterSql: "SELECT name, arrival_time\nFROM stations",
       solution:
-        "SELECT name, arrival_time\nFROM stations\nWHERE arrival_time >= TIME '03:00'\nORDER BY arrival_time",
+        "SELECT name, arrival_time\nFROM stations\nWHERE arrival_time >= TIMESTAMP '2026-07-18 03:00:00'\nORDER BY arrival_time",
       expectedSql:
-        "SELECT name, arrival_time FROM stations WHERE arrival_time >= TIME '03:00' ORDER BY arrival_time",
+        "SELECT name, arrival_time FROM stations WHERE arrival_time >= TIMESTAMP '2026-07-18 03:00:00' ORDER BY arrival_time",
       orderMatters: true,
     },
     {

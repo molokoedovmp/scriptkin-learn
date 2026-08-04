@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import type { QuestSceneFrame } from "@/lib/types";
 import { Button } from "./Button";
 import { RichText } from "./RichText";
@@ -40,6 +41,9 @@ export function SceneView({
     [frames]
   );
   const preloadedImages = useRef<HTMLImageElement[]>([]);
+  const imageDimensions = useRef(
+    new Map<string, { width: number; height: number }>()
+  );
   const [loadedImages, setLoadedImages] = useState(0);
   const [imagesReady, setImagesReady] = useState(imageUrls.length === 0);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
@@ -47,6 +51,7 @@ export function SceneView({
   useEffect(() => {
     let cancelled = false;
     preloadedImages.current = [];
+    imageDimensions.current.clear();
     setLoadedImages(0);
     setFailedImages(new Set());
 
@@ -80,10 +85,20 @@ export function SceneView({
         image.onload = () => {
           // decode() дожидается не только сети, но и готовности картинки
           // к отрисовке — при смене реплики старый кадр не задерживается.
+          const markLoaded = () => {
+            if (!cancelled && image.naturalWidth > 0 && image.naturalHeight > 0) {
+              imageDimensions.current.set(url, {
+                width: image.naturalWidth,
+                height: image.naturalHeight,
+              });
+            }
+            finish("loaded");
+          };
+
           image
             .decode()
-            .then(() => finish("loaded"))
-            .catch(() => finish("loaded"));
+            .then(markLoaded)
+            .catch(markLoaded);
         };
         image.onerror = () => finish("failed");
         image.src = url;
@@ -143,14 +158,29 @@ export function SceneView({
 
   const frame = frames[index];
   const isLast = index === frames.length - 1;
+  const frameDimensions = frame.imageUrl
+    ? imageDimensions.current.get(frame.imageUrl)
+    : undefined;
+  const desktopAspectRatio = frameDimensions
+    ? `${frameDimensions.width * 2} / ${frameDimensions.height}`
+    : "16 / 9";
 
   return (
     <div
       className={`relative flex w-full flex-col overflow-hidden bg-night-ink sm:block lg:grid lg:grid-cols-2 ${
+        textBackgroundUrl ? "midnight-scene" : ""
+      } ${
         isFullscreen
           ? "h-[100dvh]"
-          : "rounded-xl border-2 border-night-ink sm:aspect-video sm:max-h-[70vh] lg:h-[min(760px,calc(100dvh-150px))] lg:min-h-[600px] lg:aspect-auto lg:max-h-none"
+          : "rounded-xl border-2 border-night-ink sm:aspect-video sm:max-h-[70vh] lg:aspect-[var(--scene-desktop-ratio)] lg:max-h-none"
       }`}
+      style={
+        !isFullscreen
+          ? ({
+              "--scene-desktop-ratio": desktopAspectRatio,
+            } as CSSProperties)
+          : undefined
+      }
     >
       {/* Иллюстрация; клик по ней листает вперёд */}
       <div
@@ -169,7 +199,9 @@ export function SceneView({
             key={frame.imageUrl}
             src={frame.imageUrl}
             alt=""
-            className="h-full w-full object-contain sm:object-cover"
+            className={`h-full w-full object-contain sm:object-cover ${
+              isFullscreen ? "lg:object-cover" : "lg:object-contain"
+            }`}
           />
         ) : (
           <div
@@ -195,19 +227,20 @@ export function SceneView({
       )}
 
       {/* На ПК текст занимает правую половину, background.png лежит под ним. */}
-      <div className="relative z-10 flex shrink-0 justify-center p-3 sm:absolute sm:inset-x-0 sm:bottom-0 md:p-6 lg:relative lg:inset-auto lg:h-full lg:items-stretch lg:p-6">
+      <div className="relative isolate z-0 flex min-h-0 shrink-0 justify-center overflow-hidden sm:absolute sm:inset-x-0 sm:bottom-0 lg:relative lg:inset-auto lg:h-full lg:self-stretch lg:items-stretch">
         <div
-          className="absolute inset-0 hidden bg-cover bg-center lg:block"
+          className="absolute inset-0 bg-cover bg-center"
           style={
             textBackgroundUrl
-              ? { backgroundImage: `url("${textBackgroundUrl}")` }
+              ? {
+                  backgroundColor: "#17130f",
+                  backgroundImage: `linear-gradient(rgb(0 0 0 / 12%), rgb(0 0 0 / 32%)), url("${textBackgroundUrl}")`,
+                }
               : undefined
           }
           aria-hidden
         />
-        <div className="absolute inset-0 hidden bg-night-ink/50 lg:block" aria-hidden />
-
-        <div className="relative z-10 w-full max-w-[900px] rounded-xl border-2 border-charcoal bg-paper-white p-3.5 sm:p-4 md:p-5 lg:flex lg:h-full lg:max-w-none lg:flex-col lg:border-paper-white/25 lg:bg-night-ink/65 lg:p-6">
+        <div className="relative z-10 flex min-h-0 w-full max-w-[900px] flex-col bg-transparent p-4 sm:p-5 md:p-6 lg:h-full lg:max-w-none lg:p-7">
           <div className="mb-2 flex items-center justify-between gap-3">
             {frame.speaker ? (
               <span className="inline-block rounded-full bg-spark-blue px-3 py-1 text-caption font-bold uppercase tracking-wide text-paper-white">
@@ -223,10 +256,14 @@ export function SceneView({
             </span>
           </div>
 
-          <div className="max-h-[26dvh] overflow-y-auto sm:max-h-[32vh] lg:min-h-0 lg:max-h-none lg:flex-1">
+          <div
+            className={`min-h-0 max-h-[32dvh] overflow-y-auto overscroll-contain pr-1 sm:max-h-[34vh] lg:max-h-none lg:flex-1 lg:pr-3 ${
+              textBackgroundUrl ? "midnight-scene-copy" : ""
+            }`}
+          >
             <RichText
               text={frame.text}
-              className="text-[15px] font-medium leading-relaxed text-charcoal sm:text-body lg:text-paper-white"
+              className="text-[15px] font-medium leading-relaxed text-paper-white sm:text-body"
             />
           </div>
 

@@ -346,27 +346,12 @@ function MapView({
   const sceneUnlocked = (afterStep: number) =>
     watchedScenes.has(afterStep) ||
     completed ||
+    (afterStep === 0 ? current >= 1 : current > afterStep);
+  const sceneDone = (afterStep: number) =>
+    watchedScenes.has(afterStep) ||
+    completed ||
     (afterStep === 0 ? current > 1 : current > afterStep);
-
-  const sceneChip = (afterStep: number) => {
-    if (!scenesBy.has(afterStep)) return null;
-    const unlocked = sceneUnlocked(afterStep);
-    return (
-      <button
-        type="button"
-        disabled={!unlocked}
-        onClick={() => onPlayScene(afterStep)}
-        title={unlocked ? "Посмотреть сцену" : "Сцена откроется позже"}
-        className={`rounded-full border-2 px-4 py-1.5 text-caption font-bold uppercase tracking-wide ${
-          unlocked
-            ? "cursor-pointer border-spark-blue bg-[#e7f6fe] text-spark-blue hover:bg-[#d4effd]"
-            : "cursor-default border-[#e5e5e5] bg-[#f4f4f4] text-faded-gray"
-        }`}
-      >
-        🎬 Сцена
-      </button>
-    );
-  };
+  const entries = buildSnakeEntries(steps, scenesBy);
 
   return (
     <div>
@@ -396,18 +381,48 @@ function MapView({
         </div>
       </div>
 
-      {/* Дорожка уровней: узкая змейка на мобильных, широкая — на десктопе */}
-      <div className="mb-8 flex justify-center">{sceneChip(0)}</div>
-
+      {/* Единый маршрут: каждая сцена и каждый урок — отдельный узел. */}
       <div className="mb-8 flex flex-col items-center gap-6 md:hidden">
-        {steps.map((step, i) => {
+        {entries.map((entry, i) => {
+          if (entry.kind === "trophy") {
+            return (
+              <div
+                key="trophy"
+                className="flex flex-col items-center"
+                style={{ transform: `translateX(${nodeOffset(i)}px)` }}
+              >
+                <TrophyNode completed={completed} />
+              </div>
+            );
+          }
+
+          if (entry.kind === "scene") {
+            const unlocked = sceneUnlocked(entry.afterStep);
+            const done = sceneDone(entry.afterStep);
+            return (
+              <div
+                key={`scene-${entry.afterStep}`}
+                className="flex flex-col items-center gap-2"
+                style={{ transform: `translateX(${nodeOffset(i)}px)` }}
+              >
+                <SceneMapNode
+                  entry={entry}
+                  unlocked={unlocked}
+                  done={done}
+                  onPlayScene={onPlayScene}
+                />
+              </div>
+            );
+          }
+
+          const step = entry.step;
           const isDone = completed || step.stepNumber < current;
           const isActive = !completed && step.stepNumber === current;
           const locked = !isDone && !isActive;
           return (
             <div
-              key={step.stepNumber}
-              className="flex flex-col items-center gap-6"
+              key={`step-${step.stepNumber}`}
+              className="flex flex-col items-center gap-2"
               style={{ transform: `translateX(${nodeOffset(i)}px)` }}
             >
               <button
@@ -431,50 +446,27 @@ function MapView({
                 )}
               </button>
               <span
-                className={`-mt-4 max-w-[180px] text-center text-caption font-bold ${
+                className={`max-w-[180px] text-center text-caption font-bold ${
                   locked ? "text-faded-gray" : "text-charcoal"
                 }`}
               >
-                {step.title}
+                Урок {step.stepNumber} · {step.title}
               </span>
-              {sceneChip(step.stepNumber)}
             </div>
           );
         })}
-
-        {/* Финальный узел */}
-        <div
-          className="flex flex-col items-center"
-          style={{ transform: `translateX(${nodeOffset(steps.length)}px)` }}
-        >
-          <div
-            className={`flex h-[68px] w-[68px] items-center justify-center rounded-full border-b-[6px] text-[30px] ${
-              completed
-                ? "border-[#d4a000] bg-[#ffc800] text-paper-white"
-                : "border-[#cfcfcf] bg-[#e5e5e5] grayscale"
-            }`}
-            aria-hidden
-          >
-            🏆
-          </div>
-          <span
-            className={`mt-2 text-caption font-bold ${
-              completed ? "text-charcoal" : "text-faded-gray"
-            }`}
-          >
-            Развязка
-          </span>
-        </div>
       </div>
 
       {/* Широкая змейка на весь экран — от края до края, ряд за рядом */}
       <div className="mb-8 hidden md:block">
         <SnakePath
-          steps={steps}
+          entries={entries}
           current={current}
           completed={completed}
           onOpenStep={onOpenStep}
-          sceneChip={sceneChip}
+          onPlayScene={onPlayScene}
+          sceneUnlocked={sceneUnlocked}
+          sceneDone={sceneDone}
         />
       </div>
 
@@ -522,25 +514,53 @@ const ROW_SIZE = 4;
  *  вертикального соединителя между рядами к центру крайнего кружка */
 const NODE_CELL_PX = 112;
 
-type SnakeEntry = { kind: "step"; step: QuestStep } | { kind: "trophy" };
+type SnakeEntry =
+  | { kind: "scene"; afterStep: number; sceneNumber: number }
+  | { kind: "step"; step: QuestStep }
+  | { kind: "trophy" };
+
+function buildSnakeEntries(
+  steps: QuestStep[],
+  scenesBy: Map<number, QuestSceneFrame[]>
+): SnakeEntry[] {
+  const entries: SnakeEntry[] = [];
+
+  if (scenesBy.has(0)) {
+    entries.push({ kind: "scene", afterStep: 0, sceneNumber: 1 });
+  }
+
+  for (const step of steps) {
+    entries.push({ kind: "step", step });
+    if (scenesBy.has(step.stepNumber)) {
+      entries.push({
+        kind: "scene",
+        afterStep: step.stepNumber,
+        sceneNumber: step.stepNumber + 1,
+      });
+    }
+  }
+
+  entries.push({ kind: "trophy" });
+  return entries;
+}
 
 function SnakePath({
-  steps,
+  entries,
   current,
   completed,
   onOpenStep,
-  sceneChip,
+  onPlayScene,
+  sceneUnlocked,
+  sceneDone,
 }: {
-  steps: QuestStep[];
+  entries: SnakeEntry[];
   current: number;
   completed: boolean;
   onOpenStep: (n: number) => void;
-  sceneChip: (afterStep: number) => React.ReactNode;
+  onPlayScene: (afterStep: number) => void;
+  sceneUnlocked: (afterStep: number) => boolean;
+  sceneDone: (afterStep: number) => boolean;
 }) {
-  const entries: SnakeEntry[] = [
-    ...steps.map((step): SnakeEntry => ({ kind: "step", step })),
-    { kind: "trophy" },
-  ];
   const rows: SnakeEntry[][] = [];
   for (let i = 0; i < entries.length; i += ROW_SIZE) {
     rows.push(entries.slice(i, i + ROW_SIZE));
@@ -549,7 +569,9 @@ function SnakePath({
   const isEntryDone = (entry: SnakeEntry) =>
     entry.kind === "trophy"
       ? completed
-      : completed || entry.step.stepNumber < current;
+      : entry.kind === "scene"
+        ? sceneDone(entry.afterStep)
+        : completed || entry.step.stepNumber < current;
 
   return (
     <div>
@@ -564,12 +586,20 @@ function SnakePath({
             >
               {row.map((entry, i) => (
                 <SnakeNode
-                  key={entry.kind === "trophy" ? "trophy" : entry.step.stepNumber}
+                  key={
+                    entry.kind === "trophy"
+                      ? "trophy"
+                      : entry.kind === "scene"
+                        ? `scene-${entry.afterStep}`
+                        : `step-${entry.step.stepNumber}`
+                  }
                   entry={entry}
                   current={current}
                   completed={completed}
                   onOpenStep={onOpenStep}
-                  sceneChip={sceneChip}
+                  onPlayScene={onPlayScene}
+                  sceneUnlocked={sceneUnlocked}
+                  sceneDone={sceneDone}
                   connectorAfter={
                     i < row.length - 1 ? isEntryDone(entry) : undefined
                   }
@@ -594,19 +624,92 @@ function SnakePath({
   );
 }
 
+function SceneMapNode({
+  entry,
+  unlocked,
+  done,
+  onPlayScene,
+}: {
+  entry: Extract<SnakeEntry, { kind: "scene" }>;
+  unlocked: boolean;
+  done: boolean;
+  onPlayScene: (afterStep: number) => void;
+}) {
+  return (
+    <>
+      <button
+        type="button"
+        disabled={!unlocked}
+        onClick={() => onPlayScene(entry.afterStep)}
+        aria-label={`Сцена ${entry.sceneNumber}`}
+        title={unlocked ? "Посмотреть сцену" : "Сцена откроется позже"}
+        className={`relative flex h-[68px] w-[68px] items-center justify-center rounded-full border-b-[6px] text-[25px] font-extrabold transition-transform ${
+          done
+            ? "cursor-pointer border-[#006da6] bg-spark-blue text-paper-white hover:scale-105"
+            : unlocked
+              ? "cursor-pointer border-[#006da6] bg-spark-blue text-paper-white ring-4 ring-[#d4effd] hover:scale-105"
+              : "cursor-default border-[#cfcfcf] bg-[#e5e5e5] grayscale"
+        }`}
+      >
+        🎬
+        {unlocked && !done && (
+          <span className="absolute -top-9 whitespace-nowrap rounded-xl border-2 border-[#d4effd] bg-paper-white px-3 py-1 text-caption font-bold uppercase tracking-wide text-spark-blue">
+            Сюжет
+          </span>
+        )}
+      </button>
+      <span
+        className={`max-w-[104px] text-center text-caption font-bold ${
+          unlocked ? "text-charcoal" : "text-faded-gray"
+        }`}
+      >
+        Сцена {entry.sceneNumber}
+      </span>
+    </>
+  );
+}
+
+function TrophyNode({ completed }: { completed: boolean }) {
+  return (
+    <>
+      <div
+        className={`flex h-[68px] w-[68px] items-center justify-center rounded-full border-b-[6px] text-[30px] ${
+          completed
+            ? "border-[#d4a000] bg-[#ffc800] text-paper-white"
+            : "border-[#cfcfcf] bg-[#e5e5e5] grayscale"
+        }`}
+        aria-hidden
+      >
+        🏆
+      </div>
+      <span
+        className={`text-center text-caption font-bold ${
+          completed ? "text-charcoal" : "text-faded-gray"
+        }`}
+      >
+        Развязка
+      </span>
+    </>
+  );
+}
+
 function SnakeNode({
   entry,
   current,
   completed,
   onOpenStep,
-  sceneChip,
+  onPlayScene,
+  sceneUnlocked,
+  sceneDone,
   connectorAfter,
 }: {
   entry: SnakeEntry;
   current: number;
   completed: boolean;
   onOpenStep: (n: number) => void;
-  sceneChip: (afterStep: number) => React.ReactNode;
+  onPlayScene: (afterStep: number) => void;
+  sceneUnlocked: (afterStep: number) => boolean;
+  sceneDone: (afterStep: number) => boolean;
   /** true/false — рисовать соединитель после узла и его цвет; undefined — не рисовать */
   connectorAfter: boolean | undefined;
 }) {
@@ -616,25 +719,14 @@ function SnakeNode({
       style={{ width: NODE_CELL_PX }}
     >
       {entry.kind === "trophy" ? (
-        <>
-          <div
-            className={`flex h-[68px] w-[68px] items-center justify-center rounded-full border-b-[6px] text-[30px] ${
-              completed
-                ? "border-[#d4a000] bg-[#ffc800] text-paper-white"
-                : "border-[#cfcfcf] bg-[#e5e5e5] grayscale"
-            }`}
-            aria-hidden
-          >
-            🏆
-          </div>
-          <span
-            className={`text-center text-caption font-bold ${
-              completed ? "text-charcoal" : "text-faded-gray"
-            }`}
-          >
-            Развязка
-          </span>
-        </>
+        <TrophyNode completed={completed} />
+      ) : entry.kind === "scene" ? (
+        <SceneMapNode
+          entry={entry}
+          unlocked={sceneUnlocked(entry.afterStep)}
+          done={sceneDone(entry.afterStep)}
+          onPlayScene={onPlayScene}
+        />
       ) : (
         (() => {
           const step = entry.step;
@@ -668,9 +760,8 @@ function SnakeNode({
                   locked ? "text-faded-gray" : "text-charcoal"
                 }`}
               >
-                {step.title}
+                Урок {step.stepNumber} · {step.title}
               </span>
-              {sceneChip(step.stepNumber)}
             </>
           );
         })()
@@ -817,17 +908,6 @@ function StepView({
             <p className="text-body font-bold text-charcoal">{step.task}</p>
           </div>
 
-          {step.hint && (
-            <details className="mb-3">
-              <summary className="cursor-pointer text-nav-label font-bold uppercase text-spark-blue">
-                Подсказка
-              </summary>
-              <p className="mt-2 rounded-xl border-2 border-[#e5e5e5] p-3 font-mono text-caption text-charcoal">
-                {step.hint}
-              </p>
-            </details>
-          )}
-
           {showOutcome && (
             <div className="mb-3 rounded-xl border-2 border-eager-green p-4">
               <p className="mb-1 text-caption font-bold uppercase tracking-wide text-eager-green">
@@ -840,9 +920,9 @@ function StepView({
             </div>
           )}
 
-          {/* Обучение — в самом низу, свёрнуто */}
+          {/* Обучение и сразу под ним подсказка — оба блока свёрнуты. */}
           {step.theory && (
-            <details className="mb-1 overflow-hidden rounded-xl border-2 border-spark-blue">
+            <details className="mb-3 overflow-hidden rounded-xl border-2 border-spark-blue">
               <summary className="cursor-pointer bg-[#e7f6fe] px-4 py-2.5 text-nav-label font-bold uppercase tracking-wide text-spark-blue">
                 📘 Обучение: команды шага
               </summary>
@@ -851,6 +931,17 @@ function StepView({
                   text={step.theory}
                   className="text-body font-medium leading-relaxed text-pencil-gray"
                 />
+              </div>
+            </details>
+          )}
+
+          {step.hint && (
+            <details className="mb-1 overflow-hidden rounded-xl border-2 border-[#e5e5e5]">
+              <summary className="cursor-pointer bg-[#f4f4f4] px-4 py-2.5 text-nav-label font-bold uppercase tracking-wide text-spark-blue">
+                💡 Подсказка
+              </summary>
+              <div className="px-4 py-3 font-mono text-caption text-charcoal whitespace-pre-wrap">
+                {step.hint}
               </div>
             </details>
           )}

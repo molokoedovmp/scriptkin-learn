@@ -69,11 +69,13 @@ export async function POST(req: Request) {
     await client.query(`SET LOCAL search_path = "${schema}"`);
     const result = await client.query(sql);
     columns = result.fields.map((f) => f.name);
-    rows = result.rows.slice(0, MAX_ROWS);
+    rows = normalizeResultRows(result.rows.slice(0, MAX_ROWS));
     if (practiceTask) {
       const expectedResult = await client.query(practiceTask.expectedSql);
       practiceExpectedColumns = expectedResult.fields.map((field) => field.name);
-      practiceExpectedRows = expectedResult.rows.slice(0, MAX_ROWS);
+      practiceExpectedRows = normalizeResultRows(
+        expectedResult.rows.slice(0, MAX_ROWS)
+      );
     }
     await client.query("ROLLBACK");
   } catch (err) {
@@ -135,6 +137,27 @@ export async function POST(req: Request) {
 
 function json(body: ExecuteResponse, status: number) {
   return NextResponse.json(body, { status });
+}
+
+/**
+ * В базе станции хранят полную дату и время, чтобы маршрут корректно
+ * сортировался через полночь. В учебной таблице показываем только время.
+ */
+function normalizeResultRows(
+  rows: Record<string, unknown>[]
+): Record<string, unknown>[] {
+  return rows.map((row) =>
+    Object.fromEntries(
+      Object.entries(row).map(([column, value]) => [
+        column,
+        column === "arrival_time" && value instanceof Date
+          ? [value.getHours(), value.getMinutes(), value.getSeconds()]
+              .map((part) => String(part).padStart(2, "0"))
+              .join(":")
+          : value,
+      ])
+    )
+  );
 }
 
 /**

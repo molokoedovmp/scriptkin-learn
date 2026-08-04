@@ -18,6 +18,7 @@ export const QUEST_SQL_SCHEMAS: Record<string, Record<string, string[]>> = {
     stations: ["id", "name", "arrival_time", "stop_minutes"],
     conductor_log: ["id", "wagon", "event_time", "note"],
     luggage: ["id", "passenger_id", "description", "weight_kg"],
+    onboard_check: ["passenger_id", "wagon", "checked_at"],
   },
 };
 
