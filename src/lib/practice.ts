@@ -12,6 +12,7 @@ interface ServerPracticeDatabase extends Omit<PracticeDatabase, "tasks"> {
 
 const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
   questSlug: "midnight-express",
+  previewUrl: "/quests/midnight-express/preview.png",
   title: "Полночный экспресс",
   emoji: "🚂",
   description:

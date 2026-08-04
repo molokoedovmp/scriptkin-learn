@@ -92,6 +92,7 @@ export interface PracticeDatabase {
   questSlug: string;
   title: string;
   emoji: string;
+  previewUrl?: string;
   description: string;
   tables: PracticeTable[];
   tasks: PracticeTask[];

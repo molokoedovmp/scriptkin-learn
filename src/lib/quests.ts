@@ -18,7 +18,7 @@ export const DEMO_QUESTS: Quest[] = [
     stepsCount: 7,
     emoji: "🚂",
     status: "available",
-    previewUrl: "/quests/midnight-express/prew.png",
+    previewUrl: "/quests/midnight-express/preview.png",
   },
   {
     slug: "submarine-crash",

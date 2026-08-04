@@ -164,6 +164,9 @@ export function SceneView({
   const desktopAspectRatio = frameDimensions
     ? `${frameDimensions.width * 2} / ${frameDimensions.height}`
     : "16 / 9";
+  const imageAspectRatio = frameDimensions
+    ? `${frameDimensions.width} / ${frameDimensions.height}`
+    : "4 / 3";
 
   return (
     <div
@@ -178,6 +181,7 @@ export function SceneView({
         !isFullscreen
           ? ({
               "--scene-desktop-ratio": desktopAspectRatio,
+              "--scene-image-ratio": imageAspectRatio,
             } as CSSProperties)
           : undefined
       }
@@ -187,7 +191,7 @@ export function SceneView({
         className={`${
           isFullscreen
             ? "relative min-h-0 flex-1"
-            : "relative aspect-[4/3] shrink-0"
+            : "relative aspect-[var(--scene-image-ratio)] shrink-0"
         } sm:absolute sm:inset-0 sm:aspect-auto lg:relative lg:inset-auto ${
           isLast ? "" : "cursor-pointer"
         }`}

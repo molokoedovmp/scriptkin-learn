@@ -54,8 +54,8 @@ export default function HowItWorksPage() {
               <Image
                 src="/quest-prew.png"
                 alt="Интерфейс квеста Полночный экспресс"
-                width={1920}
-                height={1440}
+                width={1677}
+                height={938}
                 priority
                 sizes="(max-width: 1023px) 100vw, 58vw"
                 className="h-auto w-full"
@@ -99,11 +99,11 @@ export default function HowItWorksPage() {
               <div className="order-1 lg:order-2">
                 <div className="overflow-hidden rounded-[20px] border-2 border-[#e4e4e4] bg-paper-white p-3 shadow-[0_18px_60px_rgba(0,0,0,0.08)]">
                   <Image
-                    src="/quests/midnight-express/prew.png"
+                    src="/quests/midnight-express/preview.png"
                     alt="Обложка квеста Полночный экспресс"
-                    width={900}
-                    height={450}
-                    className="aspect-[2/1] w-full rounded-xl object-cover"
+                    width={1677}
+                    height={938}
+                    className="aspect-video w-full rounded-xl object-cover"
                   />
                   <div className="flex items-center justify-between gap-4 p-4 pb-2">
                     <div>

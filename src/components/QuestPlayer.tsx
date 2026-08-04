@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Quest, QuestSceneFrame, QuestStep } from "@/lib/types";
 import { DIFFICULTY_LABELS } from "@/lib/types";
 import { Button } from "./Button";
+import { ErrorReportModal } from "./ErrorReportModal";
 import { RichText } from "./RichText";
 import { SceneView } from "./SceneView";
 import { SqlRunner } from "./SqlRunner";
@@ -818,6 +819,7 @@ function StepView({
   onNavigate: (n: number) => void;
   onBackToMap: () => void;
 }) {
+  const [errorReportOpen, setErrorReportOpen] = useState(false);
   const showOutcome = (!isCurrent || solved) && step.outcome;
   const panelHeight = isFullscreen
     ? "md:max-h-[calc(100vh-150px)]"
@@ -945,6 +947,15 @@ function StepView({
               </div>
             </details>
           )}
+
+          <button
+            type="button"
+            onClick={() => setErrorReportOpen(true)}
+            className="mt-3 inline-flex items-center gap-2 rounded-xl border-2 border-[#ef9c7d] bg-[#fff7f3] px-4 py-2.5 text-caption font-extrabold uppercase tracking-wide text-[#bd4d2b] transition-colors hover:border-[#d85b36] hover:bg-[#fff0e9]"
+          >
+            <span aria-hidden>⚑</span>
+            Сообщить об ошибке
+          </button>
         </div>
 
         {/* Разделитель */}
@@ -975,6 +986,16 @@ function StepView({
           )}
         </div>
       </div>
+
+      {errorReportOpen && (
+        <ErrorReportModal
+          questTitle={quest.title}
+          questSlug={quest.slug}
+          stepNumber={step.stepNumber}
+          stepTitle={step.title}
+          onClose={() => setErrorReportOpen(false)}
+        />
+      )}
     </div>
   );
 }

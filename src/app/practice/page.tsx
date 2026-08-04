@@ -70,9 +70,18 @@ export default function PracticePage() {
                   href={`/practice/${database.questSlug}`}
                   className="group overflow-hidden rounded-xl border-2 border-[#e5e5e5] bg-paper-white transition-colors hover:border-eager-green"
                 >
-                  <div className="flex aspect-[2/1] items-center justify-center border-b-2 border-[#e5e5e5] bg-night-ink text-7xl">
-                    {database.emoji}
-                  </div>
+                  {database.previewUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={database.previewUrl}
+                      alt={`Обложка базы заданий «${database.title}»`}
+                      className="aspect-video w-full border-b-2 border-[#e5e5e5] object-cover"
+                    />
+                  ) : (
+                    <div className="flex aspect-video items-center justify-center border-b-2 border-[#e5e5e5] bg-night-ink text-7xl">
+                      {database.emoji}
+                    </div>
+                  )}
                   <div className="p-6">
                     <p className="mb-2 text-caption font-extrabold uppercase tracking-wide text-spark-blue">
                       База из квеста

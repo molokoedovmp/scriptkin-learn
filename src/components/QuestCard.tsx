@@ -24,7 +24,7 @@ export function QuestCard({ quest }: { quest: Quest }) {
         <img
           src={quest.previewUrl}
           alt=""
-          className="aspect-[2/1] w-full border-b-2 border-[#e5e5e5] object-cover"
+          className="aspect-video w-full border-b-2 border-[#e5e5e5] object-cover"
         />
       ) : (
         <div className="pt-6 pl-6 text-5xl" aria-hidden>
