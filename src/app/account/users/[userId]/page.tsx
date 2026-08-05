@@ -78,7 +78,7 @@ export default async function UserProfilePage({
 
           <div className="mb-6 grid grid-cols-3 gap-3">
             <Metric value={profile.activityPoints} label="вкладов" />
-            <Metric value={completed} label="квестов пройдено" />
+            <Metric value={completed} label="историй пройдено" />
             <Metric value={profile.friends.length} label="друзей" />
           </div>
 
@@ -86,10 +86,10 @@ export default async function UserProfilePage({
             <div className="space-y-6">
               <section className="rounded-[20px] border-2 border-[#e6e7eb] bg-paper-white p-5 sm:p-6">
                 <h2 className="text-heading-sm font-black text-charcoal">
-                  Прогресс в квестах
+                  Прогресс в историях
                 </h2>
                 {profile.progress.length === 0 ? (
-                  <Empty text="Пользователь ещё не начал квесты." />
+                  <Empty text="Пользователь ещё не начал истории." />
                 ) : (
                   <div className="mt-5 space-y-5">
                     {profile.progress.map((quest) => (
@@ -110,7 +110,7 @@ export default async function UserProfilePage({
                         </div>
                         <p className="mt-2 text-caption font-bold text-faded-gray">
                           {quest.completedAt
-                            ? "Квест пройден"
+                            ? "История пройдена"
                             : `Открыт шаг ${quest.currentStep} из ${quest.stepsCount}`}
                         </p>
                       </div>

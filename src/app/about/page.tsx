@@ -7,7 +7,7 @@ import { Button } from "@/components/Button";
 export const metadata: Metadata = {
   title: "О проекте — Скрипткин",
   description:
-    "Скрипткин — открытая платформа для обучения SQL через детективные квесты с сюжетом. Зачем мы её делаем и что будет дальше.",
+    "Скрипткин — открытая платформа для обучения SQL через детективные истории с сюжетом. Зачем мы её делаем и что будет дальше.",
 };
 
 export default function AboutPage() {
@@ -20,7 +20,7 @@ export default function AboutPage() {
           о проекте
         </h1>
         <p className="mb-10 text-body font-medium leading-relaxed text-pencil-gray">
-          Скрипткин — платформа для обучения SQL через игровые квесты с
+          Скрипткин — платформа для обучения SQL через игровые истории с
           сюжетом. Мы верим, что запрос к базе данных запоминается не тогда,
           когда его переписал из учебника, а тогда, когда он помог поймать
           преступника.
@@ -65,7 +65,7 @@ export default function AboutPage() {
           </h2>
           <ul className="grid gap-2 text-body font-medium text-pencil-gray">
             <li>
-              — первый квест{" "}
+              — первая история{" "}
               <Link
                 href="/quests/midnight-express"
                 className="font-bold text-spark-blue"
@@ -86,13 +86,13 @@ export default function AboutPage() {
           </h2>
           <ul className="grid gap-2 text-body font-medium text-pencil-gray">
             <li>
-              — «Крушение подлодки» — квест про затонувшую субмарину «Кальмар»;
+              — «Крушение подлодки» — история про затонувшую субмарину «Кальмар»;
             </li>
             <li>— «Ограбление галереи» — детектив среднего уровня про JOIN-ы;</li>
             <li>
-              — «Станция „Арес-9“» — продвинутый квест с оконными функциями;
+              — «Станция „Арес-9“» — продвинутая история с оконными функциями;
             </li>
-            <li>— рейтинг игроков и конструктор собственных квестов.</li>
+            <li>— рейтинг игроков и конструктор собственных историй.</li>
           </ul>
         </section>
 

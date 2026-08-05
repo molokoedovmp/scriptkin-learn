@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function CookiesPage() {
   return (
-    <LegalLayout title="политика использования cookie" updated="17.07.2026">
+    <LegalLayout title="политика использования cookie" updated="05.08.2026">
       <LegalSection number="1" title="Что такое cookie">
         <p>
           Cookie — небольшие текстовые файлы, которые сайт сохраняет в браузере
@@ -37,7 +37,7 @@ export default function CookiesPage() {
           </li>
           <li>
             <strong>skriptkin-split-pct</strong> (localStorage) — сохранённое
-            положение разделителя панелей на странице квеста.
+            положение разделителя панелей на странице истории.
           </li>
         </ul>
         <p>

@@ -1,5 +1,7 @@
 import type { Quest } from "./types";
 
+export const COMING_SOON_PRICE_RUB = 500;
+
 /**
  * Демо-каталог квестов. Используется как fallback, пока база данных
  * не поднята или не заполнена (см. db/seed.sql и db/quests/ — те же данные).
@@ -33,6 +35,7 @@ export const DEMO_QUESTS: Quest[] = [
     stepsCount: 8,
     emoji: "🌊",
     status: "coming_soon",
+    previewUrl: "/quests/submarine-crash/preview.png",
   },
   {
     slug: "midnight-heist",
@@ -46,6 +49,7 @@ export const DEMO_QUESTS: Quest[] = [
     stepsCount: 10,
     emoji: "🖼️",
     status: "coming_soon",
+    previewUrl: "/quests/midnight-heist/preview.png",
   },
   {
     slug: "mars-station",
@@ -59,6 +63,7 @@ export const DEMO_QUESTS: Quest[] = [
     stepsCount: 12,
     emoji: "🚀",
     status: "coming_soon",
+    previewUrl: "/quests/mars-station/preview.png",
   },
   {
     slug: "prometheus",

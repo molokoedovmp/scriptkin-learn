@@ -44,7 +44,7 @@ export async function GET(
 
   const quest = getDemoQuest(slug);
   if (!quest) {
-    return NextResponse.json({ error: "Квест не найден" }, { status: 404 });
+    return NextResponse.json({ error: "История не найдена" }, { status: 404 });
   }
   return NextResponse.json({ quest, steps: [], source: "demo" });
 }

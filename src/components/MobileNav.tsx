@@ -20,7 +20,7 @@ const items: {
   },
   {
     href: "/quests",
-    label: "Квесты",
+    label: "Истории",
     icon: QuestIcon,
     active: (pathname) => pathname.startsWith("/quests"),
   },

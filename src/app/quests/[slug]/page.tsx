@@ -4,7 +4,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { QuestPlayer } from "@/components/QuestPlayer";
 import { getQuestWithSteps, getUserQuestProgress } from "@/lib/quests-db";
-import { getDemoQuest } from "@/lib/quests";
+import { COMING_SOON_PRICE_RUB, getDemoQuest } from "@/lib/quests";
 import { getSessionUser } from "@/lib/auth";
 import { DIFFICULTY_LABELS } from "@/lib/types";
 
@@ -19,7 +19,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const quest = getDemoQuest(slug);
   return {
-    title: quest ? `${quest.title} — Скрипткин` : "Квест не найден — Скрипткин",
+    title: quest ? `${quest.title} — Скрипткин` : "История не найдена — Скрипткин",
   };
 }
 
@@ -85,12 +85,23 @@ export default async function QuestPage({
               </p>
               <div className="rounded-xl border-2 border-[#e5e5e5] p-8 text-center">
                 <p className="mb-2 text-subheading font-bold text-charcoal">
-                  Квест ещё готовится
+                  История ещё готовится
                 </p>
                 <p className="text-body font-medium text-pencil-gray">
                   Сюжет пишется, база данных наполняется. Начни пока с
                   «Полночного экспресса».
                 </p>
+                <p className="mt-6 text-heading-sm font-extrabold text-charcoal">
+                  {COMING_SOON_PRICE_RUB} ₽
+                </p>
+                <button
+                  type="button"
+                  disabled
+                  title="Покупка пока недоступна"
+                  className="mt-3 cursor-not-allowed rounded-xl bg-eager-green px-7 py-3 text-caption font-extrabold uppercase text-paper-white opacity-70"
+                >
+                  Купить
+                </button>
               </div>
             </>
           )}

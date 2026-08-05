@@ -7,7 +7,7 @@ import { getPracticeDatabases } from "@/lib/practice";
 export const metadata: Metadata = {
   title: "Банк заданий по SQL — Скрипткин",
   description:
-    "Тренируй SQL на базах данных из квестов: задания разных уровней, настоящая PostgreSQL-песочница и автоматическая проверка.",
+    "Тренируй SQL на базах данных из историй: задания разных уровней, настоящая PostgreSQL-песочница и автоматическая проверка.",
 };
 
 export default function PracticePage() {
@@ -27,7 +27,7 @@ export default function PracticePage() {
                 банк заданий
               </h1>
               <p className="max-w-[650px] text-body font-medium text-pencil-gray">
-                Выбирай базу из квеста и решай задачи в своём темпе. Здесь нет
+                Выбирай базу из истории и решай задачи в своём темпе. Здесь нет
                 сюжетных блокировок: можно сразу перейти к JOIN, агрегатам или
                 оконным функциям.
               </p>
@@ -84,7 +84,7 @@ export default function PracticePage() {
                   )}
                   <div className="p-6">
                     <p className="mb-2 text-caption font-extrabold uppercase tracking-wide text-spark-blue">
-                      База из квеста
+                      База из истории
                     </p>
                     <h2 className="mb-3 text-subheading font-extrabold text-charcoal">
                       {database.title}
@@ -119,7 +119,7 @@ export default function PracticePage() {
 
           <div className="mt-8 rounded-xl border-2 border-dashed border-[#d9d9d9] bg-paper-white p-6 text-center">
             <p className="text-body font-extrabold text-charcoal">
-              Новые базы появятся вместе с квестами
+              Новые базы появятся вместе с историями
             </p>
             <p className="mt-1 text-[15px] font-medium text-pencil-gray">
               «Крушение подлодки», «Ограбление галереи» и «Арес-9» уже в плане.

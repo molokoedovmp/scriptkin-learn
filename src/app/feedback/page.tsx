@@ -18,7 +18,7 @@ export default function FeedbackPage() {
             <p className="text-caption font-extrabold uppercase tracking-[0.12em] text-eager-green">Обратная связь</p>
             <h1 className="mt-3 font-feather text-heading-sm font-black text-charcoal sm:text-heading">Помоги сделать Скрипткин лучше</h1>
             <p className="mt-5 text-body font-medium text-pencil-gray">
-              Сообщи об ошибке, предложи новый квест или задай вопрос. Письмо отправится напрямую автору проекта.
+              Сообщи об ошибке, предложи новую историю или задай вопрос. Письмо отправится напрямую автору проекта.
             </p>
             <div className="mt-6 space-y-3">
               {["Ответ придёт на твой email", "Сообщение не публикуется на сайте", "Можно приложить SQL-код прямо в текст"].map((item) => (

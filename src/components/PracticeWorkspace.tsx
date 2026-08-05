@@ -170,7 +170,7 @@ export function PracticeWorkspace({
             </div>
             <div>
               <p className="mb-1 text-caption font-bold uppercase tracking-wide text-faded-gray">
-                База из квеста
+                База из истории
               </p>
               <h2 className="text-subheading font-extrabold text-charcoal">
                 {database.title}

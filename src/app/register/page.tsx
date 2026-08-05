@@ -17,7 +17,7 @@ export default function RegisterPage() {
             создай аккаунт
           </h1>
           <p className="mx-auto mb-10 max-w-[400px] text-center text-body font-medium text-pencil-gray">
-            Аккаунт сохраняет прогресс по квестам — сможешь вернуться к
+            Аккаунт сохраняет прогресс по историям — сможешь вернуться к
             истории с любого устройства.
           </p>
           <AuthForm mode="register" />

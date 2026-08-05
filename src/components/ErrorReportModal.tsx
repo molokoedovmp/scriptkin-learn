@@ -18,8 +18,8 @@ export function ErrorReportModal({
 }) {
   const titleId = useId();
   const context = [
-    "Источник: редактор квеста",
-    `Квест: ${questTitle} (${questSlug})`,
+    "Источник: редактор истории",
+    `История: ${questTitle} (${questSlug})`,
     `Урок ${stepNumber}: ${stepTitle}`,
     `Страница: /quests/${questSlug}`,
   ].join("\n");

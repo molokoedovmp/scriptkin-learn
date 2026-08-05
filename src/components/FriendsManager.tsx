@@ -269,7 +269,7 @@ function FriendRow({
         <span className="block truncate text-caption font-bold text-faded-gray">
           {bestProgress
             ? `${bestProgress.emoji} ${bestProgress.title} · ${bestProgress.percent}%`
-            : "Квесты ещё не начаты"}
+            : "Истории ещё не начаты"}
         </span>
       </Link>
       <Link

@@ -53,7 +53,7 @@ export function sendWelcomeEmail(to: string, name: string): Promise<void> {
       <div style="font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; color: #4b4b4b;">
         <h1 style="color: #58cc02; font-size: 28px;">Привет, ${escapeHtml(name)}!</h1>
         <p style="font-size: 16px; line-height: 1.5; color: #777777;">
-          Аккаунт создан — теперь прогресс по квестам сохраняется автоматически.
+          Аккаунт создан — теперь прогресс по историям сохраняется автоматически.
         </p>
         <p style="font-size: 16px; line-height: 1.5; color: #777777;">
           Ночной экспресс №13 уже отправляется, а купе №7 вот-вот опустеет.

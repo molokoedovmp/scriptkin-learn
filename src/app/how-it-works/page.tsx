@@ -9,7 +9,7 @@ import { Footer } from "@/components/Footer";
 export const metadata: Metadata = {
   title: "Как это работает | Скрипткин",
   description:
-    "Осваивай SQL через сюжетные квесты и банк заданий: настоящий PostgreSQL, подсказки, автоматическая проверка и практика от SELECT до оконных функций.",
+    "Осваивай SQL через сюжетные истории и банк заданий: настоящий PostgreSQL, подсказки, автоматическая проверка и практика от SELECT до оконных функций.",
 };
 
 export default function HowItWorksPage() {
@@ -23,7 +23,7 @@ export default function HowItWorksPage() {
           <div className="relative mx-auto grid max-w-[1400px] items-center gap-10 px-6 py-16 lg:grid-cols-[0.86fr_1.14fr] lg:py-24">
             <div>
               <p className="mb-5 inline-flex rounded-full border border-[#303665] bg-[#121744] px-4 py-2 text-caption font-extrabold uppercase tracking-[0.12em] text-fresh-leaf">
-                SQL-квесты + свободная практика
+                SQL-истории + свободная практика
               </p>
               <h1 className="mb-6 font-feather text-heading font-black leading-[1.08] sm:text-display">
                 Не заучивай SQL.
@@ -31,7 +31,7 @@ export default function HowItWorksPage() {
               </h1>
               <p className="mb-8 max-w-[620px] text-body font-medium leading-relaxed text-[#c8ccea]">
                 На Скрипткине каждая команда сразу становится инструментом.
-                Находи улики в сюжетных квестах, а потом закрепляй навык в
+                Находи улики в сюжетных историях, а потом закрепляй навык в
                 банке заданий на тех же базах данных.
               </p>
               <div className="flex flex-wrap gap-3">
@@ -39,7 +39,7 @@ export default function HowItWorksPage() {
                   href="/quests/midnight-express"
                   className="inline-flex items-center justify-center rounded-xl bg-eager-green px-6 py-3 text-nav-label font-extrabold uppercase text-paper-white transition-colors hover:bg-[#4cb002]"
                 >
-                  Начать квест
+                  Начать историю
                 </Link>
                 <Link
                   href="/practice"
@@ -53,7 +53,7 @@ export default function HowItWorksPage() {
             <div className="mx-auto w-full max-w-[780px] lg:-mr-8">
               <Image
                 src="/quest-prew.png"
-                alt="Интерфейс квеста Полночный экспресс"
+                alt="Интерфейс истории Полночный экспресс"
                 width={1677}
                 height={938}
                 priority
@@ -81,7 +81,7 @@ export default function HowItWorksPage() {
           <div className="space-y-24 sm:space-y-32">
             <article id="quest" className="grid scroll-mt-24 items-center gap-10 lg:grid-cols-2 lg:gap-16">
               <div className="order-2 lg:order-1">
-                <StepLabel number="01" label="Сюжетный квест" />
+                <StepLabel number="01" label="Сюжетная история" />
                 <h3 className="mb-4 font-feather text-heading-sm font-black text-charcoal">
                   Выбираешь историю, а не учебник
                 </h3>
@@ -100,14 +100,14 @@ export default function HowItWorksPage() {
                 <div className="overflow-hidden rounded-[20px] border-2 border-[#e4e4e4] bg-paper-white p-3 shadow-[0_18px_60px_rgba(0,0,0,0.08)]">
                   <Image
                     src="/quests/midnight-express/preview.png"
-                    alt="Обложка квеста Полночный экспресс"
+                    alt="Обложка истории Полночный экспресс"
                     width={1677}
                     height={938}
                     className="aspect-video w-full rounded-xl object-cover"
                   />
                   <div className="flex items-center justify-between gap-4 p-4 pb-2">
                     <div>
-                      <p className="text-caption font-extrabold uppercase text-eager-green">Квест для новичка</p>
+                      <p className="text-caption font-extrabold uppercase text-eager-green">История для новичка</p>
                       <p className="mt-1 text-subheading font-extrabold text-charcoal">Восемь запросов — восемь улик</p>
                     </div>
                     <span className="text-4xl">🚂</span>
@@ -167,7 +167,7 @@ export default function HowItWorksPage() {
             <article id="progress" className="grid scroll-mt-24 items-center gap-10 lg:grid-cols-2 lg:gap-16">
               <ScreenshotFrame
                 src="/how-it-works/quest-progress.webp"
-                alt="Карта прогресса SQL-квеста"
+                alt="Карта прогресса SQL-истории"
                 title="Прогресс всегда перед глазами"
               >
                 <ProgressMockup />
@@ -178,12 +178,12 @@ export default function HowItWorksPage() {
                   Возвращайся с того же места
                 </h2>
                 <p className="mb-6 text-body font-medium leading-relaxed text-pencil-gray">
-                  С аккаунтом прогресс квестов хранится между устройствами. В
+                  С аккаунтом прогресс историй хранится между устройствами. В
                   банке заданий решённые упражнения отмечаются автоматически,
                   поэтому всегда понятно, что уже освоено и куда двигаться дальше.
                 </p>
                 <FeatureList items={[
-                  "Карта открытых глав квеста",
+                  "Карта открытых глав истории",
                   "Отдельный прогресс каждой тренировочной базы",
                   "Можно тренироваться без регистрации",
                 ]} />
@@ -202,7 +202,7 @@ export default function HowItWorksPage() {
               </h2>
               <p className="mb-7 text-body font-medium leading-relaxed text-[#c8ccea]">
                 В банке заданий можно свободно работать с базами уже знакомых
-                квестов. Для «Полуночного экспресса» доступно 50 упражнений —
+                историй. Для «Полуночного экспресса» доступно 50 упражнений —
                 от простых фильтров до CTE и оконных функций.
               </p>
               <Link

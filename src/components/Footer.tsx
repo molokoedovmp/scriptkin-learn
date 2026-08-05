@@ -4,7 +4,7 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Платформа",
     links: [
-      { label: "Квесты", href: "/quests" },
+      { label: "Истории", href: "/quests" },
       { label: "Банк заданий", href: "/practice" },
       { label: "Сообщество", href: "/community" },
       { label: "Как это работает", href: "/how-it-works" },
@@ -14,7 +14,7 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
     ],
   },
   {
-    title: "Квесты",
+    title: "Истории",
     links: [
       { label: "Полночный экспресс", href: "/quests/midnight-express" },
       { label: "Крушение подлодки", href: "/quests/submarine-crash" },

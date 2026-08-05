@@ -11,7 +11,7 @@ export function AccountActivityView({ activity }: { activity: ActivityDay[] }) {
         <div className="mb-6">
           <p className="text-caption font-extrabold uppercase tracking-wide text-eager-green">Последние 365 дней</p>
           <h2 className="mt-1 text-heading-sm font-black text-charcoal">Календарь активности</h2>
-          <p className="mt-2 text-[15px] font-medium text-pencil-gray">Зелёная клетка появляется за решённый шаг квеста или упражнение банка.</p>
+          <p className="mt-2 text-[15px] font-medium text-pencil-gray">Зелёная клетка появляется за решённый шаг истории или упражнение банка.</p>
         </div>
         <div className="w-full max-w-full overflow-x-auto overscroll-x-contain pb-3">
           <div className="min-w-[780px]">

@@ -229,7 +229,7 @@ export function QuestPlayer({
           <div className="mb-2 flex items-center justify-between gap-3">
             <span className="text-nav-label font-bold uppercase text-pencil-gray">
               {isFullscreen && `${quest.emoji} `}
-              {completed ? "Квест пройден" : `Решено ${doneCount} из ${total}`}
+              {completed ? "История пройдена" : `Решено ${doneCount} из ${total}`}
             </span>
             <span className="flex items-center gap-3">
               {!isAuthed && (
@@ -504,7 +504,7 @@ function MapView({
             />
           )}
           <div className="mt-5 flex flex-wrap gap-4">
-            <Button href="/quests">К другим квестам</Button>
+            <Button href="/quests">К другим историям</Button>
             <Button href="/account" variant="outline">
               В кабинет
             </Button>

@@ -31,7 +31,7 @@ export function AccountDashboard({
           className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-2 border-[#dfe1e6] bg-paper-white px-4 py-2.5 text-caption font-extrabold uppercase text-charcoal hover:border-spark-blue hover:text-spark-blue"
         >
           <span aria-hidden="true">🚂</span>
-          Мои квесты
+          Мои истории
         </Link>
         <Link
           href="/account/friends"
@@ -58,7 +58,7 @@ export function AccountDashboard({
                 </p>
                 <p className="mt-1 text-[14px] font-bold text-pencil-gray">
                   {currentQuest.completedAt
-                    ? "Квест пройден"
+                    ? "История пройдена"
                     : `Открыт шаг ${currentQuest.currentStep} из ${currentQuest.stepsCount}`}
                 </p>
               </div>
@@ -72,7 +72,7 @@ export function AccountDashboard({
           ) : (
             <div className="mt-4 flex items-center justify-between gap-4 rounded-xl bg-[#f7f8fa] p-4">
               <p className="text-[15px] font-bold text-pencil-gray">
-                Начни первый SQL-квест
+                Начни первую SQL-историю
               </p>
               <Link
                 href="/quests/midnight-express"
@@ -96,7 +96,7 @@ export function AccountDashboard({
                 Практика SQL
               </p>
               <p className="mt-1 text-[14px] font-bold text-pencil-gray">
-                50 заданий разной сложности на базе квеста
+                50 заданий разной сложности на базе истории
               </p>
             </div>
             <Link

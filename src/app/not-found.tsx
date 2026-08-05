@@ -13,9 +13,9 @@ export default function NotFound() {
           </h1>
           <p className="mx-auto mb-8 max-w-[480px] text-body font-medium text-pencil-gray">
             Запрос вернул пустой результат. Похоже, такой страницы нет — но
-            квесты на месте.
+            истории на месте.
           </p>
-          <Button href="/quests">К квестам</Button>
+          <Button href="/quests">К историям</Button>
         </div>
       </main>
       <Footer />
