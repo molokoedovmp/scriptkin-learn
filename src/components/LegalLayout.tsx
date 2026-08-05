@@ -54,7 +54,7 @@ export function LegalSection({
   );
 }
 
-/** Плашка с реквизитами, которые нужно заполнить владельцу сервиса */
+/** Плашка с реквизитами владельца сервиса */
 export function OperatorRequisites() {
   return (
     <div className="rounded-xl border-2 border-[#e5e5e5] p-5">
@@ -62,13 +62,24 @@ export function OperatorRequisites() {
         Оператор / Исполнитель
       </p>
       <ul className="grid gap-1 text-body font-medium text-pencil-gray">
-        <li>Наименование: [ИП / ООО — указать полное наименование]</li>
-        <li>ИНН: [указать]</li>
-        <li>ОГРН/ОГРНИП: [указать]</li>
-        <li>Адрес: [указать]</li>
+        <li>ФИО: Молокоедов Михаил Павлович</li>
         <li>
-          E-mail для обращений: <strong>support@scriptkin.ru</strong> [создать
-          ящик на домене]
+          Статус: плательщик налога на профессиональный доход
+          (самозанятый)
+        </li>
+        <li>ИНН: 772310798620</li>
+        <li>
+          Адрес для корреспонденции: г. Москва, Новочеркасский бульвар, д. 47,
+          кв. 113
+        </li>
+        <li>
+          E-mail для обращений:{" "}
+          <a
+            className="font-bold text-charcoal underline"
+            href="mailto:molokoedovmp@gmail.com"
+          >
+            molokoedovmp@gmail.com
+          </a>
         </li>
       </ul>
     </div>

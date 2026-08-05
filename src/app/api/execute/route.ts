@@ -150,14 +150,27 @@ function normalizeResultRows(
     Object.fromEntries(
       Object.entries(row).map(([column, value]) => [
         column,
-        column === "arrival_time" && value instanceof Date
-          ? [value.getHours(), value.getMinutes(), value.getSeconds()]
-              .map((part) => String(part).padStart(2, "0"))
-              .join(":")
+        value instanceof Date
+          ? column === "arrival_time"
+            ? formatTime(value)
+            : formatDateTime(value)
           : value,
       ])
     )
   );
+}
+
+function formatTime(value: Date): string {
+  return [value.getHours(), value.getMinutes(), value.getSeconds()]
+    .map((part) => String(part).padStart(2, "0"))
+    .join(":");
+}
+
+function formatDateTime(value: Date): string {
+  const date = [value.getFullYear(), value.getMonth() + 1, value.getDate()]
+    .map((part, index) => String(part).padStart(index === 0 ? 4 : 2, "0"))
+    .join("-");
+  return `${date} ${formatTime(value)}`;
 }
 
 /**

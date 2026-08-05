@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function OfferPage() {
   return (
-    <LegalLayout title="публичная оферта" updated="17.07.2026">
+    <LegalLayout title="публичная оферта" updated="05.08.2026">
       <LegalSection number="1" title="Общие положения">
         <p>
           Настоящий документ является публичной офертой (ст. 435, 437 ГК РФ) —

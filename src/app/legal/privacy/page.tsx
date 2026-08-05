@@ -14,7 +14,7 @@ export default function PrivacyPage() {
   return (
     <LegalLayout
       title="политика обработки персональных данных"
-      updated="17.07.2026"
+      updated="05.08.2026"
     >
       <LegalSection number="1" title="Общие положения">
         <p>

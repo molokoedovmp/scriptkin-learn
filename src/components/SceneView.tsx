@@ -19,12 +19,16 @@ export function SceneView({
   frames,
   isFullscreen,
   textBackgroundUrl,
+  textStyle = "default",
+  hideFrameControls = false,
   onToggleFullscreen,
   onFinish,
 }: {
   frames: QuestSceneFrame[];
   isFullscreen: boolean;
   textBackgroundUrl?: string;
+  textStyle?: "default" | "midnight" | "prometheus";
+  hideFrameControls?: boolean;
   onToggleFullscreen: () => void;
   onFinish: () => void;
 }) {
@@ -167,6 +171,12 @@ export function SceneView({
   const imageAspectRatio = frameDimensions
     ? `${frameDimensions.width} / ${frameDimensions.height}`
     : "4 / 3";
+  const sceneCopyClassName =
+    textStyle === "midnight"
+      ? "midnight-scene-copy"
+      : textStyle === "prometheus"
+        ? "prometheus-scene-copy"
+        : "";
 
   return (
     <div
@@ -244,25 +254,31 @@ export function SceneView({
           }
           aria-hidden
         />
-        <div className="relative z-10 flex min-h-0 w-full max-w-[900px] flex-col bg-transparent p-4 sm:p-5 md:p-6 lg:h-full lg:max-w-none lg:p-7">
-          <div className="mb-2 flex items-center justify-between gap-3">
-            {frame.speaker ? (
-              <span className="inline-block rounded-full bg-spark-blue px-3 py-1 text-caption font-bold uppercase tracking-wide text-paper-white">
-                {frame.speaker}
+        <div
+          className={`relative z-10 flex min-h-0 w-full max-w-[900px] flex-col bg-transparent p-4 sm:p-5 md:p-6 lg:h-full lg:max-w-none lg:p-7 ${
+            textStyle === "prometheus" ? "prometheus-scene-panel" : ""
+          }`}
+        >
+          {!hideFrameControls && (
+            <div className="mb-2 flex items-center justify-between gap-3">
+              {frame.speaker ? (
+                <span className="inline-block rounded-full bg-spark-blue px-3 py-1 text-caption font-bold uppercase tracking-wide text-paper-white">
+                  {frame.speaker}
+                </span>
+              ) : (
+                <span className="inline-block rounded-full bg-[#e5e5e5] px-3 py-1 text-caption font-bold uppercase tracking-wide text-pencil-gray">
+                  Рассказчик
+                </span>
+              )}
+              <span className="whitespace-nowrap text-caption font-bold text-faded-gray">
+                {index + 1} / {frames.length}
               </span>
-            ) : (
-              <span className="inline-block rounded-full bg-[#e5e5e5] px-3 py-1 text-caption font-bold uppercase tracking-wide text-pencil-gray">
-                Рассказчик
-              </span>
-            )}
-            <span className="whitespace-nowrap text-caption font-bold text-faded-gray">
-              {index + 1} / {frames.length}
-            </span>
-          </div>
+            </div>
+          )}
 
           <div
             className={`min-h-0 max-h-[32dvh] overflow-y-auto overscroll-contain pr-1 sm:max-h-[34vh] lg:max-h-none lg:flex-1 lg:pr-3 ${
-              textBackgroundUrl ? "midnight-scene-copy" : ""
+              sceneCopyClassName
             }`}
           >
             <RichText
@@ -271,40 +287,46 @@ export function SceneView({
             />
           </div>
 
-          <div className="mt-3 flex items-center justify-between gap-2 sm:gap-4">
+          <div
+            className={`mt-3 flex items-center gap-2 sm:gap-4 ${
+              hideFrameControls ? "justify-end" : "justify-between"
+            }`}
+          >
             {/* Навигация по кадрам: назад + кликабельные точки */}
-            <span className="flex min-w-0 items-center gap-2">
-              <button
-                type="button"
-                disabled={index === 0}
-                onClick={() => setIndex(index - 1)}
-                aria-label="Предыдущий кадр"
-                className={`flex h-9 w-9 items-center justify-center rounded-xl border-2 text-[18px] font-bold ${
-                  index === 0
-                    ? "cursor-default border-[#e5e5e5] text-faded-gray"
-                    : "border-faded-gray text-spark-blue hover:border-spark-blue"
-                }`}
-              >
-                ‹
-              </button>
-              <span className="flex min-w-0 items-center gap-1.5 overflow-x-auto py-1">
-                {frames.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setIndex(i)}
-                    aria-label={`Кадр ${i + 1}`}
-                    className={`h-3 w-3 rounded-full transition-colors ${
-                      i === index
-                        ? "bg-eager-green"
-                        : i < index
-                          ? "bg-fresh-leaf hover:bg-eager-green"
-                          : "bg-[#e5e5e5] hover:bg-faded-gray"
-                    }`}
-                  />
-                ))}
+            {!hideFrameControls && (
+              <span className="flex min-w-0 items-center gap-2">
+                <button
+                  type="button"
+                  disabled={index === 0}
+                  onClick={() => setIndex(index - 1)}
+                  aria-label="Предыдущий кадр"
+                  className={`flex h-9 w-9 items-center justify-center rounded-xl border-2 text-[18px] font-bold ${
+                    index === 0
+                      ? "cursor-default border-[#e5e5e5] text-faded-gray"
+                      : "border-faded-gray text-spark-blue hover:border-spark-blue"
+                  }`}
+                >
+                  ‹
+                </button>
+                <span className="flex min-w-0 items-center gap-1.5 overflow-x-auto py-1">
+                  {frames.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setIndex(i)}
+                      aria-label={`Кадр ${i + 1}`}
+                      className={`h-3 w-3 rounded-full transition-colors ${
+                        i === index
+                          ? "bg-eager-green"
+                          : i < index
+                            ? "bg-fresh-leaf hover:bg-eager-green"
+                            : "bg-[#e5e5e5] hover:bg-faded-gray"
+                      }`}
+                    />
+                  ))}
+                </span>
               </span>
-            </span>
+            )}
 
             {isLast ? (
               <Button onClick={onFinish}>Продолжить</Button>

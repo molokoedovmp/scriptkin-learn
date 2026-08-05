@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <LegalLayout title="пользовательское соглашение" updated="17.07.2026">
+    <LegalLayout title="пользовательское соглашение" updated="05.08.2026">
       <LegalSection number="1" title="Общие положения">
         <p>
           Настоящее Пользовательское соглашение (далее — «Соглашение»)

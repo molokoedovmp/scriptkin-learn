@@ -276,8 +276,18 @@ export function QuestPlayer({
           textBackgroundUrl={
             quest.slug === "midnight-express"
               ? "/quests/midnight-express/background.png"
+              : quest.slug === "prometheus"
+                ? "/quests/prometheus/background.png"
               : undefined
           }
+          textStyle={
+            quest.slug === "midnight-express"
+              ? "midnight"
+              : quest.slug === "prometheus"
+                ? "prometheus"
+                : "default"
+          }
+          hideFrameControls={quest.slug === "prometheus"}
           onToggleFullscreen={toggleFullscreen}
           onFinish={() => {
             const next = scenePlaying.next;
