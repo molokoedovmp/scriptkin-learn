@@ -10,6 +10,11 @@ export const metadata: Metadata = {
 };
 
 export default function QuestsPage() {
+  const orderedQuests = [...DEMO_QUESTS].sort((first, second) => {
+    if (first.status === second.status) return 0;
+    return first.status === "available" ? -1 : 1;
+  });
+
   return (
     <>
       <Header />
@@ -24,7 +29,7 @@ export default function QuestsPage() {
             функций.
           </p>
           <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-            {DEMO_QUESTS.map((quest) => (
+            {orderedQuests.map((quest) => (
               <QuestCard key={quest.slug} quest={quest} />
             ))}
           </div>

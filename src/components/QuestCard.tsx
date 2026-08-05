@@ -14,7 +14,7 @@ export function QuestCard({ quest }: { quest: Quest }) {
 
   const card = (
     <article
-      className="group relative min-h-[470px] overflow-hidden rounded-[24px] bg-night-ink shadow-[0_16px_45px_rgba(15,23,42,0.16)] ring-1 ring-black/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(15,23,42,0.24)]"
+      className="group relative isolate min-h-[470px] overflow-hidden rounded-[24px] bg-night-ink shadow-[0_16px_45px_rgba(15,23,42,0.16)] ring-1 ring-black/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(15,23,42,0.24)]"
     >
       {quest.previewUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
