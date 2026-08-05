@@ -1,0 +1,83 @@
+@startuml MidnightExpressERD
+
+title Полночный экспресс — ER-диаграмма
+left to right direction
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam linetype ortho
+skinparam roundcorner 10
+skinparam entity {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  FontColor #0F172A
+  HeaderBackgroundColor #D7FFB8
+}
+skinparam ArrowColor #64748B
+
+entity "passengers" as passengers {
+  * id : integer <<PK>>
+  --
+  name : text
+  age : integer
+  occupation : text
+  wagon : integer
+  coupe : integer
+}
+
+entity "tickets" as tickets {
+  * id : integer <<PK>>
+  --
+  passenger_id : integer <<FK>>
+  from_station : text
+  to_station : text
+  price : integer
+  purchased_at : date
+}
+
+entity "luggage" as luggage {
+  * id : integer <<PK>>
+  --
+  passenger_id : integer <<FK>>
+  description : text
+  weight_kg : numeric(4,1)
+}
+
+entity "onboard_check" as onboard_check {
+  * passenger_id : integer <<PK, FK>>
+  --
+  wagon : integer
+  checked_at : time
+}
+
+entity "stations" as stations {
+  * id : integer <<PK>>
+  --
+  name : text
+  arrival_time : timestamp
+  stop_minutes : integer
+}
+
+entity "conductor_log" as conductor_log {
+  * id : integer <<PK>>
+  --
+  wagon : integer
+  event_time : time
+  note : text
+}
+
+passengers ||--o{ tickets : passenger_id
+passengers ||--o{ luggage : passenger_id
+passengers ||--o| onboard_check : passenger_id
+
+note bottom of stations
+  Таблица маршрута не имеет внешних ключей.
+  Связь с билетами определяется названиями станций.
+end note
+
+note bottom of conductor_log
+  Журнал относится к вагону по номеру,
+  но отдельного внешнего ключа нет.
+end note
+
+@enduml

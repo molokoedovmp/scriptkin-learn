@@ -3,6 +3,7 @@
 import type { ComponentType, SVGProps } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "./ThemeToggle";
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -57,7 +58,7 @@ export function MobileNav() {
       aria-label="Основная мобильная навигация"
       className="fixed inset-x-0 bottom-0 z-50 border-t-2 border-[#e5e5e5] bg-paper-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl md:hidden"
     >
-      <div className="mx-auto grid h-[68px] max-w-[560px] grid-cols-5 px-1.5">
+      <div className="mx-auto grid h-[68px] max-w-[560px] grid-cols-6 px-1.5">
         {items.map((item) => {
           const selected = item.active(pathname);
           const Icon = item.icon;
@@ -86,6 +87,7 @@ export function MobileNav() {
             </Link>
           );
         })}
+        <ThemeToggle mobile />
       </div>
     </nav>
   );

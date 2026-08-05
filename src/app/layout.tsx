@@ -15,6 +15,18 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
 });
 
+const themeScript = `
+(function () {
+  try {
+    var saved = localStorage.getItem("skriptkin-theme");
+    var dark = saved
+      ? saved === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+  } catch (_) {}
+})();`;
+
 export const metadata: Metadata = {
   title: "Скрипткин — учи SQL, проходя истории",
   description:
@@ -32,7 +44,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
         className={`${nunito.variable} ${cormorant.variable} flex min-h-screen flex-col pb-[calc(68px+env(safe-area-inset-bottom))] antialiased md:pb-0`}
       >

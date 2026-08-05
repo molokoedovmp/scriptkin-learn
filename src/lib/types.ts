@@ -93,6 +93,10 @@ export interface PracticeDatabase {
   title: string;
   emoji: string;
   previewUrl?: string;
+  /** ER-диаграмма базы, отображаемая внутри блока схемы. */
+  erDiagramUrl?: string;
+  /** Краткое пояснение структуры и назначения учебной базы. */
+  schemaDescription?: string;
   description: string;
   tables: PracticeTable[];
   tasks: PracticeTask[];

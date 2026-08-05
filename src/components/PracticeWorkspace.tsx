@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import type {
   ExecuteResponse,
   PracticeDatabase,
@@ -216,21 +222,69 @@ export function PracticeWorkspace({
           Схема базы · {database.tables.length} таблиц
           <span className="ml-2 text-faded-gray">↓</span>
         </summary>
-        <div className="grid gap-3 border-t-2 border-[#e5e5e5] p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
+        <div className="grid items-start gap-4 border-t-2 border-[#e5e5e5] p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
           {database.tables.map((table) => (
-            <div key={table.name} className="rounded-xl bg-[#f7f7f7] p-4">
-              <code className="font-mono text-[15px] font-bold text-night-ink">
-                {table.name}
-              </code>
-              <p className="mt-1 text-caption font-medium text-pencil-gray">
-                {table.description}
-              </p>
-              <p className="mt-3 break-words font-mono text-[12px] leading-relaxed text-[#6f7596]">
-                {table.columns.join(" · ")}
-              </p>
-            </div>
+            <article
+              key={table.name}
+              className="overflow-hidden rounded-xl border-2 border-[#e5e5e5] bg-[#f7f7f7]"
+            >
+              <header className="p-4">
+                <code className="font-mono text-[15px] font-extrabold text-night-ink">
+                  {table.name}
+                </code>
+                <p className="mt-1.5 text-caption font-medium leading-relaxed text-pencil-gray">
+                  {table.description}
+                </p>
+              </header>
+              <div className="border-t-2 border-[#e5e5e5] bg-paper-white">
+                <p className="border-b border-[#e5e5e5] px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.12em] text-faded-gray">
+                  Поля · {table.columns.length}
+                </p>
+                <ol className="divide-y divide-[#ededed]">
+                  {table.columns.map((column, columnIndex) => (
+                    <li
+                      key={column}
+                      className="flex min-w-0 items-center gap-3 px-4 py-2.5"
+                    >
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[#eef0f5] font-mono text-[10px] font-bold text-faded-gray">
+                        {columnIndex + 1}
+                      </span>
+                      <code className="min-w-0 break-all font-mono text-[12px] font-bold text-charcoal">
+                        {column}
+                      </code>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </article>
           ))}
         </div>
+        {database.schemaDescription && (
+          <section className="border-t-2 border-[#e5e5e5] px-5 py-6 sm:px-6 sm:py-7">
+            <p className="mb-2 text-caption font-extrabold uppercase tracking-wide text-spark-blue">
+              О базе данных
+            </p>
+            <h3 className="text-subheading font-extrabold text-charcoal">
+              Как устроена база «{database.title}»
+            </h3>
+            <div className="mt-3 max-w-[900px] space-y-3">
+              {database.schemaDescription.split("\n\n").map((paragraph) => (
+                <p
+                  key={paragraph}
+                  className="text-[15px] font-medium leading-relaxed text-pencil-gray"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </section>
+        )}
+        {database.erDiagramUrl && (
+          <SchemaDiagram
+            url={database.erDiagramUrl}
+            databaseTitle={database.title}
+          />
+        )}
       </details>
 
       <div className="grid items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
@@ -400,6 +454,246 @@ export function PracticeWorkspace({
         </section>
       </div>
     </div>
+  );
+}
+
+function SchemaDiagram({
+  url,
+  databaseTitle,
+}: {
+  url: string;
+  databaseTitle: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [dragging, setDragging] = useState(false);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const dragState = useRef({
+    active: false,
+    pointerId: -1,
+    startX: 0,
+    startY: 0,
+    scrollLeft: 0,
+    scrollTop: 0,
+  });
+
+  useEffect(() => {
+    setFailed(false);
+    setExpanded(false);
+    setZoom(1);
+    setDragging(false);
+  }, [url]);
+
+  useEffect(() => {
+    if (!expanded) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setExpanded(false);
+    }
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [expanded]);
+
+  function changeZoom(delta: number) {
+    setZoom((current) => Math.min(4, Math.max(1, current + delta)));
+  }
+
+  function startPan(event: ReactPointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    dragState.current = {
+      active: true,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      scrollLeft: viewport.scrollLeft,
+      scrollTop: viewport.scrollTop,
+    };
+    viewport.setPointerCapture(event.pointerId);
+    setDragging(true);
+    event.preventDefault();
+  }
+
+  function movePan(event: ReactPointerEvent<HTMLDivElement>) {
+    const state = dragState.current;
+    const viewport = viewportRef.current;
+    if (!state.active || state.pointerId !== event.pointerId || !viewport) {
+      return;
+    }
+
+    viewport.scrollLeft = state.scrollLeft - (event.clientX - state.startX);
+    viewport.scrollTop = state.scrollTop - (event.clientY - state.startY);
+    event.preventDefault();
+  }
+
+  function stopPan(event: ReactPointerEvent<HTMLDivElement>) {
+    const state = dragState.current;
+    const viewport = viewportRef.current;
+    if (!state.active || state.pointerId !== event.pointerId) return;
+
+    dragState.current.active = false;
+    if (viewport?.hasPointerCapture(event.pointerId)) {
+      viewport.releasePointerCapture(event.pointerId);
+    }
+    setDragging(false);
+  }
+
+  return (
+    <section className="border-t-2 border-[#e5e5e5] p-5 sm:p-6">
+      <p className="mb-4 text-caption font-extrabold uppercase tracking-wide text-faded-gray">
+        ER-диаграмма
+      </p>
+      {failed ? (
+        <div className="flex min-h-52 flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#d9d9d9] bg-[#f7f8fa] px-5 py-10 text-center">
+          <span className="mb-3 text-4xl" aria-hidden="true">
+            🗺️
+          </span>
+          <p className="text-body font-extrabold text-charcoal">
+            Место для ER-диаграммы
+          </p>
+          <p className="mt-2 max-w-[620px] text-[15px] font-medium text-pencil-gray">
+            Экспортируйте PlantUML в PNG и добавьте файл:
+          </p>
+          <code className="mt-3 rounded-lg bg-[#f1f2f8] px-3 py-2 font-mono text-caption font-bold text-night-ink">
+            public{url}
+          </code>
+        </div>
+      ) : (
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              setZoom(1);
+              setExpanded(true);
+            }}
+            className="group relative block w-full overflow-auto rounded-xl border-2 border-[#e5e5e5] bg-white p-3 text-left transition-colors hover:border-spark-blue sm:p-5"
+            aria-label={`Увеличить ER-диаграмму базы «${databaseTitle}»`}
+          >
+            <span className="sticky left-full top-0 z-10 mb-[-44px] ml-auto flex h-11 w-11 items-center justify-center rounded-xl bg-night-ink/85 text-paper-white shadow-lg backdrop-blur-sm transition-transform group-hover:scale-105">
+              <MagnifyIcon />
+            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={url}
+              alt={`ER-диаграмма базы «${databaseTitle}»`}
+              onError={() => setFailed(true)}
+              className="mx-auto h-auto min-w-[720px] max-w-none cursor-zoom-in lg:min-w-0 lg:max-w-full"
+            />
+          </button>
+
+          {expanded && (
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Увеличенная ER-диаграмма базы «${databaseTitle}»`}
+              className="fixed inset-0 z-[100] bg-black/90 p-2 sm:p-4"
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) setExpanded(false);
+              }}
+            >
+              <div className="mx-auto flex h-full max-w-[1800px] flex-col overflow-hidden rounded-xl border border-white/20 bg-[#111a2a] shadow-2xl">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/15 px-3 py-3 sm:px-5">
+                  <div className="min-w-0">
+                    <p className="truncate text-nav-label font-extrabold text-paper-white">
+                      ER-диаграмма · {databaseTitle}
+                    </p>
+                    <p className="text-caption font-bold text-[#aeb8c7]">
+                      Масштаб {Math.round(zoom * 100)}%
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => changeZoom(-0.5)}
+                      disabled={zoom <= 1}
+                      className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 text-xl font-black text-paper-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
+                      aria-label="Уменьшить диаграмму"
+                      title="Уменьшить"
+                    >
+                      −
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setZoom(1)}
+                      className="h-10 rounded-lg border border-white/20 px-3 text-caption font-extrabold uppercase text-paper-white hover:bg-white/10"
+                    >
+                      100%
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => changeZoom(0.5)}
+                      disabled={zoom >= 4}
+                      className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/20 text-xl font-black text-paper-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
+                      aria-label="Увеличить диаграмму"
+                      title="Увеличить"
+                    >
+                      +
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExpanded(false)}
+                      className="ml-1 flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-2xl font-bold text-paper-white hover:bg-white/20"
+                      aria-label="Закрыть диаграмму"
+                      title="Закрыть"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  ref={viewportRef}
+                  onPointerDown={startPan}
+                  onPointerMove={movePan}
+                  onPointerUp={stopPan}
+                  onPointerCancel={stopPan}
+                  className={`min-h-0 flex-1 touch-none select-none overflow-auto bg-white p-3 sm:p-6 ${
+                    dragging ? "cursor-grabbing" : "cursor-grab"
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt={`ER-диаграмма базы «${databaseTitle}»`}
+                    draggable={false}
+                    className="pointer-events-none block h-auto max-w-none origin-top-left transition-[width] duration-150"
+                    style={{ width: `${zoom * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
+function MagnifyIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-6 w-6"
+      aria-hidden="true"
+    >
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m15.5 15.5 5 5M10.5 7.5v6M7.5 10.5h6" />
+    </svg>
   );
 }
 

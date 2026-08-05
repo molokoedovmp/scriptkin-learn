@@ -1,0 +1,259 @@
+@startuml PrometheusERD
+
+title Прометей — ER-диаграмма
+top to bottom direction
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam linetype ortho
+skinparam roundcorner 10
+skinparam nodesep 28
+skinparam ranksep 36
+skinparam entity {
+  BackgroundColor #F8FAFC
+  BorderColor #334155
+  FontColor #0F172A
+  HeaderBackgroundColor #CDEFFF
+}
+skinparam ArrowColor #64748B
+
+entity "sectors" as sectors {
+  * sector_id : integer <<PK>>
+  --
+  sector_code : varchar(32) <<UQ>>
+  sector_name : varchar(120)
+  deck_number : integer
+  sector_type : varchar(40)
+  pressure_kpa : numeric(7,2)
+  temperature_c : numeric(6,2)
+  power_status : varchar(16)
+  contamination_level : numeric(5,2)
+  is_accessible : boolean
+}
+
+entity "sector_connections" as sector_connections {
+  * connection_id : integer <<PK>>
+  --
+  from_sector_id : integer <<FK>>
+  to_sector_id : integer <<FK>>
+  door_status : varchar(16)
+  required_access_level : integer
+  travel_time_sec : integer
+  is_pressurized : boolean
+}
+
+entity "ship_systems" as ship_systems {
+  * system_id : integer <<PK>>
+  --
+  system_name : varchar(120)
+  system_type : varchar(40)
+  sector_id : integer <<FK>>
+  status : varchar(16)
+  power_required : numeric(10,2)
+  priority_level : integer
+  last_service_at : timestamp
+}
+
+entity "system_events" as system_events {
+  * event_id : integer <<PK>>
+  --
+  system_id : integer <<FK>>
+  sector_id : integer <<FK>>
+  event_type : varchar(40)
+  severity : integer
+  event_value : numeric(14,4) <<NULL>>
+  event_message : text
+  recorded_at : timestamp
+}
+
+entity "crew_members" as crew_members {
+  * crew_id : integer <<PK>>
+  --
+  full_name : varchar(120)
+  role : varchar(80)
+  department : varchar(80)
+  badge_id : varchar(40) <<UQ>>
+  access_level : integer
+  official_status : varchar(16)
+  cabin_sector_id : integer <<FK, NULL>>
+}
+
+entity "crew_shifts" as crew_shifts {
+  * shift_id : integer <<PK>>
+  --
+  crew_id : integer <<FK>>
+  sector_id : integer <<FK>>
+  shift_start : timestamp
+  shift_end : timestamp
+  shift_role : varchar(80)
+}
+
+entity "access_logs" as access_logs {
+  * access_id : integer <<PK>>
+  --
+  badge_id : varchar(40)
+  sector_id : integer <<FK>>
+  access_time : timestamp
+  access_result : varchar(16)
+  entry_type : varchar(24)
+  device_id : varchar(40)
+}
+
+entity "communications" as communications {
+  * message_id : integer <<PK>>
+  --
+  sender_crew_id : integer <<FK, NULL>>
+  sender_type : varchar(16)
+  channel : varchar(40)
+  message_type : varchar(16)
+  message_text : text
+  sent_at : timestamp
+  voice_signature : varchar(80) <<NULL>>
+  is_corrupted : boolean
+}
+
+entity "medical_scans" as medical_scans {
+  * scan_id : integer <<PK>>
+  --
+  crew_id : integer <<FK>>
+  sector_id : integer <<FK>>
+  heart_rate : integer <<NULL>>
+  oxygen_level : numeric(5,2) <<NULL>>
+  body_temperature : numeric(5,2) <<NULL>>
+  tissue_anomaly : numeric(5,2)
+  medical_status : varchar(24)
+  scanned_at : timestamp
+}
+
+entity "cargo_containers" as cargo_containers {
+  * container_id : integer <<PK>>
+  --
+  container_code : varchar(40) <<UQ>>
+  declared_category : varchar(80)
+  sector_id : integer <<FK>>
+  seal_status : varchar(24)
+  loaded_at : timestamp
+  opened_at : timestamp <<NULL>>
+  opened_by_badge : varchar(40) <<NULL>>
+  corporate_clearance : integer
+}
+
+entity "cargo_items" as cargo_items {
+  * item_id : integer <<PK>>
+  --
+  container_id : integer <<FK>>
+  item_code : varchar(40)
+  item_name : varchar(120)
+  item_category : varchar(80)
+  quantity : integer
+  hazard_class : varchar(40) <<NULL>>
+  is_declared : boolean
+  storage_temperature : numeric(6,2) <<NULL>>
+}
+
+entity "maintenance_drones" as maintenance_drones {
+  * drone_id : integer <<PK>>
+  --
+  drone_code : varchar(40) <<UQ>>
+  drone_type : varchar(24)
+  current_sector_id : integer <<FK>>
+  status : varchar(24)
+  controlled_by : varchar(80)
+  last_contact_at : timestamp
+}
+
+entity "drone_tasks" as drone_tasks {
+  * task_id : integer <<PK>>
+  --
+  drone_id : integer <<FK>>
+  sector_id : integer <<FK>>
+  task_type : varchar(40)
+  material_code : varchar(40) <<NULL>>
+  ordered_by : varchar(80)
+  task_status : varchar(24)
+  started_at : timestamp
+  completed_at : timestamp <<NULL>>
+}
+
+entity "biohazard_events" as biohazard_events {
+  * bio_event_id : integer <<PK>>
+  --
+  sector_id : integer <<FK>>
+  threat_level : integer
+  movement_count : integer
+  organic_mass : numeric(14,3)
+  sensor_status : varchar(24)
+  detected_at : timestamp
+}
+
+entity "ai_commands" as ai_commands {
+  * command_id : integer <<PK>>
+  --
+  command_type : varchar(40)
+  target_system_id : integer <<FK, NULL>>
+  target_sector_id : integer <<FK, NULL>>
+  command_text : text
+  priority : integer
+  source_directive : varchar(120)
+  executed_at : timestamp
+  was_overridden : boolean
+}
+
+entity "escape_pods" as escape_pods {
+  * pod_id : integer <<PK>>
+  --
+  pod_code : varchar(40) <<UQ>>
+  pod_type : varchar(24)
+  sector_id : integer <<FK>>
+  status : varchar(16)
+  fuel_percent : numeric(5,2)
+  oxygen_minutes : integer
+  hull_integrity : numeric(5,2)
+  launch_lock : boolean
+  capacity : integer
+}
+
+entity "pod_diagnostics" as pod_diagnostics {
+  * diagnostic_id : integer <<PK>>
+  --
+  pod_id : integer <<FK>>
+  subsystem_name : varchar(80)
+  status : varchar(16)
+  measured_value : numeric(14,4) <<NULL>>
+  checked_at : timestamp
+}
+
+sectors ||--o{ sector_connections : from_sector_id
+sectors ||--o{ sector_connections : to_sector_id
+sectors ||--o{ ship_systems : sector_id
+ship_systems ||--o{ system_events : system_id
+sectors ||--o{ system_events : sector_id
+
+sectors |o--o{ crew_members : cabin_sector_id
+crew_members ||--o{ crew_shifts : crew_id
+sectors ||--o{ crew_shifts : sector_id
+sectors ||--o{ access_logs : sector_id
+crew_members |o..o{ access_logs : badge_id
+crew_members |o--o{ communications : sender_crew_id
+crew_members ||--o{ medical_scans : crew_id
+sectors ||--o{ medical_scans : sector_id
+
+sectors ||--o{ cargo_containers : sector_id
+cargo_containers ||--o{ cargo_items : container_id
+
+sectors ||--o{ maintenance_drones : current_sector_id
+maintenance_drones ||--o{ drone_tasks : drone_id
+sectors ||--o{ drone_tasks : sector_id
+sectors ||--o{ biohazard_events : sector_id
+
+ship_systems |o--o{ ai_commands : target_system_id
+sectors |o--o{ ai_commands : target_sector_id
+sectors ||--o{ escape_pods : sector_id
+escape_pods ||--o{ pod_diagnostics : pod_id
+
+note right of access_logs
+  badge_id хранится без внешнего ключа,
+  чтобы журнал принимал неизвестные пропуска.
+end note
+
+@enduml

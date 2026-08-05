@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AuthNav } from "./AuthNav";
 import { MobileNav } from "./MobileNav";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   return (
@@ -32,6 +33,7 @@ export function Header() {
             >
               Сообщество
             </Link>
+            <ThemeToggle />
             <AuthNav />
           </nav>
         </div>
