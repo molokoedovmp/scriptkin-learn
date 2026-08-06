@@ -2,7 +2,7 @@ import "server-only";
 
 import { getAppPool, isDatabaseConfigured } from "./db";
 import { DEMO_QUESTS } from "./quests";
-import type { QuestProgressEntry } from "./types";
+import type { QuestProgressEntry, StoryPaymentEntry } from "./types";
 
 export async function getAccountProgress(
   userId: string
@@ -40,6 +40,36 @@ export async function getAvailableQuestsCount(): Promise<number> {
     }
   }
   return DEMO_QUESTS.filter((quest) => quest.status === "available").length;
+}
+
+export async function getAccountPayments(
+  userId: string
+): Promise<StoryPaymentEntry[]> {
+  if (!isDatabaseConfigured()) return [];
+
+  try {
+    const { rows } = await getAppPool().query<StoryPaymentEntry>(
+      `SELECT payment.id::text,
+              payment.quest_slug AS "questSlug",
+              payment.quest_title AS "questTitle",
+              payment.amount_kopecks AS "amountKopecks",
+              payment.currency,
+              payment.status,
+              payment.provider,
+              payment.receipt_url AS "receiptUrl",
+              payment.created_at::text AS "createdAt",
+              payment.paid_at::text AS "paidAt"
+         FROM story_payments payment
+        WHERE payment.user_id = $1
+        ORDER BY payment.created_at DESC, payment.id DESC`,
+      [userId]
+    );
+    return rows;
+  } catch (error) {
+    // Старые локальные установки могут ещё не содержать таблицу платежей.
+    console.error("Failed to load account payments:", error);
+    return [];
+  }
 }
 
 export function calculateQuestStats(progress: QuestProgressEntry[]) {

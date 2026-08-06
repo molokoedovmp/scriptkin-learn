@@ -19,28 +19,8 @@ export function AccountDashboard({
     progress.find((entry) => !entry.completedAt) ?? progress[0];
 
   return (
-    <div className="mx-auto max-w-[1240px] px-4 py-8 sm:px-6 sm:py-10">
+    <div>
       <AccountHero user={user} />
-
-      <nav
-        aria-label="Разделы личного кабинета"
-        className="mb-7 grid grid-cols-2 gap-3 sm:flex"
-      >
-        <Link
-          href="/account/quests"
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-2 border-[#dfe1e6] bg-paper-white px-4 py-2.5 text-caption font-extrabold uppercase text-charcoal hover:border-spark-blue hover:text-spark-blue"
-        >
-          <span aria-hidden="true">🚂</span>
-          Мои истории
-        </Link>
-        <Link
-          href="/account/friends"
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-2 border-[#dfe1e6] bg-paper-white px-4 py-2.5 text-caption font-extrabold uppercase text-charcoal hover:border-spark-blue hover:text-spark-blue"
-        >
-          <span aria-hidden="true">☺</span>
-          Друзья
-        </Link>
-      </nav>
 
       <section className="mb-7 grid items-stretch gap-5 md:grid-cols-2">
         <div className="flex h-full flex-col rounded-[20px] border-2 border-[#e6e7eb] bg-paper-white p-5 sm:p-6">

@@ -118,6 +118,26 @@ export interface QuestProgressEntry {
   completedAt: string | null;
 }
 
+export type StoryPaymentStatus =
+  | "pending"
+  | "paid"
+  | "failed"
+  | "canceled"
+  | "refunded";
+
+export interface StoryPaymentEntry {
+  id: string;
+  questSlug: string | null;
+  questTitle: string;
+  amountKopecks: number;
+  currency: string;
+  status: StoryPaymentStatus;
+  provider: string | null;
+  receiptUrl: string | null;
+  createdAt: string;
+  paidAt: string | null;
+}
+
 export const DIFFICULTY_LABELS: Record<QuestDifficulty, string> = {
   beginner: "Новичок",
   intermediate: "Средний",

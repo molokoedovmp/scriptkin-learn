@@ -144,6 +144,36 @@ CREATE TABLE IF NOT EXISTS quest_progress (
   PRIMARY KEY (user_id, quest_slug)
 );
 
+-- История покупок SQL-историй. Название сохраняется снимком, чтобы чек оставался
+-- понятным даже после переименования или удаления истории из каталога.
+CREATE TABLE IF NOT EXISTS story_payments (
+  id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id             uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  quest_slug          text REFERENCES quests(slug) ON DELETE SET NULL,
+  quest_title         text NOT NULL,
+  amount_kopecks      integer NOT NULL CHECK (amount_kopecks > 0),
+  currency            varchar(3) NOT NULL DEFAULT 'RUB',
+  status              text NOT NULL DEFAULT 'pending'
+                      CHECK (status IN ('pending', 'paid', 'failed', 'canceled', 'refunded')),
+  provider            text,
+  provider_payment_id text,
+  receipt_url         text,
+  created_at          timestamptz NOT NULL DEFAULT now(),
+  paid_at             timestamptz,
+  updated_at          timestamptz NOT NULL DEFAULT now(),
+  CHECK (currency = upper(currency)),
+  CHECK (paid_at IS NULL OR paid_at >= created_at)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS story_payments_provider_payment_idx
+  ON story_payments(provider, provider_payment_id)
+  WHERE provider_payment_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS story_payments_user_created_idx
+  ON story_payments(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS story_payments_user_quest_paid_idx
+  ON story_payments(user_id, quest_slug)
+  WHERE status = 'paid';
+
 -- Запросы в друзья. Пара пользователей может иметь только одну связь,
 -- независимо от того, кто первым отправил приглашение.
 CREATE TABLE IF NOT EXISTS friendships (

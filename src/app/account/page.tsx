@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AccountDashboard } from "@/components/AccountDashboard";
+import { AccountShell } from "@/components/AccountShell";
 import { getSessionUser } from "@/lib/auth";
 import { getAccountProgress } from "@/lib/account";
 import { getSocialDashboard, type SocialDashboardData } from "@/lib/social";
@@ -38,11 +39,13 @@ export default async function AccountPage() {
     <>
       <Header />
       <main className="flex-1 bg-[#f7f8fa]">
-        <AccountDashboard
-          user={user}
-          progress={progress}
-          initialSocial={social}
-        />
+        <AccountShell>
+          <AccountDashboard
+            user={user}
+            progress={progress}
+            initialSocial={social}
+          />
+        </AccountShell>
       </main>
       <Footer />
     </>

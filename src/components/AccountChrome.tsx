@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { SessionUser } from "@/lib/types";
 import { LogoutButton } from "./LogoutButton";
 import { Button } from "./Button";
@@ -51,7 +50,6 @@ export function AccountSectionHeader({
   return (
     <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
       <div>
-        <Link href="/account" className="mb-3 inline-flex text-caption font-extrabold uppercase text-spark-blue hover:underline">← В кабинет</Link>
         <h1 className="font-feather text-heading-sm font-black text-charcoal sm:text-heading">{title}</h1>
         <p className="mt-2 max-w-[680px] text-body font-medium text-pencil-gray">{description}</p>
       </div>

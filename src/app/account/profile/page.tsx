@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AccountSectionHeader } from "@/components/AccountChrome";
+import { AccountShell } from "@/components/AccountShell";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { ProfileEditorForm } from "@/components/ProfileEditorForm";
@@ -17,10 +18,10 @@ export default async function AccountProfilePage() {
     <>
       <Header />
       <main className="flex-1 bg-[#f7f8fa]">
-        <div className="mx-auto max-w-[1000px] px-4 py-10 sm:px-6">
+        <AccountShell>
           <AccountSectionHeader title="Редактирование профиля" description="Измени имя и добавь короткое описание о себе." />
           <ProfileEditorForm user={user} />
-        </div>
+        </AccountShell>
       </main>
       <Footer />
     </>
