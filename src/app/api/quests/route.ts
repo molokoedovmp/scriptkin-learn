@@ -14,7 +14,8 @@ export async function GET() {
       const { rows } = await getAppPool().query<Quest>(
         `SELECT slug, title, tagline, intro, difficulty,
                 steps_count AS "stepsCount", emoji, status,
-                preview_url AS "previewUrl"
+                preview_url AS "previewUrl",
+                price_kopecks AS "priceKopecks"
            FROM quests
           ORDER BY sort_order`
       );

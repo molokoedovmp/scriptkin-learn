@@ -7,7 +7,12 @@ export const metadata: Metadata = {
   title: "Вход — Скрипткин",
 };
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnTo?: string }>;
+}) {
+  const { returnTo } = await searchParams;
   return (
     <>
       <Header />
@@ -20,7 +25,7 @@ export default function LoginPage() {
             Экипаж всё ещё ждёт. Войди, чтобы продолжить с того шага, где
             остановился.
           </p>
-          <AuthForm mode="login" />
+          <AuthForm mode="login" returnTo={returnTo} />
         </div>
       </main>
       <Footer />

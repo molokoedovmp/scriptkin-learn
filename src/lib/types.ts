@@ -11,6 +11,8 @@ export interface Quest {
   finale?: string | null;
   /** Обложка квеста для карточек каталога */
   previewUrl?: string | null;
+  /** Стоимость доступа в копейках; 0 — история бесплатна. */
+  priceKopecks: number;
   difficulty: QuestDifficulty;
   stepsCount: number;
   emoji: string;

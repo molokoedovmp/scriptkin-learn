@@ -5,6 +5,24 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { StoryHero, type HeroStory } from "@/components/ui/story-hero";
+import { DEMO_QUESTS } from "@/lib/quests";
+
+const HERO_STORY_SLUGS = ["midnight-express", "prometheus", "mars-station"];
+const HERO_STORIES: HeroStory[] = HERO_STORY_SLUGS.flatMap((slug) => {
+  const quest = DEMO_QUESTS.find((entry) => entry.slug === slug);
+  if (!quest?.previewUrl) return [];
+  return [{
+    slug: quest.slug,
+    title: quest.title,
+    description: quest.tagline,
+    image: quest.previewUrl,
+    difficulty: quest.difficulty,
+    stepsCount: quest.stepsCount,
+    status: quest.status,
+    priceKopecks: quest.priceKopecks,
+  }];
+});
 
 export const metadata: Metadata = {
   title: "Как это работает | Скрипткин",
@@ -17,52 +35,15 @@ export default function HowItWorksPage() {
     <>
       <Header />
       <main className="flex-1 overflow-hidden bg-[#fbfbfb]">
-        <section className="relative bg-night-ink text-paper-white">
-          <div className="absolute -left-32 -top-32 h-80 w-80 rounded-full bg-eager-green/15 blur-3xl" />
-          <div className="absolute -bottom-40 right-0 h-96 w-96 rounded-full bg-spark-blue/15 blur-3xl" />
-          <div className="relative mx-auto grid max-w-[1400px] items-center gap-10 px-6 py-16 lg:grid-cols-[0.86fr_1.14fr] lg:py-24">
-            <div>
-              <p className="mb-5 inline-flex rounded-full border border-[#303665] bg-[#121744] px-4 py-2 text-caption font-extrabold uppercase tracking-[0.12em] text-fresh-leaf">
-                SQL-истории + свободная практика
-              </p>
-              <h1 className="mb-6 font-feather text-heading font-black leading-[1.08] sm:text-display">
-                Не заучивай SQL.
-                <span className="block text-eager-green">Расследуй данные.</span>
-              </h1>
-              <p className="mb-8 max-w-[620px] text-body font-medium leading-relaxed text-[#c8ccea]">
-                На Скрипткине каждая команда сразу становится инструментом.
-                Находи улики в сюжетных историях, а потом закрепляй навык в
-                банке заданий на тех же базах данных.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/quests/midnight-express"
-                  className="inline-flex items-center justify-center rounded-xl bg-eager-green px-6 py-3 text-nav-label font-extrabold uppercase text-paper-white transition-colors hover:bg-[#4cb002]"
-                >
-                  Начать историю
-                </Link>
-                <Link
-                  href="/practice"
-                  className="inline-flex items-center justify-center rounded-xl border-2 border-[#4e568b] px-6 py-3 text-nav-label font-extrabold uppercase text-paper-white transition-colors hover:border-spark-blue hover:text-spark-blue"
-                >
-                  Открыть банк заданий
-                </Link>
-              </div>
-            </div>
-
-            <div className="mx-auto w-full max-w-[780px] lg:-mr-8">
-              <Image
-                src="/quest-prew.png"
-                alt="Интерфейс истории Полночный экспресс"
-                width={1677}
-                height={938}
-                priority
-                sizes="(max-width: 1023px) 100vw, 58vw"
-                className="h-auto w-full"
-              />
-            </div>
-          </div>
-        </section>
+        <StoryHero
+          eyebrow="SQL-истории, в которых ты ведёшь расследование"
+          title="Не заучивай SQL."
+          titleLine2="Расследуй"
+          titleHighlight="данные."
+          description="Выбирай историю, исследуй настоящую базу PostgreSQL и открывай следующую главу правильным запросом. От первого SELECT до сложных оконных функций."
+          socialProof="3 истории уже доступны · 100 заданий для свободной практики"
+          stories={HERO_STORIES}
+        />
 
         <section className="mx-auto max-w-[1200px] px-6 py-20 sm:py-28">
           <div className="mx-auto mb-16 max-w-[720px] text-center">

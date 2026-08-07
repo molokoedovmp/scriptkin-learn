@@ -11,6 +11,7 @@ const difficultyStyles: Record<Quest["difficulty"], string> = {
 
 export function QuestCard({ quest }: { quest: Quest }) {
   const isAvailable = quest.status === "available";
+  const isPaid = quest.priceKopecks > 0;
 
   const card = (
     <article
@@ -60,9 +61,23 @@ export function QuestCard({ quest }: { quest: Quest }) {
           </p>
 
           {isAvailable ? (
-            <span className="inline-flex rounded-xl bg-eager-green px-5 py-3 text-nav-label font-extrabold uppercase text-paper-white shadow-lg shadow-black/20">
-              Открыть историю →
-            </span>
+            isPaid ? (
+              <div className="flex items-end justify-between gap-4 border-t border-white/20 pt-4">
+                <div>
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-white/55">Цена</span>
+                  <strong className="text-[26px] font-extrabold leading-none text-white">
+                    {quest.priceKopecks / 100} ₽
+                  </strong>
+                </div>
+                <span className="inline-flex rounded-xl bg-eager-green px-5 py-3 text-nav-label font-extrabold uppercase text-paper-white shadow-lg shadow-black/20">
+                  Купить →
+                </span>
+              </div>
+            ) : (
+              <span className="inline-flex rounded-xl bg-eager-green px-5 py-3 text-nav-label font-extrabold uppercase text-paper-white shadow-lg shadow-black/20">
+                Открыть историю →
+              </span>
+            )
           ) : (
             <div className="flex items-end justify-between gap-4 border-t border-white/20 pt-4">
               <div>

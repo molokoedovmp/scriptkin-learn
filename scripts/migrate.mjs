@@ -25,6 +25,9 @@ await migrateDatabase(mainDatabaseUrl, "основная база", [
   ["005-prometheus-quest", "db/quests/prometheus.quest.sql"],
   ["006-prometheus-steps", "db/quests/prometheus.steps.sql"],
   ["007-prometheus-scenes", "db/quests/prometheus.scenes.sql"],
+  ["008-prometheus-beginner-quest", "db/quests/prometheus-beginner.quest.sql"],
+  ["009-prometheus-beginner-steps", "db/quests/prometheus-beginner.steps.sql"],
+  ["010-prometheus-beginner-scenes", "db/quests/prometheus-beginner.scenes.sql"],
 ]);
 
 const sandboxClient = new Client({ connectionString: sandboxAdminDatabaseUrl });
@@ -38,6 +41,7 @@ try {
       "db/quests/midnight-express.sandbox.sql",
     ],
     ["002-prometheus-sandbox", "db/quests/prometheus.sandbox.sql"],
+    ["003-prometheus-beginner-sandbox", "db/quests/prometheus-beginner.sandbox.sql"],
   ]);
 } finally {
   await sandboxClient.end();

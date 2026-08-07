@@ -49,7 +49,7 @@ export function AccountPaymentsView({
             История операций
           </h2>
           <p className="mt-2 text-[15px] font-medium text-pencil-gray">
-            Здесь хранятся покупки историй, статусы платежей, суммы и ссылки на чеки.
+            Здесь хранятся покупки историй, статусы платежей, суммы и доступные ссылки на чеки.
           </p>
         </header>
 
@@ -66,7 +66,7 @@ export function AccountPaymentsView({
             </h3>
             <p className="mx-auto mt-2 max-w-[520px] text-body font-medium text-pencil-gray">
               Когда ты купишь историю, здесь появятся её название, дата оплаты,
-              сумма, статус операции и электронный чек.
+              сумма, статус операции и ссылка на чек, когда она будет добавлена.
             </p>
             <Link
               href="/quests"

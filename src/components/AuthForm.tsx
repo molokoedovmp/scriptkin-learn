@@ -11,7 +11,13 @@ const inputCls =
 const labelCls =
   "mb-1.5 block text-caption font-bold uppercase tracking-wide text-pencil-gray";
 
-export function AuthForm({ mode }: { mode: "login" | "register" }) {
+export function AuthForm({
+  mode,
+  returnTo,
+}: {
+  mode: "login" | "register";
+  returnTo?: string;
+}) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -39,7 +45,11 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         setError(data.error ?? "Что-то пошло не так. Попробуй ещё раз.");
         return;
       }
-      router.push("/account");
+      const safeReturnTo =
+        returnTo?.startsWith("/") && !returnTo.startsWith("//")
+          ? returnTo
+          : "/account";
+      router.push(safeReturnTo);
       router.refresh();
     } catch {
       setError("Не удалось связаться с сервером.");

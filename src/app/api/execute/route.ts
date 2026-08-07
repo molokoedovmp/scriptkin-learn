@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getAppPool, getSandboxPool, isDatabaseConfigured } from "@/lib/db";
 import { getServerPracticeTask } from "@/lib/practice";
+import { getSessionUser } from "@/lib/auth";
+import { getQuestAccess } from "@/lib/quest-access";
 import type { ExecuteRequest, ExecuteResponse } from "@/lib/types";
 
 const MAX_ROWS = 100;
@@ -53,6 +55,17 @@ export async function POST(req: Request) {
     : null;
   if (body.practiceTaskId && !practiceTask) {
     return json({ ok: false, error: "Задание из банка не найдено." }, 404);
+  }
+
+  if (!practiceTask && body.questSlug && isDatabaseConfigured()) {
+    const user = await getSessionUser();
+    const access = await getQuestAccess(user?.id, body.questSlug);
+    if (!access.allowed) {
+      return json(
+        { ok: false, error: "Сначала оплати эту историю в своём аккаунте." },
+        403
+      );
+    }
   }
 
   // Мир каждого квеста живёт в своей схеме песочницы

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getAppPool, isDatabaseConfigured } from "@/lib/db";
 import { getDemoQuest } from "@/lib/quests";
+import { getSessionUser } from "@/lib/auth";
+import { getQuestAccess } from "@/lib/quest-access";
 import type { Quest } from "@/lib/types";
 
 /**
@@ -18,12 +20,23 @@ export async function GET(
       const { rows } = await pool.query<Quest>(
         `SELECT slug, title, tagline, intro, difficulty,
                 steps_count AS "stepsCount", emoji, status,
-                preview_url AS "previewUrl"
+                preview_url AS "previewUrl",
+                price_kopecks AS "priceKopecks"
            FROM quests
           WHERE slug = $1`,
         [slug]
       );
       if (rows.length > 0) {
+        const user = await getSessionUser();
+        const access = await getQuestAccess(user?.id, slug);
+        if (!access.allowed) {
+          return NextResponse.json({
+            quest: rows[0],
+            steps: [],
+            locked: true,
+            source: "database",
+          });
+        }
         const steps = await pool.query(
           `SELECT step_number AS "stepNumber", title, story, outcome, theory, task, hint
              FROM quest_steps

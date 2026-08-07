@@ -23,7 +23,8 @@ export async function getQuestWithSteps(
       const { rows } = await pool.query<Quest>(
         `SELECT slug, title, tagline, intro, finale, difficulty,
                 steps_count AS "stepsCount", emoji, status,
-                preview_url AS "previewUrl"
+                preview_url AS "previewUrl",
+                price_kopecks AS "priceKopecks"
            FROM quests
           WHERE slug = $1`,
         [slug]

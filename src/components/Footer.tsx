@@ -43,11 +43,11 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
 
 export function Footer() {
   return (
-    <footer className="bg-eager-green">
+    <footer className="site-footer border-t-2 border-[#dfe1e6]">
       <div className="mx-auto grid max-w-[1200px] gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
         {columns.map((col) => (
           <div key={col.title}>
-            <h3 className="mb-3 text-nav-label font-bold uppercase text-paper-white">
+            <h3 className="site-footer-title mb-3 text-nav-label font-extrabold uppercase tracking-wide">
               {col.title}
             </h3>
             <ul>
@@ -55,7 +55,7 @@ export function Footer() {
                 <li key={link.label} className="mb-2">
                   <Link
                     href={link.href}
-                    className="text-body font-medium text-storybook-green hover:text-paper-white"
+                    className="site-footer-link text-body font-medium"
                   >
                     {link.label}
                   </Link>
@@ -65,8 +65,8 @@ export function Footer() {
           </div>
         ))}
       </div>
-      <div className="mx-auto max-w-[1200px] px-6 pb-8">
-        <p className="text-caption font-medium text-storybook-green">
+      <div className="site-footer-bottom mx-auto max-w-[1200px] border-t px-6 py-6">
+        <p className="site-footer-copy text-caption font-medium">
           © {new Date().getFullYear()} Скрипткин. Учи SQL, раскрывая дела.
         </p>
       </div>

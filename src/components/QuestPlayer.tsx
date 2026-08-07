@@ -48,6 +48,7 @@ export function QuestPlayer({
   isAuthed: boolean;
 }) {
   const total = steps.length;
+  const isPrometheusQuest = quest.slug.startsWith("prometheus");
   const clamp = (n: number) => Math.min(Math.max(n, 1), total);
   const [current, setCurrent] = useState(clamp(initialStep));
   const [completed, setCompleted] = useState(initiallyCompleted);
@@ -276,18 +277,18 @@ export function QuestPlayer({
           textBackgroundUrl={
             quest.slug === "midnight-express"
               ? "/quests/midnight-express/background.png"
-              : quest.slug === "prometheus"
+              : isPrometheusQuest
                 ? "/quests/prometheus/background.png"
               : undefined
           }
           textStyle={
             quest.slug === "midnight-express"
               ? "midnight"
-              : quest.slug === "prometheus"
+              : isPrometheusQuest
                 ? "prometheus"
                 : "default"
           }
-          hideFrameControls={quest.slug === "prometheus"}
+          hideFrameControls={isPrometheusQuest}
           onToggleFullscreen={toggleFullscreen}
           onFinish={() => {
             const next = scenePlaying.next;

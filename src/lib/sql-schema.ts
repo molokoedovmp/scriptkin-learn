@@ -20,6 +20,18 @@ export const QUEST_SQL_SCHEMAS: Record<string, Record<string, string[]>> = {
     luggage: ["id", "passenger_id", "description", "weight_kg"],
     onboard_check: ["passenger_id", "wagon", "checked_at"],
   },
+  "prometheus-beginner": {
+    system_events: [
+      "event_id",
+      "system_id",
+      "sector_id",
+      "event_type",
+      "severity",
+      "event_value",
+      "event_message",
+      "recorded_at",
+    ],
+  },
   prometheus: {
     sectors: [
       "sector_id",

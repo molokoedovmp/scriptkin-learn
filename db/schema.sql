@@ -22,6 +22,22 @@ CREATE TABLE IF NOT EXISTS quests (
   created_at     timestamptz NOT NULL DEFAULT now()
 );
 
+-- Нулевая цена означает свободный доступ. Колонка добавляется отдельно,
+-- чтобы обновить уже существующие локальные базы без их пересоздания.
+ALTER TABLE quests
+  ADD COLUMN IF NOT EXISTS price_kopecks integer NOT NULL DEFAULT 0;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'quests_price_kopecks_check'
+  ) THEN
+    ALTER TABLE quests
+      ADD CONSTRAINT quests_price_kopecks_check CHECK (price_kopecks >= 0);
+  END IF;
+END
+$$;
+
 CREATE TABLE IF NOT EXISTS quest_steps (
   quest_slug    text NOT NULL REFERENCES quests(slug) ON DELETE CASCADE,
   step_number   integer NOT NULL,

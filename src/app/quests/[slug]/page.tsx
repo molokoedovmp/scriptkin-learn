@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { QuestPlayer } from "@/components/QuestPlayer";
+import { PurchaseCard } from "@/components/PurchaseCard";
 import { getQuestWithSteps, getUserQuestProgress } from "@/lib/quests-db";
 import { COMING_SOON_PRICE_RUB, getDemoQuest } from "@/lib/quests";
 import { getSessionUser } from "@/lib/auth";
+import { getQuestAccess } from "@/lib/quest-access";
 import { DIFFICULTY_LABELS } from "@/lib/types";
 
 // Страница зависит от cookie сессии (прогресс игрока)
@@ -37,8 +39,15 @@ export default async function QuestPage({
   const progress = user
     ? await getUserQuestProgress(user.id, quest.slug)
     : null;
+  const access =
+    quest.priceKopecks === 0
+      ? { allowed: true, purchased: false }
+      : await getQuestAccess(user?.id, quest.slug);
 
-  const playable = quest.status === "available" && steps.length > 0;
+  const playable =
+    quest.status === "available" && steps.length > 0 && access.allowed;
+  const requiresPurchase =
+    quest.status === "available" && quest.priceKopecks > 0 && !access.allowed;
 
   return (
     <>
@@ -78,6 +87,18 @@ export default async function QuestPage({
               initiallyCompleted={Boolean(progress?.completedAt)}
               isAuthed={Boolean(user)}
             />
+          ) : requiresPurchase ? (
+            <>
+              <p className="mb-10 text-body font-medium leading-relaxed text-pencil-gray">
+                {quest.intro}
+              </p>
+              <PurchaseCard
+                questSlug={quest.slug}
+                questTitle={quest.title}
+                priceKopecks={quest.priceKopecks}
+                isAuthed={Boolean(user)}
+              />
+            </>
           ) : (
             <>
               <p className="mb-10 text-body font-medium leading-relaxed text-pencil-gray">

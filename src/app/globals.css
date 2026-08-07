@@ -49,6 +49,89 @@ body {
   transition: background-color 180ms ease, color 180ms ease;
 }
 
+.story-hero {
+  background:
+    radial-gradient(circle at 50% 18%, rgb(88 204 2 / 9%), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #f5f7f9 100%);
+}
+
+.story-hero-grid {
+  background-image:
+    linear-gradient(rgb(75 75 75 / 4%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(75 75 75 / 4%) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, black, transparent 86%);
+}
+
+html.dark .story-hero {
+  background:
+    radial-gradient(circle at 50% 12%, rgb(88 204 2 / 10%), transparent 30%),
+    radial-gradient(circle at 82% 48%, rgb(28 176 246 / 8%), transparent 28%),
+    linear-gradient(180deg, #0b1423 0%, #111b2d 100%);
+}
+
+html.dark .story-hero-grid {
+  background-image:
+    linear-gradient(rgb(134 154 184 / 6%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(134 154 184 / 6%) 1px, transparent 1px);
+}
+
+html.dark .hero-primary-cta {
+  background-color: #78df31;
+  color: #102006;
+}
+
+html.dark .hero-secondary-cta {
+  border-color: #4a5e7a;
+  background-color: #142138;
+  color: #eaf0f7;
+}
+
+html.dark .hero-secondary-cta:hover {
+  border-color: #35bdf8;
+  color: #65d1ff;
+}
+
+/* Footer отделён от контента спокойной серой поверхностью. Тонкая цветная
+   линия сохраняет характер бренда без прежней заливки ярко-зелёным. */
+.site-footer {
+  position: relative;
+  overflow: hidden;
+  border-color: #d7dbe2;
+  background:
+    radial-gradient(circle at 12% 0%, rgb(88 204 2 / 7%), transparent 30%),
+    linear-gradient(180deg, #f1f3f6 0%, #e7eaef 100%);
+}
+
+.site-footer::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, #58cc02 0%, #1cb0f6 48%, transparent 88%);
+  content: "";
+}
+
+.site-footer-title {
+  color: #343a46;
+}
+
+.site-footer-link {
+  color: #656d79;
+  transition: color 160ms ease, transform 160ms ease;
+}
+
+.site-footer-link:hover {
+  color: #087fb8;
+}
+
+.site-footer-bottom {
+  border-color: #d1d6de;
+}
+
+.site-footer-copy {
+  color: #747c88;
+}
+
 html {
   color-scheme: light;
 }
@@ -60,6 +143,40 @@ html.dark {
 html.dark body {
   background: #0b1220;
   color: #e8edf5;
+}
+
+html.dark .site-footer {
+  border-color: #33435a;
+  background:
+    radial-gradient(circle at 14% 0%, rgb(28 176 246 / 10%), transparent 34%),
+    radial-gradient(circle at 86% 100%, rgb(88 204 2 / 7%), transparent 30%),
+    linear-gradient(180deg, #0b1423 0%, #070d18 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 3%);
+}
+
+html.dark .site-footer::before {
+  background: linear-gradient(90deg, #78df31 0%, #35bdf8 52%, transparent 92%);
+  opacity: 0.85;
+}
+
+html.dark .site-footer-title {
+  color: #f0f5fb;
+}
+
+html.dark .site-footer-link {
+  color: #aeb9c9;
+}
+
+html.dark .site-footer-link:hover {
+  color: #65d1ff;
+}
+
+html.dark .site-footer-bottom {
+  border-color: #29384d;
+}
+
+html.dark .site-footer-copy {
+  color: #8390a3;
 }
 
 /* Общие поверхности и текст сайта в тёмной теме. Белый цвет кнопок и
@@ -134,6 +251,7 @@ html.dark [class*="bg-[#f2ffe9]"] {
 }
 
 html.dark [class*="bg-[#e8f7ff]"],
+html.dark [class*="bg-[#e9f7ff]"],
 html.dark [class*="bg-[#eef9ff]"],
 html.dark [class*="bg-[#e7f6fe]"] {
   background-color: #132f40;
@@ -171,6 +289,95 @@ html.dark [class*="text-[#315d71]"] {
 
 html.dark [class*="text-[#7449bd]"] {
   color: #b99aef;
+}
+
+/* Личный кабинет: навигация и действия должны хорошо отделяться от тёмной
+   поверхности. Для неактивных пунктов используем собственную карточку, а не
+   прозрачный фон; активный зелёный пункт получает тёмный текст. */
+html.dark .account-sidebar {
+  border-color: #4a5b75;
+  background-color: #0d1728;
+  box-shadow: 0 18px 46px rgb(0 0 0 / 24%);
+}
+
+html.dark .account-sidebar-header {
+  border-color: #35445b;
+  background-color: #101c2f;
+}
+
+html.dark .account-sidebar-link:not(.is-active) {
+  border-color: #2d3d56;
+  background-color: #162238;
+  color: #dce5f1;
+}
+
+html.dark .account-sidebar-link:not(.is-active):hover {
+  border-color: #35bdf8;
+  background-color: #20314c;
+  color: #ffffff;
+}
+
+html.dark .account-sidebar-link.is-active {
+  border-color: #91ef52;
+  background-color: #78df31;
+  color: #102006;
+  box-shadow: inset 4px 0 0 #3d920e, 0 6px 18px rgb(72 180 10 / 20%);
+}
+
+html.dark .account-sidebar-link:not(.is-active) .account-sidebar-icon {
+  border-color: #42536d;
+  background-color: #0b1423;
+  color: #55c9ff;
+}
+
+html.dark .account-sidebar-link.is-active .account-sidebar-icon {
+  border-color: rgb(16 32 6 / 16%);
+  background-color: rgb(16 32 6 / 14%);
+  color: #102006;
+}
+
+html.dark .account-sidebar-catalog {
+  border-color: #38506e;
+  background-color: #17263c;
+  color: #5bceff;
+}
+
+html.dark .account-sidebar-catalog:hover {
+  border-color: #35bdf8;
+  background-color: #203652;
+  color: #ffffff;
+}
+
+html.dark .account-content [class*="bg-eager-green"][class*="text-paper-white"] {
+  background-color: #78df31;
+  color: #102006;
+  box-shadow: 0 3px 0 #3d920e;
+}
+
+html.dark .account-content [class*="bg-eager-green"][class*="text-paper-white"]:hover {
+  background-color: #8bea4d;
+}
+
+html.dark .account-content [class*="border-faded-gray"][class*="text-spark-blue"],
+html.dark .account-content [class*="inline-flex"][class*="border-[#dfe1e6]"] {
+  border-color: #60728d;
+  background-color: #111e32;
+  color: #62ceff;
+}
+
+html.dark .account-content [class*="border-faded-gray"][class*="text-spark-blue"]:hover,
+html.dark .account-content [class*="inline-flex"][class*="border-[#dfe1e6]"]:hover {
+  border-color: #35bdf8;
+  background-color: #1a2d47;
+  color: #ffffff;
+}
+
+html.dark .account-sidebar-link:focus-visible,
+html.dark .account-sidebar-catalog:focus-visible,
+html.dark .account-content a:focus-visible,
+html.dark .account-content button:focus-visible {
+  outline: 3px solid #74d8ff;
+  outline-offset: 3px;
 }
 
 html.dark [class*="text-[#936900]"],

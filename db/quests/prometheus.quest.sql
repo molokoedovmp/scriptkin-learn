@@ -13,6 +13,7 @@ INSERT INTO quests (
   emoji,
   status,
   preview_url,
+  price_kopecks,
   sandbox_schema,
   sort_order
 ) VALUES (
@@ -25,6 +26,7 @@ INSERT INTO quests (
   '🛰️',
   'available',
   '/quests/prometheus/preview.png',
+  50000,
   'prometheus',
   5
 )
@@ -37,5 +39,6 @@ ON CONFLICT (slug) DO UPDATE SET
   emoji = EXCLUDED.emoji,
   status = EXCLUDED.status,
   preview_url = EXCLUDED.preview_url,
+  price_kopecks = EXCLUDED.price_kopecks,
   sandbox_schema = EXCLUDED.sandbox_schema,
   sort_order = EXCLUDED.sort_order;

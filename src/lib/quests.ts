@@ -20,7 +20,22 @@ export const DEMO_QUESTS: Quest[] = [
     stepsCount: 7,
     emoji: "🚂",
     status: "available",
+    priceKopecks: 0,
     previewUrl: "/quests/midnight-express/preview.png",
+  },
+  {
+    slug: "prometheus-beginner",
+    title: "Прометей · Новичок",
+    tagline:
+      "Та же катастрофа на «Прометее», но SQL объясняется с самых основ — шаг за шагом.",
+    intro:
+      "Инженер-механик Артём Вейл прибывает к потерявшему связь грузовому кораблю «Прометей». После стыковки челнок оказывается заблокирован, аварийное освещение едва работает, а экипаж не отвечает. В этой версии расследования каждая команда SQL разбирается отдельно: от первого SELECT и WHERE до более сложных запросов.",
+    difficulty: "beginner",
+    stepsCount: 2,
+    emoji: "🛰️",
+    status: "available",
+    priceKopecks: 0,
+    previewUrl: "/quests/prometheus/preview.png",
   },
   {
     slug: "submarine-crash",
@@ -35,6 +50,7 @@ export const DEMO_QUESTS: Quest[] = [
     stepsCount: 8,
     emoji: "🌊",
     status: "coming_soon",
+    priceKopecks: 50000,
     previewUrl: "/quests/submarine-crash/preview.png",
   },
   {
@@ -49,6 +65,7 @@ export const DEMO_QUESTS: Quest[] = [
     stepsCount: 10,
     emoji: "🖼️",
     status: "coming_soon",
+    priceKopecks: 50000,
     previewUrl: "/quests/midnight-heist/preview.png",
   },
   {
@@ -63,6 +80,7 @@ export const DEMO_QUESTS: Quest[] = [
     stepsCount: 12,
     emoji: "🚀",
     status: "coming_soon",
+    priceKopecks: 50000,
     previewUrl: "/quests/mars-station/preview.png",
   },
   {
@@ -77,6 +95,7 @@ export const DEMO_QUESTS: Quest[] = [
     stepsCount: 24,
     emoji: "🛰️",
     status: "available",
+    priceKopecks: 50000,
     previewUrl: "/quests/prometheus/preview.png",
   },
 ];

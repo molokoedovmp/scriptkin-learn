@@ -17,8 +17,8 @@ export function AccountSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="self-start overflow-hidden rounded-[20px] border-2 border-[#e1e3e8] bg-paper-white lg:sticky lg:top-[88px]">
-      <div className="border-b-2 border-[#ececef] px-5 py-4">
+    <aside className="account-sidebar self-start overflow-hidden rounded-[20px] border-2 border-[#e1e3e8] bg-paper-white lg:sticky lg:top-[88px]">
+      <div className="account-sidebar-header border-b-2 border-[#ececef] px-5 py-4">
         <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] text-eager-green">
           Личный кабинет
         </p>
@@ -41,15 +41,15 @@ export function AccountSidebar() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`group flex min-h-12 items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-extrabold transition-colors sm:px-4 ${
+              className={`account-sidebar-link group flex min-h-12 items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-left text-[13px] font-extrabold transition-colors sm:px-4 ${
                 active
-                  ? "bg-eager-green text-paper-white shadow-[inset_4px_0_0_#3e9900]"
+                  ? "is-active bg-eager-green text-paper-white shadow-[inset_4px_0_0_#3e9900]"
                   : "text-pencil-gray hover:bg-[#f1f8ec] hover:text-[#3e870e]"
               }`}
             >
               <span
                 aria-hidden="true"
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[17px] font-black ${
+                className={`account-sidebar-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-transparent text-[17px] font-black ${
                   active
                     ? "bg-white/20 text-paper-white"
                     : "bg-[#f1f3f6] text-spark-blue group-hover:bg-paper-white"
@@ -66,7 +66,7 @@ export function AccountSidebar() {
       <div className="hidden border-t-2 border-[#ececef] p-4 lg:block">
         <Link
           href="/quests"
-          className="flex items-center justify-between rounded-xl bg-[#f7f8fa] px-4 py-3 text-[12px] font-extrabold uppercase text-spark-blue hover:bg-[#e9f7ff]"
+          className="account-sidebar-catalog flex items-center justify-between rounded-xl border border-transparent bg-[#f7f8fa] px-4 py-3 text-[12px] font-extrabold uppercase text-spark-blue hover:bg-[#e9f7ff]"
         >
           Все истории <span aria-hidden="true">→</span>
         </Link>

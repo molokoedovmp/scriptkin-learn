@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAppPool, isDatabaseConfigured } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
+import { getQuestAccess } from "@/lib/quest-access";
 
 /**
  * POST /api/progress — сохраняет прогресс текущего пользователя по квесту.
@@ -43,6 +44,14 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { ok: false, error: "Некорректные данные прогресса." },
       { status: 400 }
+    );
+  }
+
+  const access = await getQuestAccess(user.id, questSlug);
+  if (!access.allowed) {
+    return NextResponse.json(
+      { ok: false, error: "История не оплачена." },
+      { status: 403 }
     );
   }
 
