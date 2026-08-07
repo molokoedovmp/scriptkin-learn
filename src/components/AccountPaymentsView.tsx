@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContinuePaymentButton } from "./ContinuePaymentButton";
 import type { StoryPaymentEntry, StoryPaymentStatus } from "@/lib/types";
 
 const STATUS_LABELS: Record<StoryPaymentStatus, string> = {
@@ -85,7 +86,7 @@ export function AccountPaymentsView({
                     <th className="px-4 py-3">Дата</th>
                     <th className="px-4 py-3">Сумма</th>
                     <th className="px-4 py-3">Статус</th>
-                    <th className="px-6 py-3 text-right">Чек</th>
+                    <th className="px-6 py-3 text-right">Действие</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#ececef]">
@@ -135,7 +136,7 @@ function PaymentRow({ payment }: { payment: StoryPaymentEntry }) {
       <td className="whitespace-nowrap px-4 py-4 text-pencil-gray">{formatDate(payment.paidAt ?? payment.createdAt)}</td>
       <td className="whitespace-nowrap px-4 py-4">{formatMoney(payment.amountKopecks, payment.currency)}</td>
       <td className="px-4 py-4"><StatusBadge status={payment.status} /></td>
-      <td className="px-6 py-4 text-right"><ReceiptLink payment={payment} /></td>
+      <td className="px-6 py-4 text-right"><PaymentAction payment={payment} /></td>
     </tr>
   );
 }
@@ -151,7 +152,7 @@ function PaymentCard({ payment }: { payment: StoryPaymentEntry }) {
         <div><dt className="text-[10px] font-extrabold uppercase text-faded-gray">Дата</dt><dd className="mt-1 text-[14px] font-bold text-charcoal">{formatDate(payment.paidAt ?? payment.createdAt)}</dd></div>
         <div><dt className="text-[10px] font-extrabold uppercase text-faded-gray">Сумма</dt><dd className="mt-1 text-[14px] font-bold text-charcoal">{formatMoney(payment.amountKopecks, payment.currency)}</dd></div>
       </dl>
-      <div className="mt-4"><ReceiptLink payment={payment} /></div>
+      <div className="mt-4"><PaymentAction payment={payment} /></div>
     </article>
   );
 }
@@ -170,6 +171,13 @@ function ReceiptLink({ payment }: { payment: StoryPaymentEntry }) {
     return <span className="text-[13px] font-bold text-faded-gray">—</span>;
   }
   return <a href={payment.receiptUrl} target="_blank" rel="noreferrer" className="text-[13px] font-extrabold text-spark-blue hover:underline">Открыть чек ↗</a>;
+}
+
+function PaymentAction({ payment }: { payment: StoryPaymentEntry }) {
+  if (payment.status === "pending" && payment.provider === "yookassa") {
+    return <ContinuePaymentButton paymentId={payment.id} />;
+  }
+  return <ReceiptLink payment={payment} />;
 }
 
 function formatMoney(amountKopecks: number, currency: string) {

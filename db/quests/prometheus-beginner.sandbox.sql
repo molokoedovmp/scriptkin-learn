@@ -36,6 +36,22 @@ CREATE TABLE IF NOT EXISTS crew_members (
 CREATE INDEX IF NOT EXISTS crew_members_cabin_status_idx
   ON crew_members(cabin_sector_id, official_status);
 
+CREATE TABLE IF NOT EXISTS medical_scans (
+  scan_id           integer PRIMARY KEY,
+  crew_id           integer NOT NULL REFERENCES crew_members(crew_id),
+  sector_id         integer NOT NULL,
+  heart_rate        integer NOT NULL CHECK (heart_rate >= 0),
+  oxygen_level      numeric(5,1) NOT NULL CHECK (oxygen_level >= 0),
+  body_temperature  numeric(5,1) NOT NULL,
+  tissue_anomaly    numeric(5,1) NOT NULL CHECK (tissue_anomaly >= 0),
+  medical_status    varchar(20) NOT NULL
+                    CHECK (medical_status IN ('stable', 'warning', 'critical', 'deceased', 'unknown')),
+  scanned_at        timestamp NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS medical_scans_crew_time_idx
+  ON medical_scans(crew_id, scanned_at);
+
 INSERT INTO system_events (
   event_id, system_id, sector_id, event_type, severity,
   event_value, event_message, recorded_at
@@ -105,6 +121,42 @@ ON CONFLICT (crew_id) DO UPDATE SET
   access_level = EXCLUDED.access_level,
   official_status = EXCLUDED.official_status,
   cabin_sector_id = EXCLUDED.cabin_sector_id;
+
+INSERT INTO medical_scans (
+  scan_id, crew_id, sector_id, heart_rate, oxygen_level,
+  body_temperature, tissue_anomaly, medical_status, scanned_at
+) VALUES
+  (401, 201, 5, 91, 96.4, 37.2, 3.1, 'stable', '2187-09-14 03:21:14'),
+  (402, 202, 5, 88, 97.0, 36.9, 2.4, 'stable', '2187-09-14 03:21:47'),
+  (403, 204, 5, 102, 94.1, 37.8, 8.7, 'warning', '2187-09-14 03:22:10'),
+  (404, 205, 5, 96, 95.2, 37.5, 5.2, 'stable', '2187-09-14 03:22:31'),
+  (405, 206, 5, 99, 95.8, 37.6, 4.9, 'stable', '2187-09-14 03:22:54'),
+  (406, 203, 5, 112, 92.4, 38.1, 11.6, 'warning', '2187-09-14 03:23:12'),
+  (407, 203, 5, 124, 87.1, 38.8, 22.3, 'warning', '2187-09-14 03:25:46'),
+  (408, 203, 5, 137, 78.6, 39.4, 38.5, 'critical', '2187-09-14 03:28:19'),
+  (409, 203, 5, 148, 66.3, 40.1, 51.8, 'critical', '2187-09-14 03:31:02'),
+  (410, 203, 5, 156, 51.2, 40.8, 64.9, 'critical', '2187-09-14 03:33:41'),
+  (411, 203, 5, 131, 37.8, 41.4, 73.6, 'critical', '2187-09-14 03:35:15'),
+  (412, 203, 5, 104, 24.6, 41.9, 81.7, 'critical', '2187-09-14 03:37:02'),
+  (413, 203, 5, 72, 13.1, 42.3, 88.9, 'critical', '2187-09-14 03:39:26'),
+  (414, 203, 5, 31, 4.8, 42.7, 93.2, 'critical', '2187-09-14 03:41:18'),
+  (415, 203, 5, 0, 0.0, 42.9, 95.4, 'deceased', '2187-09-14 03:42:07'),
+  (416, 203, 5, 0, 0.0, 43.1, 96.1, 'unknown', '2187-09-14 03:43:42'),
+  (417, 203, 5, 0, 0.0, 43.2, 96.5, 'unknown', '2187-09-14 03:44:55'),
+  (418, 203, 5, 0, 0.0, 43.4, 96.7, 'unknown', '2187-09-14 03:46:00'),
+  (419, 209, 11, 86, 96.1, 37.0, 3.8, 'stable', '2187-09-14 03:22:05'),
+  (420, 211, 11, 93, 95.7, 37.3, 4.1, 'stable', '2187-09-14 03:22:42'),
+  (421, 217, 11, 89, 96.8, 36.8, 2.7, 'stable', '2187-09-14 03:23:01'),
+  (422, 218, 11, 92, 96.0, 37.1, 3.4, 'stable', '2187-09-14 03:23:18')
+ON CONFLICT (scan_id) DO UPDATE SET
+  crew_id = EXCLUDED.crew_id,
+  sector_id = EXCLUDED.sector_id,
+  heart_rate = EXCLUDED.heart_rate,
+  oxygen_level = EXCLUDED.oxygen_level,
+  body_temperature = EXCLUDED.body_temperature,
+  tissue_anomaly = EXCLUDED.tissue_anomaly,
+  medical_status = EXCLUDED.medical_status,
+  scanned_at = EXCLUDED.scanned_at;
 
 GRANT USAGE ON SCHEMA prometheus_beginner TO sqlquest_player;
 GRANT SELECT ON ALL TABLES IN SCHEMA prometheus_beginner TO sqlquest_player;

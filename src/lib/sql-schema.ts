@@ -41,6 +41,17 @@ export const QUEST_SQL_SCHEMAS: Record<string, Record<string, string[]>> = {
       "official_status",
       "cabin_sector_id",
     ],
+    medical_scans: [
+      "scan_id",
+      "crew_id",
+      "sector_id",
+      "heart_rate",
+      "oxygen_level",
+      "body_temperature",
+      "tissue_anomaly",
+      "medical_status",
+      "scanned_at",
+    ],
   },
   prometheus: {
     sectors: [

@@ -5,6 +5,7 @@ import {
   createYooKassaPayment,
   formatAmount,
   getYooKassaPayment,
+  type YooKassaPayment,
   type YooKassaPaymentStatus,
 } from "./yookassa";
 
@@ -123,6 +124,12 @@ export async function syncYooKassaPayment(
   providerPaymentId: string
 ): Promise<PaymentSyncResult> {
   const remote = await getYooKassaPayment(providerPaymentId);
+  return syncRemoteYooKassaPayment(remote);
+}
+
+async function syncRemoteYooKassaPayment(
+  remote: YooKassaPayment
+): Promise<PaymentSyncResult> {
   const localPaymentId = remote.metadata?.local_payment_id;
   if (!localPaymentId) throw new Error("В платеже отсутствует номер заказа.");
 
@@ -180,6 +187,46 @@ export async function syncYooKassaPayment(
     [localPaymentId, remote.id, status]
   );
   return updated[0];
+}
+
+export async function continueUserPayment(
+  localPaymentId: string,
+  userId: string
+): Promise<
+  | { status: "pending"; confirmationUrl: string }
+  | { status: "paid"; questSlug: string }
+> {
+  const { rows } = await getAppPool().query<{
+    providerPaymentId: string | null;
+  }>(
+    `SELECT provider_payment_id AS "providerPaymentId"
+       FROM story_payments
+      WHERE id = $1 AND user_id = $2 AND provider = $3`,
+    [localPaymentId, userId, PROVIDER]
+  );
+  const providerPaymentId = rows[0]?.providerPaymentId;
+  if (!providerPaymentId) throw new Error("Незавершённый платёж не найден.");
+
+  const remote = await getYooKassaPayment(providerPaymentId);
+  const synced = await syncRemoteYooKassaPayment(remote);
+  if (synced.localPaymentId !== localPaymentId) {
+    throw new Error("Платёж не совпадает с выбранной операцией.");
+  }
+  if (synced.status === "paid") {
+    return { status: "paid", questSlug: synced.questSlug };
+  }
+  if (synced.status === "canceled") {
+    throw new Error("Этот платёж уже отменён. Создай новый на странице истории.");
+  }
+  if (synced.status !== "pending") {
+    throw new Error("Этот платёж нельзя продолжить.");
+  }
+
+  const confirmationUrl = remote.confirmation?.confirmation_url;
+  if (!confirmationUrl) {
+    throw new Error("YooKassa больше не принимает подтверждение этого платежа.");
+  }
+  return { status: "pending", confirmationUrl };
 }
 
 export async function syncUserPaymentByLocalId(
