@@ -1,5 +1,5 @@
 -- =============================================================
--- «Прометей · Новичок» — отдельная песочница первого этапа.
+-- «Прометей · Новичок» — отдельная песочница учебной версии истории.
 -- Изоляция нужна, чтобы события поздних уроков основной версии квеста
 -- не меняли ответ простого запроса новичка.
 -- =============================================================
@@ -20,6 +20,21 @@ CREATE TABLE IF NOT EXISTS system_events (
 
 CREATE INDEX IF NOT EXISTS system_events_sector_severity_time_idx
   ON system_events(sector_id, severity, recorded_at DESC);
+
+CREATE TABLE IF NOT EXISTS crew_members (
+  crew_id          integer PRIMARY KEY,
+  full_name        varchar(120) NOT NULL,
+  role             varchar(120) NOT NULL,
+  department       varchar(80) NOT NULL,
+  badge_id         varchar(32) NOT NULL UNIQUE,
+  access_level     integer NOT NULL CHECK (access_level >= 0),
+  official_status  varchar(16) NOT NULL
+                   CHECK (official_status IN ('alive', 'missing', 'deceased')),
+  cabin_sector_id  integer NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS crew_members_cabin_status_idx
+  ON crew_members(cabin_sector_id, official_status);
 
 INSERT INTO system_events (
   event_id, system_id, sector_id, event_type, severity,
@@ -59,6 +74,37 @@ ON CONFLICT (event_id) DO UPDATE SET
   event_value = EXCLUDED.event_value,
   event_message = EXCLUDED.event_message,
   recorded_at = EXCLUDED.recorded_at;
+
+INSERT INTO crew_members (
+  crew_id, full_name, role, department, badge_id,
+  access_level, official_status, cabin_sector_id
+) VALUES
+  (201, 'Emily Carter', 'Навигатор', 'Navigation', 'BDG-201', 3, 'missing', 5),
+  (202, 'Daniel Brooks', 'Оператор грузового комплекса', 'Cargo', 'BDG-202', 2, 'missing', 5),
+  (203, 'Jason Miller', 'Техник', 'Engineering', 'BDG-203', 2, 'missing', 5),
+  (204, 'Rachel Morgan', 'Медицинский техник', 'Medical', 'BDG-204', 2, 'missing', 5),
+  (205, 'Marcus Hayes', 'Офицер безопасности', 'Security', 'BDG-205', 3, 'missing', 5),
+  (206, 'Olivia Bennett', 'Оператор связи', 'Communications', 'BDG-206', 2, 'missing', 5),
+  (207, 'Kevin Turner', 'Инженер', 'Engineering', 'BDG-207', 3, 'alive', 11),
+  (208, 'Sarah Mitchell', 'Врач', 'Medical', 'BDG-208', 4, 'alive', 11),
+  (209, 'Nathan Cooper', 'Кладовщик', 'Cargo', 'BDG-209', 2, 'missing', 11),
+  (210, 'Jessica Ward', 'Специалист по логистике', 'Cargo', 'BDG-210', 2, 'alive', 11),
+  (211, 'Brian Foster', 'Охранник', 'Security', 'BDG-211', 2, 'missing', 11),
+  (212, 'Anthony Reed', 'Старший инженер', 'Engineering', 'BDG-212', 4, 'deceased', 12),
+  (213, 'Laura Chen', 'Биолог', 'Science', 'BDG-213', 4, 'missing', 12),
+  (214, 'Robert Mason', 'Начальник грузовой смены', 'Cargo', 'BDG-214', 3, 'deceased', 12),
+  (215, 'Emma Ross', 'Хирург', 'Medical', 'BDG-215', 4, 'missing', 12),
+  (216, 'Paul Reed', 'Инженер-механик', 'Engineering', 'BDG-216', 4, 'alive', 11),
+  (217, 'Michael Kane', 'Техник реактора', 'Engineering', 'BDG-217', 4, 'missing', 11),
+  (218, 'Sophie Brown', 'Оператор дронов', 'Engineering', 'BDG-218', 3, 'missing', 11)
+ON CONFLICT (crew_id) DO UPDATE SET
+  full_name = EXCLUDED.full_name,
+  role = EXCLUDED.role,
+  department = EXCLUDED.department,
+  badge_id = EXCLUDED.badge_id,
+  access_level = EXCLUDED.access_level,
+  official_status = EXCLUDED.official_status,
+  cabin_sector_id = EXCLUDED.cabin_sector_id;
 
 GRANT USAGE ON SCHEMA prometheus_beginner TO sqlquest_player;
 GRANT SELECT ON ALL TABLES IN SCHEMA prometheus_beginner TO sqlquest_player;

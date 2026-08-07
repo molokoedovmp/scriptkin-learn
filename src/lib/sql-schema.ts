@@ -31,6 +31,16 @@ export const QUEST_SQL_SCHEMAS: Record<string, Record<string, string[]>> = {
       "event_message",
       "recorded_at",
     ],
+    crew_members: [
+      "crew_id",
+      "full_name",
+      "role",
+      "department",
+      "badge_id",
+      "access_level",
+      "official_status",
+      "cabin_sector_id",
+    ],
   },
   prometheus: {
     sectors: [
