@@ -25,7 +25,7 @@ function task({ sql, ...definition }: TaskInput): ServerPracticeTask {
 
 export const PROMETHEUS: ServerPracticeDatabase = {
   questSlug: "prometheus",
-  previewUrl: "/quests/prometheus/preview.png",
+  previewUrl: "/quests/prometheus/preview.webp",
   erDiagramUrl: "/quests/prometheus/prometheus-erp.png",
   schemaDescription:
     "База описывает устройство грузового корабля «Прометей». Таблица sectors служит главным справочником помещений: с ней связаны технические системы, события, смены экипажа, медицинские сканы, грузовые объекты, дроны, биодатчики и спасательные аппараты. Переходы между секторами образуют отдельный граф маршрутов.\n\nДанные разделены на несколько взаимосвязанных областей: технический журнал ship_systems и system_events, экипаж и доступ, грузовой манифест, обслуживание дронами, активность ARGO и эвакуационные системы. На этой структуре можно изучать сложные JOIN, коррелированные подзапросы, операции множеств, оконные функции и рекурсивные CTE.",

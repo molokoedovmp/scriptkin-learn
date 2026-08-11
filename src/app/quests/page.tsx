@@ -38,8 +38,12 @@ export default function QuestsPage() {
             функций.
           </p>
           <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-            {orderedQuests.map((quest) => (
-              <QuestCard key={quest.slug} quest={quest} />
+            {orderedQuests.map((quest, index) => (
+              <QuestCard
+                key={quest.slug}
+                quest={quest}
+                priority={index < 3}
+              />
             ))}
           </div>
         </div>

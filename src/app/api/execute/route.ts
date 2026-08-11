@@ -167,10 +167,55 @@ function normalizeResultRows(
           ? column === "arrival_time"
             ? formatTime(value)
             : formatDateTime(value)
+          : isPostgresInterval(value)
+            ? formatInterval(value)
           : value,
       ])
     )
   );
+}
+
+type PostgresIntervalValue = {
+  years?: number;
+  months?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  toPostgres: () => string;
+};
+
+function isPostgresInterval(value: unknown): value is PostgresIntervalValue {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as { toPostgres?: unknown }).toPostgres === "function"
+  );
+}
+
+function formatInterval(value: PostgresIntervalValue): string {
+  const years = value.years ?? 0;
+  const months = value.months ?? 0;
+  const days = value.days ?? 0;
+  const hours = value.hours ?? 0;
+  const minutes = value.minutes ?? 0;
+  const seconds = value.seconds ?? 0;
+  const wholeSeconds = Math.trunc(seconds);
+  const fraction = Math.abs(seconds - wholeSeconds);
+  const secondsText =
+    String(Math.abs(wholeSeconds)).padStart(2, "0") +
+    (fraction > 0 ? fraction.toFixed(6).slice(1).replace(/0+$/, "") : "");
+  const sign = hours < 0 || minutes < 0 || seconds < 0 ? "-" : "";
+  const time = `${sign}${String(Math.abs(hours)).padStart(2, "0")}:${String(
+    Math.abs(minutes)
+  ).padStart(2, "0")}:${secondsText}`;
+  const dateParts = [
+    years ? `${years} ${Math.abs(years) === 1 ? "year" : "years"}` : "",
+    months ? `${months} ${Math.abs(months) === 1 ? "mon" : "mons"}` : "",
+    days ? `${days} ${Math.abs(days) === 1 ? "day" : "days"}` : "",
+  ].filter(Boolean);
+
+  return dateParts.length > 0 ? `${dateParts.join(" ")} ${time}` : time;
 }
 
 function formatTime(value: Date): string {

@@ -13,7 +13,7 @@ interface ServerPracticeDatabase extends Omit<PracticeDatabase, "tasks"> {
 
 const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
   questSlug: "midnight-express",
-  previewUrl: "/quests/midnight-express/preview.png",
+  previewUrl: "/quests/midnight-express/preview.webp",
   erDiagramUrl: "/quests/midnight-express/express-erp.png",
   schemaDescription:
     "База моделирует пассажирский поезд и ночные события рейса Москва — Санкт-Петербург. Центральная таблица passengers хранит список пассажиров. Билеты, багаж и результаты контрольной переклички связаны с ней через passenger_id.\n\nТаблицы stations и conductor_log образуют временную часть базы: маршрут показывает последовательность остановок, а журнал проводника — происходившие в вагонах события. Такая структура подходит для тренировки фильтрации, JOIN, агрегатов, подзапросов и оконных функций на небольшом понятном наборе данных.",

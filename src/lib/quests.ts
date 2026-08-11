@@ -21,7 +21,7 @@ export const DEMO_QUESTS: Quest[] = [
     emoji: "🚂",
     status: "available",
     priceKopecks: 0,
-    previewUrl: "/quests/midnight-express/preview.png",
+    previewUrl: "/quests/midnight-express/preview.webp",
   },
   {
     slug: "prometheus-beginner",
@@ -31,11 +31,11 @@ export const DEMO_QUESTS: Quest[] = [
     intro:
       "Инженер-механик Артём Вейл прибывает к потерявшему связь грузовому кораблю «Прометей». После стыковки челнок оказывается заблокирован, аварийное освещение едва работает, а экипаж не отвечает. В этой версии расследования каждая команда SQL разбирается отдельно: от первого SELECT и WHERE до более сложных запросов.",
     difficulty: "beginner",
-    stepsCount: 11,
+    stepsCount: 18,
     emoji: "🛰️",
     status: "available",
     priceKopecks: 0,
-    previewUrl: "/quests/prometheus/preview.png",
+    previewUrl: "/quests/prometheus/preview.webp",
   },
   {
     slug: "submarine-crash",
@@ -51,7 +51,7 @@ export const DEMO_QUESTS: Quest[] = [
     emoji: "🌊",
     status: "coming_soon",
     priceKopecks: 50000,
-    previewUrl: "/quests/submarine-crash/preview.png",
+    previewUrl: "/quests/submarine-crash/preview.webp",
   },
   {
     slug: "midnight-heist",
@@ -66,7 +66,7 @@ export const DEMO_QUESTS: Quest[] = [
     emoji: "🖼️",
     status: "coming_soon",
     priceKopecks: 50000,
-    previewUrl: "/quests/midnight-heist/preview.png",
+    previewUrl: "/quests/midnight-heist/preview.webp",
   },
   {
     slug: "mars-station",
@@ -81,7 +81,7 @@ export const DEMO_QUESTS: Quest[] = [
     emoji: "🚀",
     status: "coming_soon",
     priceKopecks: 50000,
-    previewUrl: "/quests/mars-station/preview.png",
+    previewUrl: "/quests/mars-station/preview.webp",
   },
   {
     slug: "prometheus",
@@ -96,7 +96,7 @@ export const DEMO_QUESTS: Quest[] = [
     emoji: "🛰️",
     status: "available",
     priceKopecks: 50000,
-    previewUrl: "/quests/prometheus/preview.png",
+    previewUrl: "/quests/prometheus/preview.webp",
   },
 ];
 

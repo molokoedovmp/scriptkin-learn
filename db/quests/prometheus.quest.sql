@@ -25,7 +25,7 @@ INSERT INTO quests (
   24,
   '🛰️',
   'available',
-  '/quests/prometheus/preview.png',
+  '/quests/prometheus/preview.webp',
   50000,
   'prometheus',
   5

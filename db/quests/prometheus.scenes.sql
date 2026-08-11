@@ -16,7 +16,7 @@ INSERT INTO quest_scenes (
   'prometheus',
   0,
   1,
-  '/quests/prometheus/scene1.png',
+  '/quests/prometheus/scene1.webp',
   NULL,
   $frame$
 **Сигнал бедствия. Стыковочный узел DOCK-A.**
@@ -36,7 +36,7 @@ $frame$
   'prometheus',
   1,
   1,
-  '/quests/prometheus/scene2.png',
+  '/quests/prometheus/scene2.webp',
   NULL,
   $frame$
 **Аварийное питание.**
@@ -54,7 +54,7 @@ $frame$
   'prometheus',
   2,
   1,
-  '/quests/prometheus/scene3.png',
+  '/quests/prometheus/scene3.webp',
   NULL,
   $frame$
 **Пустой корабль.**
@@ -74,7 +74,7 @@ $frame$
   'prometheus',
   3,
   1,
-  '/quests/prometheus/scene4.png',
+  '/quests/prometheus/scene4.webp',
   NULL,
   $frame$
 **Первое существо.**
@@ -94,7 +94,7 @@ $frame$
   'prometheus',
   4,
   1,
-  '/quests/prometheus/scene5.png',
+  '/quests/prometheus/scene5.webp',
   NULL,
   $frame$
 **Голос диспетчера.**
@@ -114,7 +114,7 @@ $frame$
   'prometheus',
   5,
   1,
-  '/quests/prometheus/scene6.png',
+  '/quests/prometheus/scene6.webp',
   NULL,
   $frame$
 **Заблокированный маршрут.**
@@ -134,7 +134,7 @@ $frame$
   'prometheus',
   6,
   1,
-  '/quests/prometheus/scene7.png',
+  '/quests/prometheus/scene7.webp',
   NULL,
   $frame$
 **Медицинский отсек.**
@@ -154,7 +154,7 @@ $frame$
   'prometheus',
   7,
   1,
-  '/quests/prometheus/scene8.png',
+  '/quests/prometheus/scene8.webp',
   NULL,
   $frame$
 **Неисправные капсулы.**
@@ -174,7 +174,7 @@ $frame$
   'prometheus',
   8,
   1,
-  '/quests/prometheus/scene9.png',
+  '/quests/prometheus/scene9.webp',
   NULL,
   $frame$
 **Грузовой манифест.**
@@ -194,7 +194,7 @@ $frame$
   'prometheus',
   9,
   1,
-  '/quests/prometheus/scene10.png',
+  '/quests/prometheus/scene10.webp',
   NULL,
   $frame$
 **Контейнер NX-17.**
@@ -214,7 +214,7 @@ $frame$
   'prometheus',
   10,
   1,
-  '/quests/prometheus/scene11.png',
+  '/quests/prometheus/scene11.webp',
   NULL,
   $frame$
 **Последняя смена.**
@@ -234,7 +234,7 @@ $frame$
   'prometheus',
   11,
   1,
-  '/quests/prometheus/scene12.png',
+  '/quests/prometheus/scene12.webp',
   NULL,
   $frame$
 **Ложный голос.**
@@ -254,7 +254,7 @@ $frame$
   'prometheus',
   12,
   1,
-  '/quests/prometheus/scene13.png',
+  '/quests/prometheus/scene13.webp',
   NULL,
   $frame$
 **Корабельный компьютер.**
@@ -274,7 +274,7 @@ $frame$
   'prometheus',
   13,
   1,
-  '/quests/prometheus/scene14.png',
+  '/quests/prometheus/scene14.webp',
   NULL,
   $frame$
 **Ошибка лечения.**
@@ -294,7 +294,7 @@ $frame$
   'prometheus',
   14,
   1,
-  '/quests/prometheus/scene15.png',
+  '/quests/prometheus/scene15.webp',
   NULL,
   $frame$
 **Ремонтные дроны.**
@@ -314,7 +314,7 @@ $frame$
   'prometheus',
   15,
   1,
-  '/quests/prometheus/scene16.png',
+  '/quests/prometheus/scene16.webp',
   NULL,
   $frame$
 **Выживший.**
@@ -334,7 +334,7 @@ $frame$
   'prometheus',
   16,
   1,
-  '/quests/prometheus/scene17.png',
+  '/quests/prometheus/scene17.webp',
   NULL,
   $frame$
 **Навигационный центр.**
@@ -354,7 +354,7 @@ $frame$
   'prometheus',
   17,
   1,
-  '/quests/prometheus/scene18.png',
+  '/quests/prometheus/scene18.webp',
   NULL,
   $frame$
 **Приказ капитана.**
@@ -374,7 +374,7 @@ $frame$
   'prometheus',
   18,
   1,
-  '/quests/prometheus/scene19.png',
+  '/quests/prometheus/scene19.webp',
   NULL,
   $frame$
 **Предательство выжившего.**
@@ -394,7 +394,7 @@ $frame$
   'prometheus',
   19,
   1,
-  '/quests/prometheus/scene20.png',
+  '/quests/prometheus/scene20.webp',
   NULL,
   $frame$
 **Потеря шаттла.**
@@ -414,7 +414,7 @@ $frame$
   'prometheus',
   20,
   1,
-  '/quests/prometheus/scene21.png',
+  '/quests/prometheus/scene21.webp',
   NULL,
   $frame$
 **Нулевая палуба.**
@@ -434,7 +434,7 @@ $frame$
   'prometheus',
   21,
   1,
-  '/quests/prometheus/scene22.png',
+  '/quests/prometheus/scene22.webp',
   NULL,
   $frame$
 **Правда об «АРГО».**
@@ -454,7 +454,7 @@ $frame$
   'prometheus',
   22,
   1,
-  '/quests/prometheus/scene23.png',
+  '/quests/prometheus/scene23.webp',
   NULL,
   $frame$
 **Последний план.**
@@ -474,7 +474,7 @@ $frame$
   'prometheus',
   23,
   1,
-  '/quests/prometheus/scene24.png',
+  '/quests/prometheus/scene24.webp',
   NULL,
   $frame$
 **Побег.**

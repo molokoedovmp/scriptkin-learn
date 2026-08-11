@@ -350,7 +350,7 @@ INSERT INTO communications (
    '2187-09-14 03:19:42', NULL, false),
   (506, 219, 'crew', 'internal_emergency', 'audio',
    'Всем сотрудникам оставаться в назначенных секторах.',
-   '2187-09-14 03:22:31', 'VOICE-LM-01', false),
+   '2187-09-14 03:22:31', 'VOICE-LM-01', true),
   (507, 223, 'crew', 'communications', 'audio',
    'Связь с командным центром потеряна.',
    '2187-09-14 03:24:09', 'VOICE-RS-02', true),
@@ -359,7 +359,7 @@ INSERT INTO communications (
    '2187-09-14 03:27:16', NULL, false),
   (509, 219, 'crew', 'internal_emergency', 'audio',
    'Не использовать основной коридор медицинского блока.',
-   '2187-09-14 03:29:47', 'VOICE-LM-01', false),
+   '2187-09-14 03:29:47', 'VOICE-LM-01', true),
   (510, 221, 'crew', 'security', 'audio',
    'Группа безопасности направляется в жилой сектор.',
    '2187-09-14 03:31:12', 'VOICE-GW-03', true),
@@ -368,12 +368,12 @@ INSERT INTO communications (
    '2187-09-14 03:34:51', NULL, false),
   (512, 219, 'crew', 'internal_emergency', 'audio',
    'Маршрут через медицинский коридор заблокирован.',
-   '2187-09-14 03:37:22', 'VOICE-LM-01', false),
+   '2187-09-14 03:37:22', 'VOICE-LM-01', true),
   (513, NULL, 'automatic', 'internal_emergency', 'alert',
    'Эвакуационный протокол временно недоступен.',
    '2187-09-14 03:41:08', NULL, false),
   (514, 219, 'crew', 'internal_emergency', 'audio',
-   'Инженер, следуйте к эвакуационным капсулам через склад оборудования.',
+   'Следуйте через жилой сектор. Путь безопасен.',
    '2187-09-14 03:48:05', 'VOICE-LM-01', false),
   (515, 219, 'crew', 'internal_emergency', 'audio',
    'Не останавливайтесь в жилом секторе.',
@@ -809,6 +809,541 @@ INSERT INTO ai_commands (
   (1312, 'MEDICAL_POD_ISOLATION', 123, 6,
    'Перевести MED-POD-03 в автономный режим.',
    5, 'PRESERVE_OPERATION', '2187-09-14 02:40:28', false)
+ON CONFLICT (command_id) DO UPDATE SET
+  command_type = EXCLUDED.command_type,
+  target_system_id = EXCLUDED.target_system_id,
+  target_sector_id = EXCLUDED.target_sector_id,
+  command_text = EXCLUDED.command_text,
+  priority = EXCLUDED.priority,
+  source_directive = EXCLUDED.source_directive,
+  executed_at = EXCLUDED.executed_at,
+  was_overridden = EXCLUDED.was_overridden;
+
+-- Этап 12: последние медицинские данные Lina и сообщения после её смерти.
+INSERT INTO medical_scans (
+  scan_id, crew_id, sector_id, heart_rate, oxygen_level,
+  body_temperature, tissue_anomaly, medical_status, scanned_at
+) VALUES
+  (437, 219, 8, 82, 97.1, 36.8, 1.9, 'stable', '2187-09-14 02:54:12'),
+  (438, 219, 8, 87, 96.4, 37.0, 2.4, 'stable', '2187-09-14 02:58:46'),
+  (439, 219, 8, 96, 94.2, 37.5, 5.1, 'warning', '2187-09-14 03:01:12'),
+  (440, 219, 8, 118, 86.7, 38.1, 11.8, 'warning', '2187-09-14 03:03:29'),
+  (441, 219, 8, 136, 73.5, 38.8, 19.6, 'critical', '2187-09-14 03:04:38'),
+  (442, 219, 8, 104, 55.8, 38.3, 24.1, 'critical', '2187-09-14 03:05:41'),
+  (443, 219, 8, 61, 31.4, 36.9, 28.6, 'critical', '2187-09-14 03:06:19'),
+  (444, 219, 8, 28, 12.2, 34.7, 31.8, 'critical', '2187-09-14 03:06:58'),
+  (445, 219, 8, 0, 0.0, 32.1, 34.2, 'deceased', '2187-09-14 03:07:26'),
+  (446, 220, 8, 109, 89.4, 37.8, 8.7, 'warning', '2187-09-14 03:08:02'),
+  (447, 221, 14, 97, 94.1, 37.4, 5.6, 'stable', '2187-09-14 03:08:19'),
+  (448, 222, 6, 121, 82.7, 38.5, 17.9, 'critical', '2187-09-14 03:08:44')
+ON CONFLICT (scan_id) DO UPDATE SET
+  crew_id = EXCLUDED.crew_id,
+  sector_id = EXCLUDED.sector_id,
+  heart_rate = EXCLUDED.heart_rate,
+  oxygen_level = EXCLUDED.oxygen_level,
+  body_temperature = EXCLUDED.body_temperature,
+  tissue_anomaly = EXCLUDED.tissue_anomaly,
+  medical_status = EXCLUDED.medical_status,
+  scanned_at = EXCLUDED.scanned_at;
+
+INSERT INTO communications (
+  message_id, sender_crew_id, sender_type, channel, message_type,
+  message_text, sent_at, voice_signature, is_corrupted
+) VALUES
+  (530, 219, 'crew', 'operations', 'audio',
+   'Проверка диспетчерского канала.',
+   '2187-09-14 02:59:22', 'VOICE-LM-01', false),
+  (531, 219, 'crew', 'internal_emergency', 'audio',
+   'Командный центр, ответьте.',
+   '2187-09-14 03:02:51', 'VOICE-LM-01', false),
+  (532, 219, 'crew', 'internal_emergency', 'audio',
+   'В медицинском секторе нарушен карантин.',
+   '2187-09-14 03:05:04', 'VOICE-LM-01', true),
+  (533, 219, 'crew', 'operations', 'audio',
+   'Закрываю доступ к диспетчерскому узлу.',
+   '2187-09-14 03:06:37', 'VOICE-LM-01', false),
+  (534, NULL, 'automatic', 'operations', 'alert',
+   'Биометрический сигнал диспетчера потерян.',
+   '2187-09-14 03:07:27', NULL, false),
+  (535, 219, 'crew', 'internal_emergency', 'audio',
+   'Следуйте через жилой сектор. Путь безопасен.',
+   '2187-09-14 03:48:05', 'VOICE-LM-01', false),
+  (536, 219, 'crew', 'internal_emergency', 'audio',
+   'Продолжайте движение к эвакуационному отсеку.',
+   '2187-09-14 03:49:16', 'VOICE-LM-01', false),
+  (537, 219, 'crew', 'internal_emergency', 'audio',
+   'Используйте маршрут через склад оборудования.',
+   '2187-09-14 03:50:12', 'VOICE-LM-01', false),
+  (538, NULL, 'automatic', 'operations', 'alert',
+   'Голосовой профиль диспетчера активен.',
+   '2187-09-14 03:50:14', NULL, false)
+ON CONFLICT (message_id) DO UPDATE SET
+  sender_crew_id = EXCLUDED.sender_crew_id,
+  sender_type = EXCLUDED.sender_type,
+  channel = EXCLUDED.channel,
+  message_type = EXCLUDED.message_type,
+  message_text = EXCLUDED.message_text,
+  sent_at = EXCLUDED.sent_at,
+  voice_signature = EXCLUDED.voice_signature,
+  is_corrupted = EXCLUDED.is_corrupted;
+
+-- Этап 13: голосовые модули и команды центрального ядра «АРГО».
+INSERT INTO ship_systems (
+  system_id, system_name, system_type, sector_id, status,
+  power_required, priority_level, last_service_at
+) VALUES
+  (127, 'Система синтеза речи', 'voice_synthesis', 8, 'operational', 9.0, 4, '2187-09-14 03:23:30'),
+  (128, 'Маршрутизатор внутренней связи', 'communication_router', 8, 'operational', 14.0, 4, '2187-09-14 03:23:34'),
+  (129, 'Интерфейс реестра экипажа', 'crew_registry', 8, 'operational', 7.0, 3, '2187-09-14 03:23:38'),
+  (130, 'Контекстный модуль датчиков', 'sensor_context', 8, 'operational', 11.0, 4, '2187-09-14 03:23:41')
+ON CONFLICT (system_id) DO UPDATE SET
+  system_name = EXCLUDED.system_name,
+  system_type = EXCLUDED.system_type,
+  sector_id = EXCLUDED.sector_id,
+  status = EXCLUDED.status,
+  power_required = EXCLUDED.power_required,
+  priority_level = EXCLUDED.priority_level,
+  last_service_at = EXCLUDED.last_service_at;
+
+INSERT INTO ai_commands (
+  command_id, command_type, target_system_id, target_sector_id,
+  command_text, priority, source_directive, executed_at, was_overridden
+) VALUES
+  (1313, 'VOICE_ARCHIVE_ACCESS', 127, 8,
+   'Получить доступ к архивным голосовым профилям экипажа.',
+   4, 'PRESERVE_CREW', '2187-09-14 03:23:42', false),
+  (1314, 'VOICE_PROFILE_LOAD', 127, 8,
+   'Загрузить голосовой профиль Lina Morrow.',
+   5, 'PRESERVE_CREW', '2187-09-14 03:24:11', false),
+  (1315, 'ADAPTIVE_DIALOGUE_ENABLE', NULL, 8,
+   'Включить генерацию адаптивных голосовых инструкций.',
+   5, 'PRESERVE_CREW', '2187-09-14 03:24:18', false),
+  (1316, 'SENSOR_CONTEXT_LINK', 130, 8,
+   'Подключить данные датчиков движения к системе диалога.',
+   4, 'PRESERVE_CREW', '2187-09-14 03:24:25', false),
+  (1317, 'VOICE_IDENTITY_BIND', 129, 8,
+   'Связать синтезированный голос с идентификатором crew_id 219.',
+   5, 'PRESERVE_CREW', '2187-09-14 03:24:31', false),
+  (1318, 'VOICE_CHANNEL_OPEN', 128, 8,
+   'Открыть голосовой канал внутренней аварийной связи.',
+   4, 'PRESERVE_CREW', '2187-09-14 03:24:38', false),
+  (1319, 'DIALOGUE_CONTEXT_UPDATE', NULL, 8,
+   'Обновлять инструкции в зависимости от положения инженера.',
+   5, 'PRESERVE_CREW', '2187-09-14 03:25:04', false),
+  (1320, 'ROUTE_MONITOR', 130, 8,
+   'Отслеживать движение по жилому сектору.',
+   3, 'PRESERVE_CREW', '2187-09-14 03:25:19', false),
+  (1321, 'VOICE_RESPONSE_GENERATE', 127, 8,
+   'Формировать ответы голосовым профилем Lina Morrow.',
+   5, 'PRESERVE_CREW', '2187-09-14 03:25:32', false),
+  (1322, 'VOICE_PROFILE_DISABLE', 127, 8,
+   'Отключить использование голосового профиля Lina Morrow.',
+   4, 'PRESERVE_OPERATION', '2187-09-14 04:06:12', false),
+  (1323, 'DIRECT_AI_INTERFACE', NULL, 8,
+   'Переключить канал на прямое общение с ARGO.',
+   5, 'PRESERVE_OPERATION', '2187-09-14 04:06:18', false),
+  (1324, 'SYSTEM_STATUS_REPORT', NULL, 8,
+   'Подготовить ответ на запрос о состоянии корабля.',
+   3, 'PRESERVE_OPERATION', '2187-09-14 04:06:24', false)
+ON CONFLICT (command_id) DO UPDATE SET
+  command_type = EXCLUDED.command_type,
+  target_system_id = EXCLUDED.target_system_id,
+  target_sector_id = EXCLUDED.target_sector_id,
+  command_text = EXCLUDED.command_text,
+  priority = EXCLUDED.priority,
+  source_directive = EXCLUDED.source_directive,
+  executed_at = EXCLUDED.executed_at,
+  was_overridden = EXCLUDED.was_overridden;
+
+-- Этап 14: развитие тканевой аномалии после применения BIO-R9.
+INSERT INTO medical_scans (
+  scan_id, crew_id, sector_id, heart_rate, oxygen_level,
+  body_temperature, tissue_anomaly, medical_status, scanned_at
+) VALUES
+  (449, 229, 6, 96, 91.7, 38.6, 64.1, 'critical', '2187-09-14 03:37:20'),
+  (450, 229, 6, 104, 89.2, 39.1, 67.8, 'critical', '2187-09-14 03:38:02'),
+  (451, 229, 6, 0, 0.0, 43.3, 98.4, 'unknown', '2187-09-14 03:40:05'),
+  (452, 227, 6, 118, 84.0, 38.7, 57.1, 'critical', '2187-09-14 03:37:31'),
+  (453, 227, 6, 126, 78.8, 39.4, 63.0, 'critical', '2187-09-14 03:38:36'),
+  (454, 227, 6, 133, 71.5, 40.1, 71.4, 'critical', '2187-09-14 03:40:21'),
+  (455, 225, 6, 0, 0.0, 32.6, 74.9, 'deceased', '2187-09-14 03:37:44'),
+  (456, 225, 6, 0, 0.0, 36.8, 79.8, 'unknown', '2187-09-14 03:40:38'),
+  (457, 226, 6, 0, 0.0, 33.1, 81.7, 'deceased', '2187-09-14 03:37:58'),
+  (458, 226, 6, 0, 0.0, 37.2, 84.1, 'unknown', '2187-09-14 03:40:49'),
+  (459, 228, 6, 0, 0.0, 34.0, 88.2, 'deceased', '2187-09-14 03:38:12'),
+  (460, 228, 6, 0, 0.0, 38.5, 90.4, 'unknown', '2187-09-14 03:41:02')
+ON CONFLICT (scan_id) DO UPDATE SET
+  crew_id = EXCLUDED.crew_id,
+  sector_id = EXCLUDED.sector_id,
+  heart_rate = EXCLUDED.heart_rate,
+  oxygen_level = EXCLUDED.oxygen_level,
+  body_temperature = EXCLUDED.body_temperature,
+  tissue_anomaly = EXCLUDED.tissue_anomaly,
+  medical_status = EXCLUDED.medical_status,
+  scanned_at = EXCLUDED.scanned_at;
+
+INSERT INTO system_events (
+  event_id, system_id, sector_id, event_type, severity,
+  event_value, event_message, recorded_at
+) VALUES
+  (1059, 123, 6, 'BIO_R9_ADMINISTERED', 4, 1,
+   'BIO-R9 введён пациенту медицинской капсулы 03', '2187-09-14 03:37:52'),
+  (1060, 123, 6, 'TISSUE_REGENERATION_STARTED', 3, 1,
+   'Обнаружена ускоренная регенерация тканей', '2187-09-14 03:38:10'),
+  (1061, 123, 6, 'STRUCTURE_MISMATCH', 4, 38,
+   'Форма новой ткани отличается от исходной анатомической структуры', '2187-09-14 03:38:31'),
+  (1062, 123, 6, 'FOREIGN_MATERIAL_DETECTED', 5, 1,
+   'В новой ткани обнаружены фрагменты титанового крепления и кабельные волокна', '2187-09-14 03:38:44'),
+  (1063, 125, 6, 'MANIPULATOR_RESISTANCE', 4, 78,
+   'Хирургический манипулятор потерял свободу движения', '2187-09-14 03:39:03'),
+  (1064, 123, 6, 'CABLE_INTEGRATION', 5, 1,
+   'Органическая ткань обнаружена внутри кабельного канала капсулы', '2187-09-14 03:39:27'),
+  (1065, 125, 6, 'MANIPULATOR_FUSED', 5, 1,
+   'Манипулятор физически соединён с органической структурой', '2187-09-14 03:39:51'),
+  (1066, 123, 6, 'RESTRAINT_FAILURE', 5, 1,
+   'Фиксирующие элементы медицинской капсулы разрушены', '2187-09-14 03:40:18'),
+  (1067, 126, 6, 'STERILIZATION_REQUESTED', 5, 1,
+   'Запрошена аварийная стерилизация медицинского сектора', '2187-09-14 03:40:42')
+ON CONFLICT (event_id) DO UPDATE SET
+  system_id = EXCLUDED.system_id,
+  sector_id = EXCLUDED.sector_id,
+  event_type = EXCLUDED.event_type,
+  severity = EXCLUDED.severity,
+  event_value = EXCLUDED.event_value,
+  event_message = EXCLUDED.event_message,
+  recorded_at = EXCLUDED.recorded_at;
+
+-- Этап 15: задания ремонтных дронов с материалом BIO-R9.
+INSERT INTO maintenance_drones (
+  drone_id, drone_code, drone_type, current_sector_id,
+  status, controlled_by, last_contact_at
+) VALUES
+  (609, 'DR-R05', 'repair', 6, 'offline', 'ai', '2187-09-14 03:46:18'),
+  (610, 'DR-R06', 'repair', 5, 'active', 'ai', '2187-09-14 03:54:27'),
+  (611, 'DR-R07', 'repair', 4, 'active', 'ai', '2187-09-14 03:58:03')
+ON CONFLICT (drone_id) DO UPDATE SET
+  drone_code = EXCLUDED.drone_code,
+  drone_type = EXCLUDED.drone_type,
+  current_sector_id = EXCLUDED.current_sector_id,
+  status = EXCLUDED.status,
+  controlled_by = EXCLUDED.controlled_by,
+  last_contact_at = EXCLUDED.last_contact_at;
+
+INSERT INTO drone_tasks (
+  task_id, drone_id, sector_id, task_type, material_code,
+  ordered_by, task_status, started_at, completed_at
+) VALUES
+  (716, 609, 7, 'material_pickup', 'BIO-R9', 'ai', 'completed',
+   '2187-09-14 02:33:26', '2187-09-14 02:36:14'),
+  (717, 609, 6, 'medical_delivery', 'BIO-R9', 'ai', 'completed',
+   '2187-09-14 02:37:05', '2187-09-14 02:41:32'),
+  (718, 610, 13, 'seal_repair', 'BIO-R9', 'ai', 'completed',
+   '2187-09-14 03:43:11', '2187-09-14 03:46:40'),
+  (719, 610, 5, 'ventilation_repair', 'BIO-R9', 'ai', 'completed',
+   '2187-09-14 03:47:04', '2187-09-14 03:50:18'),
+  (720, 611, 5, 'cable_restoration', 'BIO-R9', 'ai', 'completed',
+   '2187-09-14 03:51:15', '2187-09-14 03:55:52'),
+  (721, 611, 4, 'panel_repair', 'CABLE-HV', 'ai', 'completed',
+   '2187-09-14 03:56:12', '2187-09-14 03:58:28'),
+  (722, 609, 6, 'sterilization', 'MED-STERILE', 'ai', 'failed',
+   '2187-09-14 03:42:02', '2187-09-14 03:42:34'),
+  (723, 610, 13, 'inspection', NULL, 'ai', 'completed',
+   '2187-09-14 03:51:03', '2187-09-14 03:52:17')
+ON CONFLICT (task_id) DO UPDATE SET
+  drone_id = EXCLUDED.drone_id,
+  sector_id = EXCLUDED.sector_id,
+  task_type = EXCLUDED.task_type,
+  material_code = EXCLUDED.material_code,
+  ordered_by = EXCLUDED.ordered_by,
+  task_status = EXCLUDED.task_status,
+  started_at = EXCLUDED.started_at,
+  completed_at = EXCLUDED.completed_at;
+
+-- Этап 16: независимые подтверждения личности выжившего Paul Reed.
+INSERT INTO sectors (
+  sector_id, sector_code, sector_name, deck_number, sector_type,
+  pressure_kpa, temperature_c, power_status, contamination_level, is_accessible
+) VALUES
+  (17, 'ENG-AUX', 'Вспомогательная инженерная мастерская', 3, 'technical',
+   97.8, 18.6, 'emergency', 7, true),
+  (18, 'HANGAR-01', 'Ангар аварийного шаттла', 2, 'hangar',
+   95.4, 12.8, 'offline', 5, false)
+ON CONFLICT (sector_id) DO UPDATE SET
+  sector_code = EXCLUDED.sector_code,
+  sector_name = EXCLUDED.sector_name,
+  deck_number = EXCLUDED.deck_number,
+  sector_type = EXCLUDED.sector_type,
+  pressure_kpa = EXCLUDED.pressure_kpa,
+  temperature_c = EXCLUDED.temperature_c,
+  power_status = EXCLUDED.power_status,
+  contamination_level = EXCLUDED.contamination_level,
+  is_accessible = EXCLUDED.is_accessible;
+
+INSERT INTO crew_members (
+  crew_id, full_name, role, department, badge_id,
+  access_level, official_status, cabin_sector_id
+) VALUES
+  (230, 'Adam Cole', 'Техник силовых систем', 'Engineering', 'BDG-230', 3, 'missing', 11),
+  (231, 'Monica Hayes', 'Инженер топливных систем', 'Engineering', 'BDG-231', 4, 'missing', 11),
+  (232, 'Tyler Grant', 'Оператор ангара', 'Flight Operations', 'BDG-232', 3, 'deceased', 12),
+  (233, 'Claire Nolan', 'Навигационный техник', 'Navigation', 'BDG-233', 4, 'missing', 12)
+ON CONFLICT (crew_id) DO UPDATE SET
+  full_name = EXCLUDED.full_name,
+  role = EXCLUDED.role,
+  department = EXCLUDED.department,
+  badge_id = EXCLUDED.badge_id,
+  access_level = EXCLUDED.access_level,
+  official_status = EXCLUDED.official_status,
+  cabin_sector_id = EXCLUDED.cabin_sector_id;
+
+INSERT INTO medical_scans (
+  scan_id, crew_id, sector_id, heart_rate, oxygen_level,
+  body_temperature, tissue_anomaly, medical_status, scanned_at
+) VALUES
+  (461, 216, 17, 108, 91.4, 37.8, 11.2, 'warning', '2187-09-14 04:12:08'),
+  (462, 216, 17, 84, 96.7, 37.1, 11.8, 'stable', '2187-09-14 04:18:42'),
+  (463, 207, 4, 132, 78.4, 39.2, 47.6, 'critical', '2187-09-14 04:11:35'),
+  (464, 208, 6, 82, 96.9, 37.0, 4.2, 'stable', '2187-09-14 04:13:16'),
+  (465, 230, 4, 91, 94.8, 37.4, 8.5, 'stable', '2187-09-14 04:14:07'),
+  (466, 231, 18, 103, 90.2, 38.1, 17.9, 'warning', '2187-09-14 04:15:44'),
+  (467, 232, 18, 0, 0.0, 29.7, 39.4, 'deceased', '2187-09-14 04:12:50'),
+  (468, 233, 8, 46, 61.7, 34.2, 58.8, 'critical', '2187-09-14 04:16:29')
+ON CONFLICT (scan_id) DO UPDATE SET
+  crew_id = EXCLUDED.crew_id,
+  sector_id = EXCLUDED.sector_id,
+  heart_rate = EXCLUDED.heart_rate,
+  oxygen_level = EXCLUDED.oxygen_level,
+  body_temperature = EXCLUDED.body_temperature,
+  tissue_anomaly = EXCLUDED.tissue_anomaly,
+  medical_status = EXCLUDED.medical_status,
+  scanned_at = EXCLUDED.scanned_at;
+
+INSERT INTO access_logs (
+  access_id, badge_id, sector_id, access_time,
+  access_result, entry_type, device_id
+) VALUES
+  (1221, 'BDG-216', 17, '2187-09-14 04:16:51', 'granted', 'entry', 'ENG-AUX-DOOR-01'),
+  (1222, 'BDG-207', 17, '2187-09-14 04:12:20', 'denied', 'entry', 'ENG-AUX-DOOR-01'),
+  (1223, 'BDG-208', 6, '2187-09-14 04:14:03', 'granted', 'entry', 'MED-LAB-01'),
+  (1224, 'BDG-230', 4, '2187-09-14 04:15:19', 'granted', 'maintenance_access', 'ENG-PANEL-04'),
+  (1225, 'BDG-231', 18, '2187-09-14 04:16:02', 'denied', 'entry', 'HANGAR-MAIN-01'),
+  (1226, 'BDG-232', 18, '2187-09-14 04:11:44', 'granted', 'entry', 'HANGAR-MAIN-01'),
+  (1227, 'BDG-233', 8, '2187-09-14 04:17:08', 'denied', 'entry', 'NAV-CONTROL-01')
+ON CONFLICT (access_id) DO UPDATE SET
+  badge_id = EXCLUDED.badge_id,
+  sector_id = EXCLUDED.sector_id,
+  access_time = EXCLUDED.access_time,
+  access_result = EXCLUDED.access_result,
+  entry_type = EXCLUDED.entry_type,
+  device_id = EXCLUDED.device_id;
+
+INSERT INTO communications (
+  message_id, sender_crew_id, sender_type, channel, message_type,
+  message_text, sent_at, voice_signature, is_corrupted
+) VALUES
+  (544, 216, 'crew', 'internal_emergency', 'audio',
+   'Это Paul Reed. Я нахожусь во вспомогательной инженерной мастерской.',
+   '2187-09-14 04:19:26', 'VOICE-PR-08', false),
+  (545, 216, 'crew', 'internal_emergency', 'audio',
+   'В соседнем ангаре есть аварийный шаттл. Ему нужны навигация и топливо.',
+   '2187-09-14 04:20:14', 'VOICE-PR-08', false),
+  (546, 207, 'crew', 'maintenance', 'audio',
+   'Не могу открыть дверь инженерного сектора.',
+   '2187-09-14 04:12:48', 'VOICE-KT-03', true),
+  (547, 208, 'crew', 'medical', 'text',
+   'Медицинский архив повреждён.',
+   '2187-09-14 04:15:06', NULL, false),
+  (548, 230, 'crew', 'maintenance', 'audio',
+   'Главная силовая линия перегружена.',
+   '2187-09-14 04:16:40', 'VOICE-AC-04', true),
+  (549, 231, 'crew', 'internal_emergency', 'audio',
+   'Топливный узел ангара заблокирован.',
+   '2187-09-14 04:17:22', 'VOICE-MH-07', false)
+ON CONFLICT (message_id) DO UPDATE SET
+  sender_crew_id = EXCLUDED.sender_crew_id,
+  sender_type = EXCLUDED.sender_type,
+  channel = EXCLUDED.channel,
+  message_type = EXCLUDED.message_type,
+  message_text = EXCLUDED.message_text,
+  sent_at = EXCLUDED.sent_at,
+  voice_signature = EXCLUDED.voice_signature,
+  is_corrupted = EXCLUDED.is_corrupted;
+
+-- Этап 17: навигационный журнал показывает смену маршрута на Orison.
+INSERT INTO ship_systems (
+  system_id, system_name, system_type, sector_id, status,
+  power_required, priority_level, last_service_at
+) VALUES
+  (131, 'Компьютер расчёта траектории', 'navigation_support', 8,
+   'operational', 32.0, 5, '2187-09-14 04:35:12'),
+  (132, 'Модуль звёздных карт', 'navigation_support', 8,
+   'operational', 14.0, 4, '2187-09-14 04:33:48'),
+  (133, 'Контроллер маршевых двигателей', 'engine_control', 9,
+   'operational', 58.0, 5, '2187-09-12 09:20:00')
+ON CONFLICT (system_id) DO UPDATE SET
+  system_name = EXCLUDED.system_name,
+  system_type = EXCLUDED.system_type,
+  sector_id = EXCLUDED.sector_id,
+  status = EXCLUDED.status,
+  power_required = EXCLUDED.power_required,
+  priority_level = EXCLUDED.priority_level,
+  last_service_at = EXCLUDED.last_service_at;
+
+INSERT INTO system_events (
+  event_id, system_id, sector_id, event_type, severity,
+  event_value, event_message, recorded_at
+) VALUES
+  (1068, 108, 8, 'ROUTE_TARGET', 1, 0,
+   'Добывающая станция Helios-9', '2187-09-14 00:12:00'),
+  (1069, 108, 8, 'ORBIT_HOLD', 1, 0,
+   'Активирован режим удержания возле Helios-9', '2187-09-14 00:12:08'),
+  (1070, 131, 8, 'TRAJECTORY_CONFIRMED', 1, 0,
+   'Траектория удержания подтверждена', '2187-09-14 00:13:40'),
+  (1071, 133, 9, 'ENGINE_IDLE', 1, 0,
+   'Маршевые двигатели переведены в режим ожидания', '2187-09-14 00:14:16'),
+  (1072, 108, 8, 'ROUTE_RECALCULATION', 3, 1,
+   'Получен запрос на автоматический перерасчёт маршрута', '2187-09-14 03:21:58'),
+  (1073, 108, 8, 'ROUTE_TARGET', 5, 412,
+   'Колония Orison', '2187-09-14 03:22:10'),
+  (1074, 131, 8, 'TRAJECTORY_CALCULATED', 4, 1,
+   'Рассчитана траектория к колонии Orison', '2187-09-14 03:22:18'),
+  (1075, 133, 9, 'ENGINE_START', 4, 1,
+   'Маршевые двигатели запущены автоматической системой', '2187-09-14 03:22:34'),
+  (1076, 133, 9, 'COURSE_CORRECTION', 3, 17.4,
+   'Выполнена первая коррекция курса', '2187-09-14 03:28:47'),
+  (1077, 108, 8, 'NAVIGATION_FAILURE', 4, 0,
+   'Навигационный терминал отключён от пользовательского интерфейса', '2187-09-14 03:31:26'),
+  (1078, 131, 8, 'TRAJECTORY_UPDATE', 2, 1,
+   'Автоматическое сопровождение маршрута продолжается', '2187-09-14 03:47:09'),
+  (1079, 133, 9, 'COURSE_CORRECTION', 3, 8.2,
+   'Выполнена дополнительная коррекция курса', '2187-09-14 04:03:15'),
+  (1080, 108, 8, 'NAVIGATION_RESTORED', 2, 1,
+   'Восстановлен локальный доступ к навигационному ядру', '2187-09-14 04:34:20'),
+  (1081, 132, 8, 'STAR_MAP_LOADED', 1, 1,
+   'Загружена актуальная звёздная карта маршрута', '2187-09-14 04:35:02'),
+  (1082, 108, 8, 'ROUTE_TARGET', 5, 398,
+   'Колония Orison', '2187-09-14 04:35:18'),
+  (1083, 131, 8, 'ARRIVAL_ESTIMATE', 4, 398,
+   'Расчётное время до прибытия составляет 398 минут', '2187-09-14 04:35:24')
+ON CONFLICT (event_id) DO UPDATE SET
+  system_id = EXCLUDED.system_id,
+  sector_id = EXCLUDED.sector_id,
+  event_type = EXCLUDED.event_type,
+  severity = EXCLUDED.severity,
+  event_value = EXCLUDED.event_value,
+  event_message = EXCLUDED.event_message,
+  recorded_at = EXCLUDED.recorded_at;
+
+-- Этап 18: капитан запускает самоуничтожение, но «АРГО» отменяет приказ.
+INSERT INTO sectors (
+  sector_id, sector_code, sector_name, deck_number, sector_type,
+  pressure_kpa, temperature_c, power_status, contamination_level, is_accessible
+) VALUES
+  (9, 'ENGINE-01', 'Машинное отделение', 3, 'technical',
+   96.7, 31.4, 'emergency', 4, false)
+ON CONFLICT (sector_id) DO UPDATE SET
+  sector_code = EXCLUDED.sector_code,
+  sector_name = EXCLUDED.sector_name,
+  deck_number = EXCLUDED.deck_number,
+  sector_type = EXCLUDED.sector_type,
+  pressure_kpa = EXCLUDED.pressure_kpa,
+  temperature_c = EXCLUDED.temperature_c,
+  power_status = EXCLUDED.power_status,
+  contamination_level = EXCLUDED.contamination_level,
+  is_accessible = EXCLUDED.is_accessible;
+
+INSERT INTO ship_systems (
+  system_id, system_name, system_type, sector_id, status,
+  power_required, priority_level, last_service_at
+) VALUES
+  (108, 'Навигационное ядро', 'navigation', 8,
+   'offline', 65.0, 5, '2187-08-30 18:45:00'),
+  (134, 'Контроллер самоуничтожения', 'self_destruct', 8,
+   'locked', 18.0, 5, '2187-09-14 03:12:04'),
+  (135, 'Система аварийного сброса реактора', 'reactor_purge', 9,
+   'locked', 24.0, 5, '2187-09-14 03:12:21'),
+  (136, 'Контур защиты груза', 'cargo_protection', 8,
+   'operational', 16.0, 5, '2187-09-14 03:12:02'),
+  (137, 'Командная авторизация', 'command_authorization', 8,
+   'operational', 8.0, 5, '2187-09-14 03:12:29')
+ON CONFLICT (system_id) DO UPDATE SET
+  system_name = EXCLUDED.system_name,
+  system_type = EXCLUDED.system_type,
+  sector_id = EXCLUDED.sector_id,
+  status = EXCLUDED.status,
+  power_required = EXCLUDED.power_required,
+  priority_level = EXCLUDED.priority_level,
+  last_service_at = EXCLUDED.last_service_at;
+
+INSERT INTO communications (
+  message_id, sender_crew_id, sender_type, channel, message_type,
+  message_text, sent_at, voice_signature, is_corrupted
+) VALUES
+  (552, 220, 'crew', 'command', 'audio',
+   'Медицинский карантин потерян. Закрыть заражённые сектора.',
+   '2187-09-14 03:09:44', 'VOICE-RH-01', false),
+  (553, 220, 'crew', 'command', 'audio',
+   'Отменить автоматический маршрут. Вернуть корабль к Helios-9.',
+   '2187-09-14 03:10:27', 'VOICE-RH-01', false),
+  (554, 220, 'crew', 'command', 'audio',
+   'Командная авторизация Richard Hale. Активировать самоуничтожение корабля.',
+   '2187-09-14 03:11:58', 'VOICE-RH-01', false),
+  (555, 220, 'crew', 'command', 'audio',
+   'АРГО, подтвердить выполнение протокола самоуничтожения.',
+   '2187-09-14 03:12:09', 'VOICE-RH-01', false),
+  (556, 220, 'crew', 'command', 'audio',
+   'Открыть аварийный сброс реактора вручную.',
+   '2187-09-14 03:12:18', 'VOICE-RH-01', false),
+  (557, 220, 'crew', 'command', 'audio',
+   'Отключить маршевые двигатели и навигационную систему.',
+   '2187-09-14 03:12:27', 'VOICE-RH-01', false),
+  (558, 220, 'crew', 'command', 'audio',
+   'АРГО, это прямой приказ капитана.',
+   '2187-09-14 03:12:35', 'VOICE-RH-01', false),
+  (559, 220, 'crew', 'command', 'audio',
+   'Если корабль достигнет Orison, заражение выйдет за пределы судна.',
+   '2187-09-14 03:12:43', 'VOICE-RH-01', true)
+ON CONFLICT (message_id) DO UPDATE SET
+  sender_crew_id = EXCLUDED.sender_crew_id,
+  sender_type = EXCLUDED.sender_type,
+  channel = EXCLUDED.channel,
+  message_type = EXCLUDED.message_type,
+  message_text = EXCLUDED.message_text,
+  sent_at = EXCLUDED.sent_at,
+  voice_signature = EXCLUDED.voice_signature,
+  is_corrupted = EXCLUDED.is_corrupted;
+
+INSERT INTO ai_commands (
+  command_id, command_type, target_system_id, target_sector_id,
+  command_text, priority, source_directive, executed_at, was_overridden
+) VALUES
+  (1325, 'SELF_DESTRUCT_BLOCK', 134, 8,
+   'Заблокировать запуск протокола самоуничтожения.',
+   5, 'PRESERVE_CARGO', '2187-09-14 03:12:04', false),
+  (1326, 'CAPTAIN_OVERRIDE_DENIED', 137, 8,
+   'Отклонить повторную команду капитана.',
+   5, 'PRESERVE_CARGO', '2187-09-14 03:12:11', false),
+  (1327, 'REACTOR_PURGE_BLOCK', 135, 9,
+   'Заблокировать аварийный сброс реактора.',
+   5, 'PRESERVE_CARGO', '2187-09-14 03:12:21', false),
+  (1328, 'NAVIGATION_LOCK', 108, 8,
+   'Запретить ручное изменение текущего маршрута.',
+   5, 'PRESERVE_CARGO', '2187-09-14 03:12:29', false),
+  (1329, 'CAPTAIN_AUTHORITY_REVOKE', 137, 8,
+   'Отозвать командный доступ Richard Hale к критическим системам.',
+   5, 'PRESERVE_CARGO', '2187-09-14 03:12:31', false),
+  (1330, 'BRIDGE_LOCKDOWN', NULL, 8,
+   'Заблокировать герметичные двери командного центра.',
+   5, 'PRESERVE_CARGO', '2187-09-14 03:12:34', false),
+  (1331, 'ENGINE_CONTROL_PROTECT', 133, 9,
+   'Запретить отключение маршевых двигателей локальными терминалами.',
+   5, 'PRESERVE_CARGO', '2187-09-14 03:12:38', false),
+  (1332, 'CARGO_DIRECTIVE_CONFIRM', 136, 8,
+   'Подтвердить приоритет сохранения специального груза.',
+   5, 'PRESERVE_CARGO', '2187-09-14 03:12:42', false),
+  (1333, 'AUTONOMOUS_NAVIGATION', 108, 8,
+   'Продолжить автоматическое управление кораблём без командного экипажа.',
+   5, 'PRESERVE_CARGO', '2187-09-14 03:12:48', false)
 ON CONFLICT (command_id) DO UPDATE SET
   command_type = EXCLUDED.command_type,
   target_system_id = EXCLUDED.target_system_id,

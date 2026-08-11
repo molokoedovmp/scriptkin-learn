@@ -38,6 +38,26 @@ export const metadata: Metadata = {
   title: "Скрипткин — учи SQL, проходя истории",
   description:
     "Скрипткин — интерактивная платформа для обучения SQL: выбирай историю с сюжетом и продвигай её настоящими SQL-запросами прямо в браузере.",
+  robots: {
+    index: true,
+    follow: true,
+    noarchive: false,
+    nosnippet: false,
+    noimageindex: false,
+    "max-snippet": -1,
+    "max-image-preview": "large",
+    "max-video-preview": -1,
+    googleBot: {
+      index: true,
+      follow: true,
+      noarchive: false,
+      nosnippet: false,
+      noimageindex: false,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
   icons: {
     icon: [{ url: "/logo.png", type: "image/png" }],
     shortcut: "/logo.png",

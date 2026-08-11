@@ -16,7 +16,7 @@ const HERO_STORY_SLUGS = [
 ];
 const HERO_STORY_IMAGES: Record<string, string> = {
   "midnight-express": "/how-it-works/express.png",
-  "prometheus-beginner": "/quests/prometheus/preview.png",
+  "prometheus-beginner": "/quests/prometheus/preview.webp",
   prometheus: "/how-it-works/prometheus.png",
 };
 const HERO_STORIES: HeroStory[] = HERO_STORY_SLUGS.flatMap((slug) => {
@@ -92,7 +92,7 @@ export default function HowItWorksPage() {
               <div className="order-1 lg:order-2">
                 <div className="overflow-hidden rounded-[20px] border-2 border-[#e4e4e4] bg-paper-white p-3 shadow-[0_18px_60px_rgba(0,0,0,0.08)]">
                   <Image
-                    src="/quests/midnight-express/preview.png"
+                    src="/quests/midnight-express/preview.webp"
                     alt="Обложка истории Полночный экспресс"
                     width={1677}
                     height={938}

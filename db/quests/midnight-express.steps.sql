@@ -29,7 +29,7 @@ INSERT INTO quests (slug, title, tagline, intro, finale, difficulty, steps_count
 Ирину Штерн задержали для допроса как посредницу в готовившейся продаже поддельной коллекции. Безбилетный проезд оформили отдельно. Когда она узнала, что в кофре подделки, то долго смеялась — Ланской обманул и её.
 
 Поезд прибыл в **Санкт-Петербург, на Московский вокзал**, в 06:55, точно по расписанию. На перроне Белова сказала только одно: «Я не жалею». Семь запросов — семь улик. **Дело раскрыто с помощью SQL.**',
-  'beginner', 7, '🚂', 'available', '/quests/midnight-express/preview.png', 'midnight_express', 1
+  'beginner', 7, '🚂', 'available', '/quests/midnight-express/preview.webp', 'midnight_express', 1
 )
 ON CONFLICT (slug) DO UPDATE SET
   title = EXCLUDED.title, tagline = EXCLUDED.tagline, intro = EXCLUDED.intro,

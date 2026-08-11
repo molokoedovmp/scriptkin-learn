@@ -12,7 +12,7 @@ DELETE FROM quest_scenes WHERE quest_slug = 'midnight-express';
 INSERT INTO quest_scenes (quest_slug, after_step, frame_order, image_url, speaker, text) VALUES
 
 -- СЦЕНА 1 «Ночной рейс»: два книжных кадра до первого урока
-('midnight-express', 0, 1, '/quests/midnight-express/scene1-1.png', NULL,
+('midnight-express', 0, 1, '/quests/midnight-express/scene1-1.webp', NULL,
  $frame$
 **Экспресс №13. До отправления — пять минут.**
 
@@ -30,7 +30,7 @@ INSERT INTO quest_scenes (quest_slug, after_step, frame_order, image_url, speake
 
 Не успеваешь. Колёса выстукивают что-то убаюкивающее, вагон покачивается, как лодка на длинной волне, — и сон накрывает тебя раньше, чем город отпускает поезд.
 $frame$),
-('midnight-express', 0, 2, '/quests/midnight-express/scene1-3.png', NULL,
+('midnight-express', 0, 2, '/quests/midnight-express/scene1-3.webp', NULL,
  $frame$
 **03:26. Стук, который отменяет отпуск.**
 
@@ -56,7 +56,7 @@ $frame$),
 $frame$),
 
 -- СЦЕНА 2 «Купе номер семь»: один кадр перед вторым уроком
-('midnight-express', 1, 1, '/quests/midnight-express/scene2-1.png', NULL,
+('midnight-express', 1, 1, '/quests/midnight-express/scene2-1.webp', NULL,
  $frame$
 **Купе 7. Два времени — и ни одного имени.**
 
@@ -78,7 +78,7 @@ $frame$),
 $frame$),
 
 -- СЦЕНА 3 «Маршрут в ночи»: перед уроком 3
-('midnight-express', 2, 1, '/quests/midnight-express/scene3.png', NULL,
+('midnight-express', 2, 1, '/quests/midnight-express/scene3.webp', NULL,
  $frame$
 **Две остановки. Два возможных пути для побега.**
 
@@ -104,7 +104,7 @@ $frame$),
 $frame$),
 
 -- СЦЕНА 4 «Журнал, который не спит»: перед уроком 4
-('midnight-express', 3, 1, '/quests/midnight-express/scene4.png', NULL,
+('midnight-express', 3, 1, '/quests/midnight-express/scene4.webp', NULL,
  $frame$
 **Проводник мог уснуть. Журнал — нет.**
 
@@ -134,7 +134,7 @@ $frame$),
 $frame$),
 
 -- СЦЕНА 5 «Багажная ведомость»: перед уроком 5
-('midnight-express', 4, 1, '/quests/midnight-express/scene5.png', NULL,
+('midnight-express', 4, 1, '/quests/midnight-express/scene5.webp', NULL,
  $frame$
 **Сначала цифры. Потом замки.**
 
@@ -154,7 +154,7 @@ $frame$),
 $frame$),
 
 -- СЦЕНА 6 «Двойное дно»: после урока 5, перед уроком 6
-('midnight-express', 5, 1, '/quests/midnight-express/scene6.png', NULL,
+('midnight-express', 5, 1, '/quests/midnight-express/scene6.webp', NULL,
  $frame$
 **Тяжёлая строка приводит к скрытой улике.**
 
@@ -176,7 +176,7 @@ $frame$),
 $frame$),
 
 -- СЦЕНА 7 «Без билета»: после урока 6, перед уроком 7
-('midnight-express', 6, 1, '/quests/midnight-express/scene7.png', NULL,
+('midnight-express', 6, 1, '/quests/midnight-express/scene7.webp', NULL,
  $frame$
 **Запрос находит человека без билета.**
 
@@ -192,7 +192,7 @@ $frame$),
 $frame$),
 
 -- СЦЕНА 8 «Последний маршрут»: после урока 7 и финал
-('midnight-express', 7, 1, '/quests/midnight-express/scene8-1.png', NULL,
+('midnight-express', 7, 1, '/quests/midnight-express/scene8-1.webp', NULL,
  $frame$
 **Последний разговор.**
 
@@ -206,7 +206,7 @@ $frame$),
 
 — Ланской устроил кражу и переложил вину на моего отца. Отец умер в колонии. Я вошла к Ланскому как врач, сделала укол и выбросила ампулу. Ошиблась только со временем. Но я не жалею.
 $frame$),
-('midnight-express', 7, 2, '/quests/midnight-express/scene8.png', NULL,
+('midnight-express', 7, 2, '/quests/midnight-express/scene8.webp', NULL,
  $frame$
 **06:55, Санкт-Петербург. Московский вокзал.**
 

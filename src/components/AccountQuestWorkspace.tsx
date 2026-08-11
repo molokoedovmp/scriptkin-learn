@@ -37,9 +37,36 @@ export async function AccountQuestWorkspace({ slug }: { slug: string }) {
         ? "quest-game-workspace midnight-quest-workspace"
         : ""
     : "";
+  const lessonBackgroundUrl = quest.slug.startsWith("prometheus")
+    ? "/quests/prometheus/background-lesson.webp"
+    : quest.slug === "midnight-express"
+      ? "/quests/midnight-express/bacground-lesson.webp"
+      : null;
+  const sceneBackgroundUrl = quest.slug.startsWith("prometheus")
+    ? "/quests/prometheus/background.webp"
+    : quest.slug === "midnight-express"
+      ? "/quests/midnight-express/background.webp"
+      : null;
 
   return (
     <AccountShell fullBleed={Boolean(workspaceTheme)}>
+      {playable && lessonBackgroundUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={lessonBackgroundUrl}
+          type="image/webp"
+          fetchPriority="high"
+        />
+      )}
+      {playable && sceneBackgroundUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={sceneBackgroundUrl}
+          type="image/webp"
+        />
+      )}
       <div
         className={`${
           playable ? "" : "mx-auto max-w-[800px] py-6 sm:py-10"

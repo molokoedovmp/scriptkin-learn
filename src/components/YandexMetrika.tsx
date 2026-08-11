@@ -1,6 +1,11 @@
+"use client";
+
 import Script from "next/script";
+import { useEffect, useState } from "react";
 
 const COUNTER_ID = 111507261;
+const CONSENT_KEY = "sk-cookie-consent";
+const CONSENT_EVENT = "sk-cookie-consent-changed";
 
 const metrikaScript = `
 (function(m,e,t,r,i,k,a){
@@ -14,16 +19,27 @@ ym(${COUNTER_ID}, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"da
 `;
 
 export function YandexMetrika() {
+  const [allowed, setAllowed] = useState(false);
+
+  useEffect(() => {
+    const savedChoice = window.localStorage.getItem(CONSENT_KEY);
+    // Старое значение было ISO-датой и означало принятие cookie.
+    setAllowed(Boolean(savedChoice && savedChoice !== "declined"));
+
+    function handleConsent(event: Event) {
+      const choice = (event as CustomEvent<{ choice?: string }>).detail?.choice;
+      setAllowed(choice === "accepted");
+    }
+
+    window.addEventListener(CONSENT_EVENT, handleConsent);
+    return () => window.removeEventListener(CONSENT_EVENT, handleConsent);
+  }, []);
+
+  if (!allowed) return null;
+
   return (
-    <>
-      <Script id="yandex-metrika" strategy="afterInteractive">
-        {metrikaScript}
-      </Script>
-      <noscript
-        dangerouslySetInnerHTML={{
-          __html: `<div><img src="https://mc.yandex.ru/watch/${COUNTER_ID}" style="position:absolute; left:-9999px;" alt="" /></div>`,
-        }}
-      />
-    </>
+    <Script id="yandex-metrika" strategy="afterInteractive">
+      {metrikaScript}
+    </Script>
   );
 }

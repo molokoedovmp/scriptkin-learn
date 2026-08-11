@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Quest, QuestSceneFrame, QuestStep } from "@/lib/types";
 import { DIFFICULTY_LABELS } from "@/lib/types";
@@ -261,9 +262,9 @@ export function QuestPlayer({
           isFullscreen={isFullscreen}
           textBackgroundUrl={
             quest.slug === "midnight-express"
-              ? "/quests/midnight-express/background.png"
+              ? "/quests/midnight-express/background.webp"
               : isPrometheusQuest
-                ? "/quests/prometheus/background.png"
+                ? "/quests/prometheus/background.webp"
               : undefined
           }
           textStyle={
@@ -386,9 +387,12 @@ function MapView({
             >
               <span className="relative block aspect-[16/10] overflow-hidden bg-[#101927]">
                 {done && preview?.imageUrl ? (
-                  <img
+                  <Image
                     src={preview.imageUrl}
                     alt=""
+                    fill
+                    sizes="(min-width: 1280px) 310px, (min-width: 768px) 33vw, 100vw"
+                    quality={70}
                     draggable={false}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                   />

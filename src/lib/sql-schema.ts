@@ -43,6 +43,16 @@ export const QUEST_SQL_SCHEMAS: Record<string, Record<string, string[]>> = {
       "event_message",
       "recorded_at",
     ],
+    ship_systems: [
+      "system_id",
+      "system_name",
+      "system_type",
+      "sector_id",
+      "status",
+      "power_required",
+      "priority_level",
+      "last_service_at",
+    ],
     crew_members: [
       "crew_id",
       "full_name",

@@ -240,7 +240,7 @@ export function SceneView({
         </button>
       )}
 
-      {/* На ПК текст занимает правую половину, background.png лежит под ним. */}
+      {/* На ПК текст занимает правую половину, WebP-фон лежит под ним. */}
       <div className="relative isolate z-0 flex min-h-0 shrink-0 justify-center overflow-hidden sm:absolute sm:inset-x-0 sm:bottom-0 lg:relative lg:inset-auto lg:h-full lg:self-stretch lg:items-stretch">
         <div
           className="absolute inset-0 bg-cover bg-center"

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Quest } from "@/lib/types";
 import { DIFFICULTY_LABELS } from "@/lib/types";
@@ -9,7 +10,13 @@ const difficultyStyles: Record<Quest["difficulty"], string> = {
   advanced: "bg-night-ink text-paper-white",
 };
 
-export function QuestCard({ quest }: { quest: Quest }) {
+export function QuestCard({
+  quest,
+  priority = false,
+}: {
+  quest: Quest;
+  priority?: boolean;
+}) {
   const isAvailable = quest.status === "available";
   const isPaid = quest.priceKopecks > 0;
 
@@ -19,10 +26,13 @@ export function QuestCard({ quest }: { quest: Quest }) {
       className="group relative isolate min-h-[470px] overflow-hidden rounded-[24px] bg-night-ink shadow-[0_16px_45px_rgba(15,23,42,0.16)] ring-1 ring-black/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(15,23,42,0.24)]"
     >
       {quest.previewUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={quest.previewUrl}
           alt={`Обложка истории «${quest.title}»`}
+          fill
+          sizes="(min-width: 1024px) 380px, (min-width: 768px) 50vw, 100vw"
+          quality={76}
+          priority={priority}
           className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
         />
       ) : (

@@ -10,6 +10,10 @@ const escapedCanonicalHost = canonicalHost.replace(/\./g, "\\.");
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  images: {
+    formats: ["image/webp"],
+    minimumCacheTTL: 2_678_400,
+  },
   async redirects() {
     return [
       {
@@ -40,6 +44,12 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
+    const imageCacheHeaders = [
+      {
+        key: "Cache-Control",
+        value: "public, max-age=604800, stale-while-revalidate=2592000",
+      },
+    ];
     const noIndexHeaders = [
       {
         key: "X-Robots-Tag",
@@ -48,6 +58,7 @@ const nextConfig: NextConfig = {
     ];
 
     return [
+      { source: "/quests/:path*.webp", headers: imageCacheHeaders },
       { source: "/admin/:path*", headers: noIndexHeaders },
       { source: "/account/:path*", headers: noIndexHeaders },
       { source: "/api/:path*", headers: noIndexHeaders },

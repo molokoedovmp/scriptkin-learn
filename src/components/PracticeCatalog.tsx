@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getPracticeDatabases } from "@/lib/practice";
 import { Breadcrumbs } from "./Breadcrumbs";
@@ -66,7 +67,7 @@ export function PracticeCatalog({
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {databases.map((database) => {
+        {databases.map((database, index) => {
           const easy = database.tasks.filter(
             (task) => task.difficulty === "easy"
           ).length;
@@ -84,12 +85,17 @@ export function PracticeCatalog({
               className="group overflow-hidden rounded-xl border-2 border-[#e5e5e5] bg-paper-white transition-colors hover:border-eager-green"
             >
               {database.previewUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <span className="relative block aspect-video overflow-hidden border-b-2 border-[#e5e5e5]">
+                <Image
                   src={database.previewUrl}
                   alt={`Обложка базы заданий «${database.title}»`}
-                  className="aspect-video w-full border-b-2 border-[#e5e5e5] object-cover"
+                  fill
+                  sizes="(min-width: 1024px) 380px, (min-width: 768px) 50vw, 100vw"
+                  quality={76}
+                  priority={index < 2}
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 />
+                </span>
               ) : (
                 <div className="flex aspect-video items-center justify-center border-b-2 border-[#e5e5e5] bg-night-ink text-7xl">
                   {database.emoji}
