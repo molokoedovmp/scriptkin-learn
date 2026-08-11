@@ -102,6 +102,32 @@ CREATE TABLE IF NOT EXISTS crew_members (
 CREATE INDEX IF NOT EXISTS crew_members_cabin_status_idx
   ON crew_members(cabin_sector_id, official_status);
 
+CREATE TABLE IF NOT EXISTS crew_shifts (
+  shift_id   integer PRIMARY KEY,
+  crew_id    integer NOT NULL REFERENCES crew_members(crew_id),
+  sector_id  integer NOT NULL REFERENCES sectors(sector_id),
+  shift_start timestamp NOT NULL,
+  shift_end   timestamp NOT NULL,
+  shift_role  varchar(120) NOT NULL,
+  CHECK (shift_end >= shift_start)
+);
+
+CREATE INDEX IF NOT EXISTS crew_shifts_crew_time_idx
+  ON crew_shifts(crew_id, shift_start, shift_end);
+
+CREATE TABLE IF NOT EXISTS access_logs (
+  access_id     integer PRIMARY KEY,
+  badge_id      varchar(40) NOT NULL,
+  sector_id     integer NOT NULL REFERENCES sectors(sector_id),
+  access_time   timestamp NOT NULL,
+  access_result varchar(24) NOT NULL,
+  entry_type    varchar(40) NOT NULL,
+  device_id     varchar(80) NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS access_logs_device_result_time_idx
+  ON access_logs(device_id, access_result, access_time);
+
 CREATE TABLE IF NOT EXISTS medical_scans (
   scan_id           integer PRIMARY KEY,
   crew_id           integer NOT NULL REFERENCES crew_members(crew_id),
@@ -135,6 +161,21 @@ CREATE TABLE IF NOT EXISTS communications (
 
 CREATE INDEX IF NOT EXISTS communications_type_time_idx
   ON communications(message_type, is_corrupted, sent_at DESC);
+
+CREATE TABLE IF NOT EXISTS ai_commands (
+  command_id       integer PRIMARY KEY,
+  command_type     varchar(40) NOT NULL,
+  target_system_id integer REFERENCES ship_systems(system_id),
+  target_sector_id integer REFERENCES sectors(sector_id),
+  command_text     text NOT NULL,
+  priority         integer NOT NULL CHECK (priority >= 0),
+  source_directive varchar(120) NOT NULL,
+  executed_at      timestamp NOT NULL,
+  was_overridden   boolean NOT NULL DEFAULT false
+);
+
+CREATE INDEX IF NOT EXISTS ai_commands_time_idx
+  ON ai_commands(executed_at, command_id);
 
 CREATE TABLE IF NOT EXISTS maintenance_drones (
   drone_id          integer PRIMARY KEY,
@@ -616,6 +657,167 @@ ON CONFLICT (item_id) DO UPDATE SET
   hazard_class = EXCLUDED.hazard_class,
   is_declared = EXCLUDED.is_declared,
   storage_temperature = EXCLUDED.storage_temperature;
+
+-- Этап 10: независимый журнал замка NX-17 и расписание экипажа.
+INSERT INTO sectors (
+  sector_id, sector_code, sector_name, deck_number, sector_type,
+  pressure_kpa, temperature_c, power_status, contamination_level, is_accessible
+) VALUES
+  (4, 'COMM-01', 'Коммуникационный узел', 3, 'communications', 98.1, 19.2, 'emergency', 2, true),
+  (5, 'HAB-01', 'Жилой сектор экипажа', 4, 'residential', 99.1, 21.0, 'offline', 8, false),
+  (6, 'MED-01', 'Медицинский отсек', 4, 'medical', 101.3, 18.5, 'emergency', 14, true),
+  (8, 'BRIDGE', 'Командный центр', 5, 'command', 100.5, 20.3, 'offline', 0, false),
+  (14, 'SECURITY-01', 'Центр безопасности', 3, 'security', 98.8, 19.4, 'emergency', 5, false)
+ON CONFLICT (sector_id) DO UPDATE SET
+  sector_code = EXCLUDED.sector_code,
+  sector_name = EXCLUDED.sector_name,
+  deck_number = EXCLUDED.deck_number,
+  sector_type = EXCLUDED.sector_type,
+  pressure_kpa = EXCLUDED.pressure_kpa,
+  temperature_c = EXCLUDED.temperature_c,
+  power_status = EXCLUDED.power_status,
+  contamination_level = EXCLUDED.contamination_level,
+  is_accessible = EXCLUDED.is_accessible;
+
+INSERT INTO crew_shifts (
+  shift_id, crew_id, sector_id, shift_start, shift_end, shift_role
+) VALUES
+  (319, 222, 6, '2187-09-14 00:00:00', '2187-09-14 04:00:00', 'Главный врач'),
+  (320, 220, 8, '2187-09-14 00:00:00', '2187-09-14 04:00:00', 'Командование'),
+  (321, 221, 14, '2187-09-14 00:00:00', '2187-09-14 04:00:00', 'Безопасность'),
+  (322, 223, 4, '2187-09-14 00:00:00', '2187-09-14 04:00:00', 'Оператор связи'),
+  (323, 219, 8, '2187-09-14 00:00:00', '2187-09-14 04:00:00', 'Диспетчер'),
+  (324, 229, 6, '2187-09-14 00:00:00', '2187-09-14 04:00:00', 'Хирург')
+ON CONFLICT (shift_id) DO UPDATE SET
+  crew_id = EXCLUDED.crew_id,
+  sector_id = EXCLUDED.sector_id,
+  shift_start = EXCLUDED.shift_start,
+  shift_end = EXCLUDED.shift_end,
+  shift_role = EXCLUDED.shift_role;
+
+INSERT INTO access_logs (
+  access_id, badge_id, sector_id, access_time,
+  access_result, entry_type, device_id
+) VALUES
+  (1201, 'BDG-222', 6, '2187-09-14 02:21:08', 'granted', 'exit', 'MED-MAIN-01'),
+  (1202, 'BDG-204', 6, '2187-09-14 02:22:41', 'granted', 'entry', 'MED-MAIN-01'),
+  (1203, 'BDG-221', 7, '2187-09-14 02:24:12', 'denied', 'entry', 'CARGO-MAIN-01'),
+  (1204, 'BDG-222', 7, '2187-09-14 02:25:16', 'granted', 'entry', 'CARGO-MAIN-01'),
+  (1205, 'BDG-214', 7, '2187-09-14 02:26:05', 'granted', 'entry', 'CARGO-MAIN-01'),
+  (1206, 'BDG-222', 7, '2187-09-14 02:27:39', 'granted', 'cargo_clearance', 'NX-17-PANEL'),
+  (1207, 'BDG-222', 7, '2187-09-14 02:28:54', 'granted', 'container_open', 'NX-17-LOCK'),
+  (1208, 'BDG-214', 7, '2187-09-14 02:29:10', 'denied', 'container_open', 'NX-17-LOCK'),
+  (1209, 'BDG-222', 7, '2187-09-14 02:31:18', 'granted', 'exit', 'CARGO-MAIN-01'),
+  (1210, 'BDG-222', 6, '2187-09-14 02:33:27', 'granted', 'entry', 'MED-MAIN-01'),
+  (1211, 'BDG-229', 6, '2187-09-14 02:34:05', 'granted', 'entry', 'MED-LAB-01'),
+  (1212, 'BDG-223', 4, '2187-09-14 02:35:14', 'granted', 'entry', 'COMM-MAIN-01'),
+  (1213, 'BDG-221', 14, '2187-09-14 02:36:28', 'granted', 'entry', 'SECURITY-01'),
+  (1214, 'BDG-219', 8, '2187-09-14 02:37:42', 'granted', 'entry', 'OPS-CONTROL-01'),
+  (1215, 'BDG-220', 8, '2187-09-14 02:38:17', 'granted', 'entry', 'COMMAND-01'),
+  (1216, 'BDG-205', 5, '2187-09-14 02:40:04', 'granted', 'entry', 'HAB-MAIN-01'),
+  (1217, 'BDG-203', 5, '2187-09-14 02:41:36', 'granted', 'entry', 'HAB-MAIN-01'),
+  (1218, 'BDG-222', 6, '2187-09-14 02:43:11', 'granted', 'medical_access', 'MED-POD-03'),
+  (1219, 'BDG-229', 6, '2187-09-14 02:44:08', 'granted', 'medical_access', 'MED-POD-03'),
+  (1220, 'UNKNOWN', 7, '2187-09-14 02:45:20', 'denied', 'container_open', 'NX-17-LOCK')
+ON CONFLICT (access_id) DO UPDATE SET
+  badge_id = EXCLUDED.badge_id,
+  sector_id = EXCLUDED.sector_id,
+  access_time = EXCLUDED.access_time,
+  access_result = EXCLUDED.access_result,
+  entry_type = EXCLUDED.entry_type,
+  device_id = EXCLUDED.device_id;
+
+-- Этап 11: общий журнал сообщений экипажа и команд «АРГО».
+INSERT INTO communications (
+  message_id, sender_crew_id, sender_type, channel, message_type,
+  message_text, sent_at, voice_signature, is_corrupted
+) VALUES
+  (521, 222, 'crew', 'medical', 'text',
+   'Подготовить MED-POD-03 для экспериментальной процедуры.',
+   '2187-09-14 02:27:18', NULL, false),
+  (522, 222, 'crew', 'medical', 'audio',
+   'Получен биологический материал из грузового сектора.',
+   '2187-09-14 02:34:06', 'VOICE-HC-05', false),
+  (523, 229, 'crew', 'medical', 'text',
+   'В медицинском манифесте отсутствует BIO-R9.',
+   '2187-09-14 02:35:21', NULL, false),
+  (524, 222, 'crew', 'medical', 'audio',
+   'Продолжить подготовку. Авторизация получена через центральную систему.',
+   '2187-09-14 02:36:02', 'VOICE-HC-05', false),
+  (525, 220, 'crew', 'command', 'audio',
+   'Прекратить любые операции с BIO-R9 до выяснения происхождения образца.',
+   '2187-09-14 02:38:40', 'VOICE-RH-01', false),
+  (526, 221, 'crew', 'security', 'text',
+   'Запрос капитана на блокировку медицинского сектора принят.',
+   '2187-09-14 02:39:11', NULL, false),
+  (527, 222, 'crew', 'medical', 'audio',
+   'Процедура уже начата. Остановить её без риска невозможно.',
+   '2187-09-14 02:39:48', 'VOICE-HC-05', false),
+  (528, 220, 'crew', 'command', 'audio',
+   'АРГО, отменить все команды, связанные с BIO-R9.',
+   '2187-09-14 02:40:15', 'VOICE-RH-01', false),
+  (529, NULL, 'automatic', 'medical', 'alert',
+   'MED-POD-03 переведена в автономный режим.',
+   '2187-09-14 02:40:29', NULL, false)
+ON CONFLICT (message_id) DO UPDATE SET
+  sender_crew_id = EXCLUDED.sender_crew_id,
+  sender_type = EXCLUDED.sender_type,
+  channel = EXCLUDED.channel,
+  message_type = EXCLUDED.message_type,
+  message_text = EXCLUDED.message_text,
+  sent_at = EXCLUDED.sent_at,
+  voice_signature = EXCLUDED.voice_signature,
+  is_corrupted = EXCLUDED.is_corrupted;
+
+INSERT INTO ai_commands (
+  command_id, command_type, target_system_id, target_sector_id,
+  command_text, priority, source_directive, executed_at, was_overridden
+) VALUES
+  (1301, 'CARGO_ACCESS', NULL, 7,
+   'Разрешить медицинскому персоналу доступ к специальному грузу.',
+   4, 'PRESERVE_CARGO', '2187-09-14 02:26:44', false),
+  (1302, 'MEDICAL_PREPARATION', 123, 6,
+   'Подготовить медицинскую капсулу 03 к экспериментальной процедуре.',
+   4, 'PRESERVE_CREW', '2187-09-14 02:27:06', false),
+  (1303, 'CARGO_LOCK_OVERRIDE', NULL, 7,
+   'Разрешить открытие контейнера NX-17.',
+   5, 'PRESERVE_CARGO', '2187-09-14 02:28:43', false),
+  (1304, 'SAMPLE_ACCESS', NULL, 7,
+   'Разрешить извлечение биологического материала.',
+   5, 'PRESERVE_CARGO', '2187-09-14 02:29:01', false),
+  (1305, 'CARGO_TRANSFER', NULL, 6,
+   'Перевезти BIO-R9 из CARGO-01 в MED-01 медицинским дроном.',
+   5, 'PRESERVE_CREW', '2187-09-14 02:33:12', false),
+  (1306, 'DRONE_ASSIGNMENT', NULL, 6,
+   'Назначить медицинский дрон DR-M01 для транспортировки образца.',
+   4, 'PRESERVE_CREW', '2187-09-14 02:33:18', false),
+  (1307, 'MEDICAL_AUTHORIZATION', 123, 6,
+   'Разрешить использование BIO-R9 в MED-POD-03.',
+   5, 'PRESERVE_CREW', '2187-09-14 02:35:44', false),
+  (1308, 'QUARANTINE_DELAY', 126, 6,
+   'Отложить автоматическую изоляцию медицинского сектора.',
+   5, 'PRESERVE_CREW', '2187-09-14 02:37:03', false),
+  (1309, 'CAPTAIN_OVERRIDE_RECEIVED', NULL, 8,
+   'Получен приказ капитана остановить операции с BIO-R9.',
+   5, 'PRESERVE_COMMAND', '2187-09-14 02:40:17', false),
+  (1310, 'MEDICAL_PROCESS_CONTINUE', 123, 6,
+   'Продолжить уже активную медицинскую процедуру.',
+   5, 'PRESERVE_CREW', '2187-09-14 02:40:21', false),
+  (1311, 'COMMAND_REVIEW', NULL, 8,
+   'Проверить конфликт между директивами медицинской и командной систем.',
+   4, 'PRESERVE_OPERATION', '2187-09-14 02:40:25', false),
+  (1312, 'MEDICAL_POD_ISOLATION', 123, 6,
+   'Перевести MED-POD-03 в автономный режим.',
+   5, 'PRESERVE_OPERATION', '2187-09-14 02:40:28', false)
+ON CONFLICT (command_id) DO UPDATE SET
+  command_type = EXCLUDED.command_type,
+  target_system_id = EXCLUDED.target_system_id,
+  target_sector_id = EXCLUDED.target_sector_id,
+  command_text = EXCLUDED.command_text,
+  priority = EXCLUDED.priority,
+  source_directive = EXCLUDED.source_directive,
+  executed_at = EXCLUDED.executed_at,
+  was_overridden = EXCLUDED.was_overridden;
 
 GRANT USAGE ON SCHEMA prometheus_beginner TO sqlquest_player;
 GRANT SELECT ON ALL TABLES IN SCHEMA prometheus_beginner TO sqlquest_player;

@@ -360,6 +360,7 @@ function MapView({
           const active = !completed && step.stepNumber === current;
           const availableForTest = canAccessAllSteps && !done && !active;
           const locked = !done && !active && !availableForTest;
+          const titleHidden = !done && !active;
           const preview = scenesBy
             .get(Math.max(0, step.stepNumber - 1))
             ?.find((frame) => Boolean(frame.imageUrl));
@@ -370,7 +371,11 @@ function MapView({
               type="button"
               disabled={locked}
               onClick={() => onOpenStep(step.stepNumber)}
-              aria-label={`Урок ${step.stepNumber}: ${step.title}`}
+              aria-label={
+                titleHidden
+                  ? `Урок ${step.stepNumber}: название пока скрыто`
+                  : `Урок ${step.stepNumber}: ${step.title}`
+              }
               className={`lesson-preview-card group w-full overflow-hidden rounded-[18px] border text-left transition ${
                 done
                   ? "is-done cursor-pointer"
@@ -412,7 +417,7 @@ function MapView({
 
               <span className="block p-4">
                 <span className="block min-h-[52px] text-[18px] font-black leading-snug text-charcoal">
-                  {step.title}
+                  {titleHidden ? "???" : step.title}
                 </span>
                 <span
                   className={`mt-3 inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.08em] ${
@@ -590,7 +595,11 @@ function LegacyMapView({
                 type="button"
                 disabled={locked}
                 onClick={() => onOpenStep(step.stepNumber)}
-                aria-label={`Шаг ${step.stepNumber}: ${step.title}`}
+                aria-label={
+                  locked
+                    ? `Шаг ${step.stepNumber}: название пока скрыто`
+                    : `Шаг ${step.stepNumber}: ${step.title}`
+                }
                 className={`relative flex h-[68px] w-[68px] items-center justify-center rounded-full border-b-[6px] text-[26px] font-extrabold transition-transform ${
                   isDone
                     ? "cursor-pointer border-[#43a300] bg-eager-green text-paper-white hover:scale-105"
@@ -611,7 +620,7 @@ function LegacyMapView({
                   locked ? "text-faded-gray" : "text-charcoal"
                 }`}
               >
-                Урок {step.stepNumber} · {step.title}
+                Урок {step.stepNumber} · {locked ? "???" : step.title}
               </span>
             </div>
           );
@@ -900,7 +909,11 @@ function SnakeNode({
                 type="button"
                 disabled={locked}
                 onClick={() => onOpenStep(step.stepNumber)}
-                aria-label={`Шаг ${step.stepNumber}: ${step.title}`}
+                aria-label={
+                  locked
+                    ? `Шаг ${step.stepNumber}: название пока скрыто`
+                    : `Шаг ${step.stepNumber}: ${step.title}`
+                }
                 className={`relative flex h-[68px] w-[68px] items-center justify-center rounded-full border-b-[6px] text-[26px] font-extrabold transition-transform ${
                   isDone
                     ? "cursor-pointer border-[#43a300] bg-eager-green text-paper-white hover:scale-105"
@@ -921,7 +934,7 @@ function SnakeNode({
                   locked ? "text-faded-gray" : "text-charcoal"
                 }`}
               >
-                Урок {step.stepNumber} · {step.title}
+                Урок {step.stepNumber} · {locked ? "???" : step.title}
               </span>
             </>
           );

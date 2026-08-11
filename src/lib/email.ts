@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { absoluteUrl } from "@/lib/site";
 
 /**
  * Отправка писем через Resend (https://resend.com).
@@ -22,7 +23,6 @@ function getResend(): Resend | null {
 }
 
 const FROM = process.env.EMAIL_FROM ?? "Скрипткин <onboarding@resend.dev>";
-const SITE_URL = (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
 
 export async function sendEmail({
   to,
@@ -60,7 +60,7 @@ export function sendWelcomeEmail(to: string, name: string): Promise<void> {
           Каждый правильный SQL-запрос открывает следующую главу.
         </p>
         <p style="margin: 24px 0;">
-          <a href="${SITE_URL}/quests/midnight-express"
+          <a href="${absoluteUrl("/stories/midnight-express")}"
              style="background: #58cc02; color: #ffffff; text-decoration: none; font-weight: bold; padding: 12px 24px; border-radius: 12px; display: inline-block;">
             НАЧАТЬ РАССЛЕДОВАНИЕ
           </a>
@@ -85,7 +85,9 @@ export async function sendEmailVerificationEmail(
     return false;
   }
 
-  const verificationUrl = `${SITE_URL}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
+  const verificationUrl = absoluteUrl(
+    `/api/auth/verify-email?token=${encodeURIComponent(token)}`
+  );
   try {
     const { error } = await client.emails.send({
       from: FROM,
@@ -128,7 +130,9 @@ export function sendPasswordResetEmail(
   name: string,
   token: string
 ): Promise<void> {
-  const resetUrl = `${SITE_URL}/reset-password?token=${encodeURIComponent(token)}`;
+  const resetUrl = absoluteUrl(
+    `/reset-password?token=${encodeURIComponent(token)}`
+  );
   return sendEmail({
     to,
     subject: "Восстановление пароля — Скрипткин",

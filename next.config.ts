@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://scriptkin.ru"
+  process.env.SITE_URL ??
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://scriptkin.ru"
 ).replace(/\/+$/, "");
 const canonicalHost = new URL(siteUrl).hostname;
 const escapedCanonicalHost = canonicalHost.replace(/\./g, "\\.");

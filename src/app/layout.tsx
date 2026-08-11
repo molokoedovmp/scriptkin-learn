@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Nunito } from "next/font/google";
 import { CookieConsent } from "@/components/CookieConsent";
+import { YandexMetrika } from "@/components/YandexMetrika";
 import {
   OrganizationJsonLd,
   WebSiteJsonLd,
@@ -60,6 +61,7 @@ export default function RootLayout({
         <OrganizationJsonLd />
         <WebSiteJsonLd />
         {children}
+        <YandexMetrika />
         <CookieConsent />
       </body>
     </html>

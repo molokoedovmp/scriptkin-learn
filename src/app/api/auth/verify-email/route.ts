@@ -3,19 +3,20 @@ import { createSession, SESSION_COOKIE, sessionCookieOptions } from "@/lib/auth"
 import { getAppPool, isDatabaseConfigured } from "@/lib/db";
 import { sendWelcomeEmail } from "@/lib/email";
 import { hashEmailVerificationToken } from "@/lib/email-verification";
+import { absoluteUrl } from "@/lib/site";
 
-function verificationRedirect(req: Request, status: string) {
+function verificationRedirect(status: string) {
   return NextResponse.redirect(
-    new URL(`/verify-email?status=${encodeURIComponent(status)}`, req.url)
+    absoluteUrl(`/verify-email?status=${encodeURIComponent(status)}`)
   );
 }
 
 export async function GET(req: Request) {
-  if (!isDatabaseConfigured()) return verificationRedirect(req, "error");
+  if (!isDatabaseConfigured()) return verificationRedirect("error");
 
   const token = new URL(req.url).searchParams.get("token") ?? "";
   if (token.length < 20 || token.length > 200) {
-    return verificationRedirect(req, "invalid");
+    return verificationRedirect("invalid");
   }
 
   const tokenHash = hashEmailVerificationToken(token);
@@ -41,7 +42,7 @@ export async function GET(req: Request) {
 
     if (!rows[0]) {
       await client.query("ROLLBACK");
-      return verificationRedirect(req, "invalid");
+      return verificationRedirect("invalid");
     }
 
     user = { id: rows[0].user_id, email: rows[0].email, name: rows[0].name };
@@ -66,19 +67,19 @@ export async function GET(req: Request) {
   } catch (error) {
     await client.query("ROLLBACK").catch(() => {});
     console.error("Email verification failed:", error);
-    return verificationRedirect(req, "error");
+    return verificationRedirect("error");
   } finally {
     client.release();
   }
 
-  if (!user) return verificationRedirect(req, "error");
+  if (!user) return verificationRedirect("error");
 
   const session = await createSession(user.id);
   sendWelcomeEmail(user.email, user.name).catch((error) =>
     console.error("Welcome email failed:", error)
   );
 
-  const response = verificationRedirect(req, "success");
+  const response = verificationRedirect("success");
   response.cookies.set(
     SESSION_COOKIE,
     session.token,
