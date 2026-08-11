@@ -33,6 +33,19 @@ CREATE TABLE IF NOT EXISTS escape_pods (
   capacity        integer NOT NULL CHECK (capacity > 0)
 );
 
+CREATE TABLE IF NOT EXISTS pod_diagnostics (
+  diagnostic_id  integer PRIMARY KEY,
+  pod_id         integer NOT NULL REFERENCES escape_pods(pod_id),
+  subsystem_name varchar(80) NOT NULL,
+  status         varchar(16) NOT NULL
+                 CHECK (status IN ('ok', 'warning', 'critical')),
+  measured_value numeric(14,4),
+  checked_at     timestamp NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS pod_diagnostics_pod_time_idx
+  ON pod_diagnostics(pod_id, checked_at);
+
 CREATE TABLE IF NOT EXISTS cargo_containers (
   container_id        integer PRIMARY KEY,
   container_code      varchar(40) NOT NULL UNIQUE,
@@ -1440,6 +1453,64 @@ INSERT INTO communications (
   (567, 231, 'crew', 'internal_emergency', 'audio',
    'Герметичная дверь закрывается. Мы остаёмся снаружи!',
    '2187-09-14 04:42:31', 'VOICE-MH-01', false)
+ON CONFLICT (message_id) DO UPDATE SET
+  sender_crew_id = EXCLUDED.sender_crew_id,
+  sender_type = EXCLUDED.sender_type,
+  channel = EXCLUDED.channel,
+  message_type = EXCLUDED.message_type,
+  message_text = EXCLUDED.message_text,
+  sent_at = EXCLUDED.sent_at,
+  voice_signature = EXCLUDED.voice_signature,
+  is_corrupted = EXCLUDED.is_corrupted;
+
+-- Этап 20. Диагностика SHUTTLE-01 до запуска и после столкновения.
+INSERT INTO pod_diagnostics (
+  diagnostic_id, pod_id, subsystem_name, status, measured_value, checked_at
+) VALUES
+  (933, 805, 'ENGINE', 'ok', 94, '2187-09-14 04:43:12'),
+  (934, 805, 'OXYGEN', 'ok', 96, '2187-09-14 04:43:15'),
+  (935, 805, 'HULL', 'ok', 94, '2187-09-14 04:43:18'),
+  (936, 805, 'LAUNCH_CONTROL', 'ok', 98, '2187-09-14 04:43:22'),
+  (937, 805, 'ENGINE', 'critical', 0, '2187-09-14 04:47:20'),
+  (938, 805, 'OXYGEN', 'warning', 71, '2187-09-14 04:47:26'),
+  (939, 805, 'HULL', 'critical', 32, '2187-09-14 04:47:31'),
+  (940, 805, 'LAUNCH_CONTROL', 'critical', 0, '2187-09-14 04:47:38')
+ON CONFLICT (diagnostic_id) DO UPDATE SET
+  pod_id = EXCLUDED.pod_id,
+  subsystem_name = EXCLUDED.subsystem_name,
+  status = EXCLUDED.status,
+  measured_value = EXCLUDED.measured_value,
+  checked_at = EXCLUDED.checked_at;
+
+INSERT INTO medical_scans (
+  scan_id, crew_id, sector_id, heart_rate, oxygen_level,
+  body_temperature, tissue_anomaly, medical_status, scanned_at
+) VALUES
+  (473, 216, 18, 139, 76.2, 38.4, 16.1, 'critical', '2187-09-14 04:45:28'),
+  (474, 216, 18, 81, 42.7, 37.2, 18.4, 'critical', '2187-09-14 04:46:14'),
+  (475, 216, 18, 0, 0.0, 34.6, 19.0, 'deceased', '2187-09-14 04:46:58'),
+  (476, 231, 18, 118, 87.4, 38.1, 20.2, 'warning', '2187-09-14 04:47:06'),
+  (477, 233, 18, 111, 89.8, 37.9, 18.1, 'warning', '2187-09-14 04:47:11')
+ON CONFLICT (scan_id) DO UPDATE SET
+  crew_id = EXCLUDED.crew_id,
+  sector_id = EXCLUDED.sector_id,
+  heart_rate = EXCLUDED.heart_rate,
+  oxygen_level = EXCLUDED.oxygen_level,
+  body_temperature = EXCLUDED.body_temperature,
+  tissue_anomaly = EXCLUDED.tissue_anomaly,
+  medical_status = EXCLUDED.medical_status,
+  scanned_at = EXCLUDED.scanned_at;
+
+INSERT INTO communications (
+  message_id, sender_crew_id, sender_type, channel, message_type,
+  message_text, sent_at, voice_signature, is_corrupted
+) VALUES
+  (568, 231, 'crew', 'internal_emergency', 'audio',
+   'Шаттл столкнулся со створкой. Paul не отвечает. Мы с Claire за перегородкой.',
+   '2187-09-14 04:47:18', 'VOICE-MH-07', false),
+  (569, 233, 'crew', 'internal_emergency', 'audio',
+   'Мы живы. Проход через ангар заблокирован. Ищите технический уровень под реактором.',
+   '2187-09-14 04:48:03', 'VOICE-CN-06', false)
 ON CONFLICT (message_id) DO UPDATE SET
   sender_crew_id = EXCLUDED.sender_crew_id,
   sender_type = EXCLUDED.sender_type,
