@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { QuestCard } from "@/components/QuestCard";
 import { DEMO_QUESTS } from "@/lib/quests";
 
 export const metadata: Metadata = {
-  title: "Истории — Скрипткин",
-  description: "Каталог SQL-историй: выбери сюжет и уровень сложности.",
+  title: "Интерактивные истории для изучения SQL — Скрипткин",
+  description:
+    "Выберите сюжетную историю и изучайте SQL на практике: расследуйте события, работайте с PostgreSQL и открывайте главы правильными запросами.",
+  alternates: { canonical: "/quests" },
 };
 
 export default function QuestsPage() {
@@ -14,14 +17,20 @@ export default function QuestsPage() {
     if (first.status === second.status) return 0;
     return first.status === "available" ? -1 : 1;
   });
-
   return (
     <>
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-[1200px] px-6 py-16">
+          <Breadcrumbs
+            className="mb-6"
+            items={[
+              { name: "Главная", path: "/" },
+              { name: "Истории для изучения SQL", path: "/quests" },
+            ]}
+          />
           <h1 className="mb-4 font-feather text-heading font-extrabold text-eager-green">
-            истории
+            истории для изучения SQL
           </h1>
           <p className="mb-12 max-w-[480px] text-body font-medium text-pencil-gray">
             Каждая история — законченный сюжет со своей базой данных.

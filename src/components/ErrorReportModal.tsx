@@ -21,7 +21,7 @@ export function ErrorReportModal({
     "Источник: редактор истории",
     `История: ${questTitle} (${questSlug})`,
     `Урок ${stepNumber}: ${stepTitle}`,
-    `Страница: /quests/${questSlug}`,
+    `Страница: /account/quests/${questSlug}`,
   ].join("\n");
 
   useEffect(() => {

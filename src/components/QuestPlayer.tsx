@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import type { Quest, QuestSceneFrame, QuestStep } from "@/lib/types";
 import { DIFFICULTY_LABELS } from "@/lib/types";
 import { Button } from "./Button";
@@ -39,6 +38,7 @@ export function QuestPlayer({
   initialStep,
   initiallyCompleted,
   isAuthed,
+  canAccessAllSteps,
 }: {
   quest: Quest;
   steps: QuestStep[];
@@ -46,9 +46,15 @@ export function QuestPlayer({
   initialStep: number;
   initiallyCompleted: boolean;
   isAuthed: boolean;
+  canAccessAllSteps: boolean;
 }) {
   const total = steps.length;
   const isPrometheusQuest = quest.slug.startsWith("prometheus");
+  const fullscreenWorkspaceClass = isPrometheusQuest
+    ? "quest-game-workspace prometheus-quest-workspace"
+    : quest.slug === "midnight-express"
+      ? "quest-game-workspace midnight-quest-workspace"
+      : "";
   const clamp = (n: number) => Math.min(Math.max(n, 1), total);
   const [current, setCurrent] = useState(clamp(initialStep));
   const [completed, setCompleted] = useState(initiallyCompleted);
@@ -194,24 +200,43 @@ export function QuestPlayer({
     }
   }
 
-  /** Открыть шаг с карты; перед первым шагом играется пролог */
+  /** Открыть урок с карты: сначала показываем связанную с ним сцену. */
   function openStep(n: number) {
     setSolved(false);
-    if (n === 1 && !prologueSeen && scenesBy.has(0)) {
-      setPrologueSeen(true);
-      playScene(0, 1);
+    const sceneBeforeStep = Math.max(0, n - 1);
+    if (scenesBy.has(sceneBeforeStep)) {
+      if (n === 1) setPrologueSeen(true);
+      playScene(sceneBeforeStep, n);
     } else {
       setView(n);
     }
   }
 
-  const doneCount = completed ? total : current - 1;
   /** До какого шага можно листать историю */
-  const maxUnlocked = completed ? total : current;
+  const maxUnlocked = completed || canAccessAllSteps ? total : current;
 
   // В полноэкранном режиме во время сцены прогресс-бар и белые поля
   // скрываются — картинка идёт от края до края, кнопка выхода лежит на ней
   const sceneFullscreen = isFullscreen && Boolean(scenePlaying);
+  const fullscreenButton = (
+    <button
+      type="button"
+      onClick={toggleFullscreen}
+      title={
+        isFullscreen
+          ? "Выйти из полноэкранного режима"
+          : "Полноэкранный режим"
+      }
+      aria-label={
+        isFullscreen
+          ? "Выйти из полноэкранного режима"
+          : "Полноэкранный режим"
+      }
+      className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-faded-gray text-[16px] font-bold text-pencil-gray hover:border-spark-blue hover:text-spark-blue"
+    >
+      {isFullscreen ? "✕" : "⛶"}
+    </button>
+  );
 
   return (
     <div
@@ -220,53 +245,13 @@ export function QuestPlayer({
         sceneFullscreen
           ? "bg-night-ink"
           : isFullscreen
-            ? "overflow-y-auto bg-paper-white px-4 py-4 md:px-6"
+            ? `overflow-y-auto bg-paper-white px-4 py-4 md:px-6 ${fullscreenWorkspaceClass}`
             : ""
       }
     >
-      {/* Прогресс + полноэкранный режим */}
-      {!sceneFullscreen && (
-        <div className="mb-5">
-          <div className="mb-2 flex items-center justify-between gap-3">
-            <span className="text-nav-label font-bold uppercase text-pencil-gray">
-              {isFullscreen && `${quest.emoji} `}
-              {completed ? "История пройдена" : `Решено ${doneCount} из ${total}`}
-            </span>
-            <span className="flex items-center gap-3">
-              {!isAuthed && (
-                <span className="hidden text-caption font-medium text-faded-gray sm:inline">
-                  <Link href="/login" className="font-bold text-spark-blue">
-                    Войди
-                  </Link>
-                  , чтобы сохранять прогресс
-                </span>
-              )}
-              <button
-                type="button"
-                onClick={toggleFullscreen}
-                title={
-                  isFullscreen
-                    ? "Выйти из полноэкранного режима"
-                    : "Полноэкранный режим"
-                }
-                aria-label={
-                  isFullscreen
-                    ? "Выйти из полноэкранного режима"
-                    : "Полноэкранный режим"
-                }
-                className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-faded-gray text-[16px] font-bold text-pencil-gray hover:border-spark-blue hover:text-spark-blue"
-              >
-                {isFullscreen ? "✕" : "⛶"}
-              </button>
-            </span>
-          </div>
-          <div className="h-3 overflow-hidden rounded-full bg-[#e5e5e5]">
-            <div
-              className="h-full rounded-full bg-eager-green transition-all"
-              style={{ width: `${(doneCount / total) * 100}%` }}
-            />
-          </div>
-        </div>
+      {/* В игровом режиме оставляем только управление полноэкранным видом. */}
+      {!sceneFullscreen && !scenePlaying && view === "map" && (
+        <div className="mb-4 flex justify-end">{fullscreenButton}</div>
       )}
 
       {scenePlaying ? (
@@ -302,16 +287,17 @@ export function QuestPlayer({
           steps={steps}
           current={current}
           completed={completed}
+          canAccessAllSteps={canAccessAllSteps}
           scenesBy={scenesBy}
-          watchedScenes={watchedScenes}
           onOpenStep={openStep}
-          onPlayScene={(afterStep) => playScene(afterStep, "map")}
         />
       ) : (
         <StepView
           quest={quest}
           step={steps[view - 1]}
           isCurrent={!completed && view === current}
+          isCompletedStep={completed || view < current}
+          canRunCheck={canAccessAllSteps || (!completed && view === current)}
           solved={solved}
           isLast={view === total}
           maxUnlocked={maxUnlocked}
@@ -321,11 +307,9 @@ export function QuestPlayer({
           onStartDrag={startDrag}
           onSolved={() => setSolved(true)}
           onAdvance={advance}
-          onNavigate={(n) => {
-            setSolved(false);
-            setView(n);
-          }}
+          onNavigate={openStep}
           onBackToMap={() => setView("map")}
+          onToggleFullscreen={toggleFullscreen}
         />
       )}
     </div>
@@ -337,6 +321,171 @@ export function QuestPlayer({
 // ===========================================================================
 
 function MapView({
+  quest,
+  steps,
+  current,
+  completed,
+  canAccessAllSteps,
+  scenesBy,
+  onOpenStep,
+}: {
+  quest: Quest;
+  steps: QuestStep[];
+  current: number;
+  completed: boolean;
+  canAccessAllSteps: boolean;
+  scenesBy: Map<number, QuestSceneFrame[]>;
+  onOpenStep: (n: number) => void;
+}) {
+  return (
+    <div className="lesson-map-content mx-auto w-full max-w-[1288px]">
+      <div className="mb-5">
+        <div>
+          <p className="text-caption font-extrabold uppercase tracking-[0.12em] text-fresh-leaf">
+            Карта прохождения
+          </p>
+          <h2 className="mt-1 font-feather text-heading-sm font-black text-charcoal">
+            Уроки истории
+          </h2>
+          <p className="mt-1 text-[14px] font-bold text-pencil-gray">
+            Превью откроется после выполнения соответствующего урока.
+          </p>
+        </div>
+
+      </div>
+
+      <div className="lesson-card-grid flex flex-wrap justify-center gap-4 pb-5">
+        {steps.map((step) => {
+          const done = completed || step.stepNumber < current;
+          const active = !completed && step.stepNumber === current;
+          const availableForTest = canAccessAllSteps && !done && !active;
+          const locked = !done && !active && !availableForTest;
+          const preview = scenesBy
+            .get(Math.max(0, step.stepNumber - 1))
+            ?.find((frame) => Boolean(frame.imageUrl));
+
+          return (
+            <button
+              key={step.stepNumber}
+              type="button"
+              disabled={locked}
+              onClick={() => onOpenStep(step.stepNumber)}
+              aria-label={`Урок ${step.stepNumber}: ${step.title}`}
+              className={`lesson-preview-card group w-full overflow-hidden rounded-[18px] border text-left transition ${
+                done
+                  ? "is-done cursor-pointer"
+                  : active || availableForTest
+                    ? "is-active cursor-pointer"
+                    : "is-locked cursor-not-allowed"
+              }`}
+            >
+              <span className="relative block aspect-[16/10] overflow-hidden bg-[#101927]">
+                {done && preview?.imageUrl ? (
+                  <img
+                    src={preview.imageUrl}
+                    alt=""
+                    draggable={false}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  />
+                ) : (
+                  <span className="lesson-preview-placeholder flex h-full flex-col items-center justify-center px-5 text-center">
+                    <span className="text-[58px] font-black leading-none">?</span>
+                    <span className="mt-3 text-[11px] font-extrabold uppercase tracking-[0.11em]">
+                      {active
+                        ? "Пройди урок, чтобы открыть кадр"
+                        : availableForTest
+                          ? "Доступен для тестирования"
+                          : "Урок пока закрыт"}
+                    </span>
+                  </span>
+                )}
+
+                <span className="absolute left-3 top-3 rounded-full border border-white/20 bg-black/65 px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-white backdrop-blur">
+                  Урок {String(step.stepNumber).padStart(2, "0")}
+                </span>
+                {done && (
+                  <span className="absolute right-3 top-3 grid h-8 w-8 place-content-center rounded-full bg-eager-green font-black text-white shadow-lg">
+                    ✓
+                  </span>
+                )}
+              </span>
+
+              <span className="block p-4">
+                <span className="block min-h-[52px] text-[18px] font-black leading-snug text-charcoal">
+                  {step.title}
+                </span>
+                <span
+                  className={`mt-3 inline-flex rounded-full px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.08em] ${
+                    done
+                      ? "bg-storybook-green text-[#347b08]"
+                      : active || availableForTest
+                        ? "bg-[#e8f7ff] text-spark-blue"
+                        : "bg-[#eef0f3] text-faded-gray"
+                  }`}
+                >
+                  {done
+                    ? "Пройден"
+                    : active
+                      ? "Доступен сейчас"
+                      : availableForTest
+                        ? "Тестовый доступ"
+                        : "Закрыт"}
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {!completed && (
+        <div className="mt-2 text-center">
+          <Button onClick={() => onOpenStep(current)}>
+            {current === 1 ? "Начать первый урок" : `Продолжить: урок ${current}`}
+          </Button>
+        </div>
+      )}
+
+      {completed && (
+        <div className="mt-4 rounded-xl border-2 border-eager-green bg-black/30 p-5 backdrop-blur-sm">
+          <h2 className="mb-3 font-feather text-heading-sm font-extrabold text-eager-green">
+            История пройдена
+          </h2>
+          {quest.slug.startsWith("prometheus") ? (
+            <>
+              <p className="max-w-[760px] text-body font-medium leading-relaxed text-charcoal">
+                История завершена, но работу с базой корабля можно продолжить
+                в свободной практике. Выполняй задания разной сложности или
+                экспериментируй с собственными SQL-запросами.
+              </p>
+              <div className="mt-5">
+                <Button href="/account/practice/prometheus">
+                  В банк заданий «Прометея»
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              {quest.finale && (
+                <RichText
+                  text={quest.finale}
+                  className="text-body font-medium leading-relaxed text-charcoal"
+                />
+              )}
+              <div className="mt-5 flex flex-wrap gap-4">
+                <Button href="/account/quests">К другим историям</Button>
+                <Button href="/account" variant="outline">
+                  В кабинет
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LegacyMapView({
   quest,
   steps,
   current,
@@ -505,7 +654,7 @@ function MapView({
             />
           )}
           <div className="mt-5 flex flex-wrap gap-4">
-            <Button href="/quests">К другим историям</Button>
+            <Button href="/account/quests">К другим историям</Button>
             <Button href="/account" variant="outline">
               В кабинет
             </Button>
@@ -803,6 +952,8 @@ function StepView({
   quest,
   step,
   isCurrent,
+  isCompletedStep,
+  canRunCheck,
   solved,
   isLast,
   maxUnlocked,
@@ -814,10 +965,13 @@ function StepView({
   onAdvance,
   onNavigate,
   onBackToMap,
+  onToggleFullscreen,
 }: {
   quest: Quest;
   step: QuestStep;
   isCurrent: boolean;
+  isCompletedStep: boolean;
+  canRunCheck: boolean;
   solved: boolean;
   isLast: boolean;
   maxUnlocked: number;
@@ -829,16 +983,18 @@ function StepView({
   onAdvance: () => void;
   onNavigate: (n: number) => void;
   onBackToMap: () => void;
+  onToggleFullscreen: () => void;
 }) {
   const [errorReportOpen, setErrorReportOpen] = useState(false);
-  const showOutcome = (!isCurrent || solved) && step.outcome;
+  const showOutcome = (isCompletedStep || solved) && step.outcome;
+  // Панели занимают всё место от строки навигации до нижнего края экрана.
+  // Раньше ограничение 76vh оставляло снизу широкую пустую полосу.
   const panelHeight = isFullscreen
-    ? "md:max-h-[calc(100vh-150px)]"
-    : "md:max-h-[76vh]";
+    ? "md:h-[calc(100dvh-112px)] md:max-h-none"
+    : "md:h-[calc(100dvh-108px)] md:max-h-none";
 
   const navBtn =
     "flex h-9 w-9 items-center justify-center rounded-xl border-2 text-[18px] font-bold transition-colors";
-
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -850,46 +1006,58 @@ function StepView({
           ← Карта
         </button>
 
-        {/* Кнопка перехода дальше — появляется после решения шага */}
-        {isCurrent && solved && (
-          <Button onClick={onAdvance}>
-            {isLast ? "Завершить дело 🏆" : "Следующий шаг →"}
-          </Button>
-        )}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {/* Кнопка перехода дальше — появляется после решения текущего шага */}
+          {isCurrent && solved && (
+            <Button onClick={onAdvance}>
+              {isLast ? "Завершить дело 🏆" : "Следующий шаг →"}
+            </Button>
+          )}
 
-        {/* Листалка по открытым шагам истории */}
-        <span className="flex items-center gap-2">
-          <button
-            type="button"
-            disabled={step.stepNumber <= 1}
-            onClick={() => onNavigate(step.stepNumber - 1)}
-            aria-label="Предыдущий шаг"
-            className={`${navBtn} ${
-              step.stepNumber <= 1
-                ? "cursor-default border-[#e5e5e5] text-faded-gray"
-                : "border-faded-gray text-spark-blue hover:border-spark-blue"
-            }`}
-          >
-            ‹
-          </button>
-          <span className="min-w-[110px] text-center text-nav-label font-bold uppercase text-pencil-gray">
-            Шаг {step.stepNumber}
-            {!isCurrent && " ✓"}
+          {/* Листалка по открытым шагам истории */}
+          <span className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={step.stepNumber <= 1}
+              onClick={() => onNavigate(step.stepNumber - 1)}
+              aria-label="Предыдущий шаг"
+              className={`${navBtn} ${
+                step.stepNumber <= 1
+                  ? "cursor-default border-[#e5e5e5] text-faded-gray"
+                  : "border-faded-gray text-spark-blue hover:border-spark-blue"
+              }`}
+            >
+              ‹
+            </button>
+            <span className="min-w-[110px] text-center text-nav-label font-bold uppercase text-pencil-gray">
+              Шаг {step.stepNumber}
+              {isCompletedStep && " ✓"}
+            </span>
+            <button
+              type="button"
+              disabled={step.stepNumber >= maxUnlocked}
+              onClick={() => onNavigate(step.stepNumber + 1)}
+              aria-label="Следующий шаг"
+              className={`${navBtn} ${
+                step.stepNumber >= maxUnlocked
+                  ? "cursor-default border-[#e5e5e5] text-faded-gray"
+                  : "border-faded-gray text-spark-blue hover:border-spark-blue"
+              }`}
+            >
+              ›
+            </button>
           </span>
+
           <button
             type="button"
-            disabled={step.stepNumber >= maxUnlocked}
-            onClick={() => onNavigate(step.stepNumber + 1)}
-            aria-label="Следующий шаг"
-            className={`${navBtn} ${
-              step.stepNumber >= maxUnlocked
-                ? "cursor-default border-[#e5e5e5] text-faded-gray"
-                : "border-faded-gray text-spark-blue hover:border-spark-blue"
-            }`}
+            onClick={onToggleFullscreen}
+            title={isFullscreen ? "Выйти из полноэкранного режима" : "Полноэкранный режим"}
+            aria-label={isFullscreen ? "Выйти из полноэкранного режима" : "Полноэкранный режим"}
+            className={`${navBtn} border-faded-gray text-[16px] text-spark-blue hover:border-spark-blue`}
           >
-            ›
+            {isFullscreen ? "✕" : "⛶"}
           </button>
-        </span>
+        </div>
       </div>
 
       <div
@@ -988,11 +1156,16 @@ function StepView({
             key={`${quest.slug}-${step.stepNumber}`}
             questSlug={quest.slug}
             stepNumber={step.stepNumber}
-            onCorrect={isCurrent ? onSolved : undefined}
+            onCorrect={canRunCheck ? onSolved : undefined}
           />
-          {!isCurrent && (
+          {isCompletedStep && (
             <p className="mt-2 text-caption font-medium text-faded-gray">
               Этот шаг уже решён — терминал открыт для экспериментов.
+            </p>
+          )}
+          {!isCompletedStep && !isCurrent && canRunCheck && (
+            <p className="mt-2 text-caption font-medium text-spark-blue">
+              Тестовый доступ: проверка этого урока включена без изменения текущего прогресса.
             </p>
           )}
         </div>

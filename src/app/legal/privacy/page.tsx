@@ -8,6 +8,9 @@ import {
 
 export const metadata: Metadata = {
   title: "Политика обработки персональных данных — Скрипткин",
+  description:
+    "Порядок сбора, хранения, использования и защиты персональных данных пользователей платформы Скрипткин, а также способы отзыва согласия.",
+  alternates: { canonical: "/legal/privacy" },
 };
 
 export default function PrivacyPage() {
@@ -15,6 +18,7 @@ export default function PrivacyPage() {
     <LegalLayout
       title="политика обработки персональных данных"
       updated="05.08.2026"
+      canonicalPath="/legal/privacy"
     >
       <LegalSection number="1" title="Общие положения">
         <p>

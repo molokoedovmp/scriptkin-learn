@@ -79,9 +79,11 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   try {
     const { rows } = await getAppPool().query<SessionUser>(
       `SELECT u.id, u.email, u.name, u.bio
-         FROM sessions s
+        FROM sessions s
          JOIN users u ON u.id = s.user_id
-        WHERE s.token = $1 AND s.expires_at > now()`,
+        WHERE s.token = $1
+          AND s.expires_at > now()
+          AND u.email_verified_at IS NOT NULL`,
       [token]
     );
     return rows[0] ?? null;

@@ -8,11 +8,18 @@ import {
 
 export const metadata: Metadata = {
   title: "Публичная оферта — Скрипткин",
+  description:
+    "Условия покупки платных SQL-историй в Скрипткине: стоимость, порядок оплаты, предоставление доступа, кассовый чек и возврат средств.",
+  alternates: { canonical: "/legal/offer" },
 };
 
 export default function OfferPage() {
   return (
-    <LegalLayout title="публичная оферта" updated="05.08.2026">
+    <LegalLayout
+      title="публичная оферта"
+      updated="05.08.2026"
+      canonicalPath="/legal/offer"
+    >
       <LegalSection number="1" title="Общие положения">
         <p>
           Настоящий документ является публичной офертой (ст. 435, 437 ГК РФ) —

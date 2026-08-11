@@ -86,6 +86,14 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS bio text;
+
+-- При первом добавлении колонки существующие аккаунты считаются подтверждёнными.
+-- После удаления DEFAULT все новые аккаунты создаются неподтверждёнными.
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS email_verified_at timestamptz DEFAULT now();
+ALTER TABLE users
+  ALTER COLUMN email_verified_at DROP DEFAULT;
+
 ALTER TABLE users DROP CONSTRAINT IF EXISTS users_bio_check;
 ALTER TABLE users ADD CONSTRAINT users_bio_check
   CHECK (bio IS NULL OR char_length(bio) <= 500);
@@ -149,6 +157,19 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
 
 CREATE INDEX IF NOT EXISTS password_reset_tokens_user_idx
   ON password_reset_tokens(user_id, created_at DESC);
+
+-- Одноразовые ссылки подтверждения почты. В базе хранится только SHA-256
+-- токена; ссылка действует 24 часа и после использования погашается.
+CREATE TABLE IF NOT EXISTS email_verification_tokens (
+  token_hash text PRIMARY KEY,
+  user_id    uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  expires_at timestamptz NOT NULL,
+  used_at    timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS email_verification_tokens_user_idx
+  ON email_verification_tokens(user_id, created_at DESC);
 
 -- Прогресс игроков по квестам.
 CREATE TABLE IF NOT EXISTS quest_progress (

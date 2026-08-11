@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server";
 import { getAppPool, isDatabaseConfigured } from "@/lib/db";
-import {
-  createSession,
-  hashPassword,
-  SESSION_COOKIE,
-  sessionCookieOptions,
-} from "@/lib/auth";
-import { sendWelcomeEmail } from "@/lib/email";
+import { hashPassword } from "@/lib/auth";
+import { sendEmailVerificationEmail } from "@/lib/email";
+import { issueEmailVerificationToken } from "@/lib/email-verification";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
  * POST /api/auth/register — регистрация по email и паролю.
- * Сразу создаёт сессию и ставит httpOnly-cookie.
+ * Создаёт неподтверждённый аккаунт и отправляет одноразовую ссылку.
  */
 export async function POST(req: Request) {
   if (!isDatabaseConfigured()) {
@@ -73,29 +69,43 @@ export async function POST(req: Request) {
 
   try {
     const passwordHash = await hashPassword(password);
-    const { rows } = await getAppPool().query<{ id: string }>(
-      `INSERT INTO users (email, name, password_hash, pd_consent_at)
-       VALUES ($1, $2, $3, now())
-       RETURNING id`,
-      [email, name, passwordHash]
+    const client = await getAppPool().connect();
+    let userId = "";
+    let verificationToken = "";
+    try {
+      await client.query("BEGIN");
+      const { rows } = await client.query<{ id: string }>(
+        `INSERT INTO users (
+           email, name, password_hash, pd_consent_at, email_verified_at
+         ) VALUES ($1, $2, $3, now(), NULL)
+         RETURNING id`,
+        [email, name, passwordHash]
+      );
+      userId = rows[0].id;
+      verificationToken = await issueEmailVerificationToken(client, userId);
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK").catch(() => {});
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    const emailSent = await sendEmailVerificationEmail(
+      email,
+      name,
+      verificationToken
     );
 
-    // Приветственное письмо — не блокирует ответ и не ломает регистрацию
-    sendWelcomeEmail(email, name).catch((err) =>
-      console.error("Welcome email failed:", err)
-    );
-
-    const session = await createSession(rows[0].id);
-    const res = NextResponse.json({
+    return NextResponse.json({
       ok: true,
-      user: { id: rows[0].id, email, name },
+      requiresEmailVerification: true,
+      emailSent,
+      message: emailSent
+        ? "Мы отправили ссылку подтверждения. Она действует 24 часа."
+        : "Аккаунт создан, но письмо не удалось отправить. Нажми «Отправить ещё раз».",
+      user: { id: userId, email, name },
     });
-    res.cookies.set(
-      SESSION_COOKIE,
-      session.token,
-      sessionCookieOptions(session.expiresAt)
-    );
-    return res;
   } catch (err) {
     // 23505 — нарушение уникальности никнейма или email
     const dbError = err as { code?: string; constraint?: string };

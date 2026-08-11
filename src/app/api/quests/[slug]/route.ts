@@ -28,7 +28,7 @@ export async function GET(
       );
       if (rows.length > 0) {
         const user = await getSessionUser();
-        const access = await getQuestAccess(user?.id, slug);
+        const access = await getQuestAccess(user?.id, slug, user?.email);
         if (!access.allowed) {
           return NextResponse.json({
             quest: rows[0],

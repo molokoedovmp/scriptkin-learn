@@ -25,6 +25,35 @@ export function AuthForm({
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [verificationPending, setVerificationPending] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState("");
+  const [resending, setResending] = useState(false);
+
+  async function resendVerification() {
+    setResending(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = (await response.json()) as {
+        ok: boolean;
+        message?: string;
+        error?: string;
+      };
+      if (!data.ok) {
+        setError(data.error ?? "Не удалось отправить письмо.");
+        return;
+      }
+      setVerificationMessage(data.message ?? "Новое письмо отправлено.");
+    } catch {
+      setError("Не удалось связаться с сервером.");
+    } finally {
+      setResending(false);
+    }
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,9 +69,29 @@ export function AuthForm({
             : { email, password }
         ),
       });
-      const data = (await res.json()) as { ok: boolean; error?: string };
+      const data = (await res.json()) as {
+        ok: boolean;
+        code?: string;
+        error?: string;
+        message?: string;
+        requiresEmailVerification?: boolean;
+      };
       if (!data.ok) {
+        if (data.code === "EMAIL_NOT_VERIFIED") {
+          setVerificationPending(true);
+          setVerificationMessage(
+            data.error ?? "Сначала подтверди email по ссылке из письма."
+          );
+          return;
+        }
         setError(data.error ?? "Что-то пошло не так. Попробуй ещё раз.");
+        return;
+      }
+      if (mode === "register" && data.requiresEmailVerification) {
+        setVerificationPending(true);
+        setVerificationMessage(
+          data.message ?? "Мы отправили ссылку подтверждения на указанный email."
+        );
         return;
       }
       const safeReturnTo =
@@ -56,6 +105,56 @@ export function AuthForm({
     } finally {
       setLoading(false);
     }
+  }
+
+  if (verificationPending) {
+    return (
+      <section className="mx-auto w-full max-w-[440px] rounded-[22px] border-2 border-[#cceeb4] bg-[#f2ffe9] p-7 text-center">
+        <span className="text-5xl" aria-hidden>
+          ✉️
+        </span>
+        <h2 className="mt-4 text-subheading font-black text-charcoal">
+          Подтверди email
+        </h2>
+        <p className="mt-2 text-body font-medium leading-relaxed text-[#53723d]">
+          {verificationMessage}
+        </p>
+        <p className="mt-2 break-all text-caption font-bold text-pencil-gray">
+          {email}
+        </p>
+        {error && (
+          <p className="mt-4 text-body font-bold text-[#ea2b2b]">{error}</p>
+        )}
+        <Button
+          type="button"
+          disabled={resending}
+          onClick={resendVerification}
+          className="mt-6 w-full"
+        >
+          {resending ? "Отправляю…" : "Отправить ещё раз"}
+        </Button>
+        {mode === "register" ? (
+          <Link
+            href="/login"
+            className="mt-5 inline-flex text-caption font-extrabold text-spark-blue"
+          >
+            Перейти ко входу
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setVerificationPending(false);
+              setVerificationMessage("");
+              setError(null);
+            }}
+            className="mt-5 text-caption font-extrabold text-spark-blue"
+          >
+            Вернуться ко входу
+          </button>
+        )}
+      </section>
+    );
   }
 
   return (

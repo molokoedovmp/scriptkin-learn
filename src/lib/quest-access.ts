@@ -9,13 +9,20 @@ export interface QuestAccess {
   allowed: boolean;
 }
 
+const QUEST_TESTER_EMAILS = new Set(["molokoedovmp@gmail.com"]);
+
+export function hasQuestTesterAccess(email: string | null | undefined): boolean {
+  return QUEST_TESTER_EMAILS.has(email?.trim().toLowerCase() ?? "");
+}
+
 /**
  * Доступ к бесплатной истории открыт всем. Платная история открывается только
  * пользователю с успешно завершённым платежом.
  */
 export async function getQuestAccess(
   userId: string | null | undefined,
-  questSlug: string
+  questSlug: string,
+  userEmail?: string | null
 ): Promise<QuestAccess> {
   const { rows } = await getAppPool().query<{
     priceKopecks: number;
@@ -44,10 +51,11 @@ export async function getQuestAccess(
 
   const priceKopecks = Number(row.priceKopecks);
   const purchased = Boolean(row.purchased);
+  const testerAccess = hasQuestTesterAccess(userEmail);
   return {
     exists: true,
     priceKopecks,
     purchased,
-    allowed: priceKopecks === 0 || purchased,
+    allowed: priceKopecks === 0 || purchased || testerAccess,
   };
 }

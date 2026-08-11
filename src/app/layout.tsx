@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Nunito } from "next/font/google";
 import { CookieConsent } from "@/components/CookieConsent";
+import {
+  OrganizationJsonLd,
+  WebSiteJsonLd,
+} from "@/components/seo/JsonLd";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -28,6 +33,7 @@ const themeScript = `
 })();`;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Скрипткин — учи SQL, проходя истории",
   description:
     "Скрипткин — интерактивная платформа для обучения SQL: выбирай историю с сюжетом и продвигай её настоящими SQL-запросами прямо в браузере.",
@@ -51,6 +57,8 @@ export default function RootLayout({
       <body
         className={`${nunito.variable} ${cormorant.variable} flex min-h-screen flex-col pb-[calc(68px+env(safe-area-inset-bottom))] antialiased md:pb-0`}
       >
+        <OrganizationJsonLd />
+        <WebSiteJsonLd />
         {children}
         <CookieConsent />
       </body>

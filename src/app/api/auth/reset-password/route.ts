@@ -31,7 +31,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "Ссылка истекла или уже была использована." }, { status: 400 });
     }
     userId = rows[0].user_id;
-    await client.query(`UPDATE users SET password_hash = $1 WHERE id = $2`, [passwordHash, userId]);
+    // Действующая ссылка восстановления также доказывает владение почтой.
+    await client.query(
+      `UPDATE users
+          SET password_hash = $1,
+              email_verified_at = COALESCE(email_verified_at, now())
+        WHERE id = $2`,
+      [passwordHash, userId]
+    );
     await client.query(`UPDATE password_reset_tokens SET used_at = now() WHERE token_hash = $1`, [tokenHash]);
     await client.query(`DELETE FROM sessions WHERE user_id = $1`, [userId]);
     await client.query("COMMIT");

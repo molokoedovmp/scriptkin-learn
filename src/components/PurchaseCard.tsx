@@ -79,7 +79,7 @@ export function PurchaseCard({
         </button>
       ) : (
         <Link
-          href={`/login?returnTo=${encodeURIComponent(`/quests/${questSlug}`)}`}
+          href={`/login?returnTo=${encodeURIComponent(`/account/quests/${questSlug}`)}`}
           className="mt-6 inline-flex min-h-12 items-center justify-center rounded-xl bg-eager-green px-8 py-3 text-nav-label font-extrabold uppercase text-paper-white shadow-[0_5px_0_#3e9900]"
         >
           Войти и купить

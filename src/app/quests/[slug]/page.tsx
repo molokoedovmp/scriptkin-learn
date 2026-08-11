@@ -1,16 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { QuestPlayer } from "@/components/QuestPlayer";
-import { PurchaseCard } from "@/components/PurchaseCard";
-import { getQuestWithSteps, getUserQuestProgress } from "@/lib/quests-db";
-import { COMING_SOON_PRICE_RUB, getDemoQuest } from "@/lib/quests";
-import { getSessionUser } from "@/lib/auth";
-import { getQuestAccess } from "@/lib/quest-access";
-import { DIFFICULTY_LABELS } from "@/lib/types";
+import { redirect } from "next/navigation";
+import { getDemoQuest } from "@/lib/quests";
+import { PRIVATE_ROBOTS } from "@/lib/seo";
 
-// Страница зависит от cookie сессии (прогресс игрока)
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
@@ -20,115 +12,20 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const quest = getDemoQuest(slug);
+
   return {
-    title: quest ? `${quest.title} — Скрипткин` : "История не найдена — Скрипткин",
+    title: quest
+      ? `${quest.title} — Скрипткин`
+      : "История не найдена — Скрипткин",
+    robots: PRIVATE_ROBOTS,
   };
 }
 
-export default async function QuestPage({
+export default async function LegacyQuestPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const data = await getQuestWithSteps(slug);
-  if (!data) notFound();
-  const { quest, steps, scenes } = data;
-
-  const user = await getSessionUser();
-  const progress = user
-    ? await getUserQuestProgress(user.id, quest.slug)
-    : null;
-  const access =
-    quest.priceKopecks === 0
-      ? { allowed: true, purchased: false }
-      : await getQuestAccess(user?.id, quest.slug);
-
-  const playable =
-    quest.status === "available" && steps.length > 0 && access.allowed;
-  const requiresPurchase =
-    quest.status === "available" && quest.priceKopecks > 0 && !access.allowed;
-
-  return (
-    <>
-      <Header />
-      <main className="flex-1">
-        <div
-          className={`mx-auto ${
-            playable
-              ? "max-w-[1440px] px-3 py-5 md:px-5"
-              : "max-w-[800px] px-6 py-16"
-          }`}
-        >
-          {!playable && (
-            <div className="mb-2 flex items-center gap-3">
-              <span className="text-nav-label font-bold uppercase text-spark-blue">
-                {DIFFICULTY_LABELS[quest.difficulty]}
-              </span>
-              <span className="text-nav-label font-medium text-faded-gray">
-                {quest.stepsCount} шагов
-              </span>
-            </div>
-          )}
-          <h1
-            className={`font-feather font-extrabold text-eager-green ${
-              playable ? "mb-4 text-heading-sm" : "mb-8 text-heading"
-            }`}
-          >
-            {quest.emoji} {quest.title}
-          </h1>
-
-          {playable ? (
-            <QuestPlayer
-              quest={quest}
-              steps={steps}
-              scenes={scenes}
-              initialStep={progress?.currentStep ?? 1}
-              initiallyCompleted={Boolean(progress?.completedAt)}
-              isAuthed={Boolean(user)}
-            />
-          ) : requiresPurchase ? (
-            <>
-              <p className="mb-10 text-body font-medium leading-relaxed text-pencil-gray">
-                {quest.intro}
-              </p>
-              <PurchaseCard
-                questSlug={quest.slug}
-                questTitle={quest.title}
-                priceKopecks={quest.priceKopecks}
-                isAuthed={Boolean(user)}
-              />
-            </>
-          ) : (
-            <>
-              <p className="mb-10 text-body font-medium leading-relaxed text-pencil-gray">
-                {quest.intro}
-              </p>
-              <div className="rounded-xl border-2 border-[#e5e5e5] p-8 text-center">
-                <p className="mb-2 text-subheading font-bold text-charcoal">
-                  История ещё готовится
-                </p>
-                <p className="text-body font-medium text-pencil-gray">
-                  Сюжет пишется, база данных наполняется. Начни пока с
-                  «Полночного экспресса».
-                </p>
-                <p className="mt-6 text-heading-sm font-extrabold text-charcoal">
-                  {COMING_SOON_PRICE_RUB} ₽
-                </p>
-                <button
-                  type="button"
-                  disabled
-                  title="Покупка пока недоступна"
-                  className="mt-3 cursor-not-allowed rounded-xl bg-eager-green px-7 py-3 text-caption font-extrabold uppercase text-paper-white opacity-70"
-                >
-                  Купить
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </main>
-      <Footer />
-    </>
-  );
+  redirect(`/account/quests/${slug}`);
 }

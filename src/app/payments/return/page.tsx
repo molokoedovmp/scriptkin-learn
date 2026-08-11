@@ -4,9 +4,11 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { getSessionUser } from "@/lib/auth";
 import { syncUserPaymentByLocalId, type PaymentSyncResult } from "@/lib/payments";
+import { PRIVATE_ROBOTS } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Результат оплаты — Скрипткин",
+  robots: PRIVATE_ROBOTS,
 };
 
 export const dynamic = "force-dynamic";
@@ -55,7 +57,7 @@ export default async function PaymentReturnPage({
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             {paid && result ? (
-              <Link href={`/quests/${result.questSlug}`} className="rounded-xl bg-eager-green px-7 py-3 text-caption font-extrabold uppercase text-paper-white">
+              <Link href={`/account/quests/${result.questSlug}`} className="rounded-xl bg-eager-green px-7 py-3 text-caption font-extrabold uppercase text-paper-white">
                 Начать историю
               </Link>
             ) : !user ? (

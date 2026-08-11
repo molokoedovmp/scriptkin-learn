@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/Button";
 
 export const metadata: Metadata = {
-  title: "О проекте — Скрипткин",
+  title: "О платформе для изучения SQL «Скрипткин»",
   description:
-    "Скрипткин — открытая платформа для обучения SQL через детективные истории с сюжетом. Зачем мы её делаем и что будет дальше.",
+    "Узнайте, как Скрипткин помогает изучать SQL через сюжетные истории, настоящий PostgreSQL, автоматическую проверку запросов и сохранение прогресса.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
@@ -16,8 +18,15 @@ export default function AboutPage() {
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-[800px] px-6 py-16">
+        <Breadcrumbs
+          className="mb-6"
+          items={[
+            { name: "Главная", path: "/" },
+            { name: "О платформе Скрипткин", path: "/about" },
+          ]}
+        />
         <h1 className="mb-4 font-feather text-heading font-extrabold text-eager-green">
-          о проекте
+          о платформе обучения SQL «Скрипткин»
         </h1>
         <p className="mb-10 text-body font-medium leading-relaxed text-pencil-gray">
           Скрипткин — платформа для обучения SQL через игровые истории с
@@ -67,7 +76,7 @@ export default function AboutPage() {
             <li>
               — первая история{" "}
               <Link
-                href="/quests/midnight-express"
+                href="/account/quests/midnight-express"
                 className="font-bold text-spark-blue"
               >
                 «Полночный экспресс»

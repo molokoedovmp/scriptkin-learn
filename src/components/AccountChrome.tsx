@@ -1,6 +1,4 @@
 import type { SessionUser } from "@/lib/types";
-import { LogoutButton } from "./LogoutButton";
-import { Button } from "./Button";
 
 export function AccountHero({ user }: { user: SessionUser }) {
   return (
@@ -28,12 +26,6 @@ export function AccountHero({ user }: { user: SessionUser }) {
               </p>
             )}
           </div>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Button href="/account/profile">
-            Редактировать профиль
-          </Button>
-          <LogoutButton />
         </div>
       </div>
     </section>

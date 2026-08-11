@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { AccountDashboard } from "@/components/AccountDashboard";
 import { AccountShell } from "@/components/AccountShell";
 import { getSessionUser } from "@/lib/auth";
@@ -36,18 +34,12 @@ export default async function AccountPage() {
   ]);
 
   return (
-    <>
-      <Header />
-      <main className="flex-1 bg-[#f7f8fa]">
-        <AccountShell>
-          <AccountDashboard
-            user={user}
-            progress={progress}
-            initialSocial={social}
-          />
-        </AccountShell>
-      </main>
-      <Footer />
-    </>
+    <AccountShell>
+      <AccountDashboard
+        user={user}
+        progress={progress}
+        initialSocial={social}
+      />
+    </AccountShell>
   );
 }

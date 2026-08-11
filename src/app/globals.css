@@ -92,23 +92,13 @@ html.dark .hero-secondary-cta:hover {
   color: #65d1ff;
 }
 
-/* Footer отделён от контента спокойной серой поверхностью. Тонкая цветная
-   линия сохраняет характер бренда без прежней заливки ярко-зелёным. */
 .site-footer {
-  position: relative;
-  overflow: hidden;
   border-color: #d7dbe2;
-  background:
-    radial-gradient(circle at 12% 0%, rgb(88 204 2 / 7%), transparent 30%),
-    linear-gradient(180deg, #f1f3f6 0%, #e7eaef 100%);
+  background: #eef0f3;
 }
 
 .site-footer::before {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 3px;
-  background: linear-gradient(90deg, #58cc02 0%, #1cb0f6 48%, transparent 88%);
-  content: "";
+  content: none;
 }
 
 .site-footer-title {
@@ -147,16 +137,11 @@ html.dark body {
 
 html.dark .site-footer {
   border-color: #33435a;
-  background:
-    radial-gradient(circle at 14% 0%, rgb(28 176 246 / 10%), transparent 34%),
-    radial-gradient(circle at 86% 100%, rgb(88 204 2 / 7%), transparent 30%),
-    linear-gradient(180deg, #0b1423 0%, #070d18 100%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 3%);
+  background: #0d1625;
 }
 
 html.dark .site-footer::before {
-  background: linear-gradient(90deg, #78df31 0%, #35bdf8 52%, transparent 92%);
-  opacity: 0.85;
+  content: none;
 }
 
 html.dark .site-footer-title {
@@ -177,6 +162,16 @@ html.dark .site-footer-bottom {
 
 html.dark .site-footer-copy {
   color: #8390a3;
+}
+
+/* Пункты мобильной навигации и списка заданий не должны получать
+   постоянную заливку из-за классов hover:bg-* в тёмной теме. */
+html.dark .mobile-nav-link {
+  background-color: transparent !important;
+}
+
+html.dark .practice-task-option:not(.is-active) {
+  background-color: transparent !important;
 }
 
 /* Общие поверхности и текст сайта в тёмной теме. Белый цвет кнопок и
@@ -289,6 +284,130 @@ html.dark [class*="text-[#315d71]"] {
 
 html.dark [class*="text-[#7449bd]"] {
   color: #b99aef;
+}
+
+/* Личный кабинет использует собственную полноэкранную оболочку без общей шапки и подвала. */
+.account-dashboard-shell {
+  background:
+    radial-gradient(circle at 92% 4%, rgb(28 176 246 / 5%), transparent 25%),
+    #f5f7fa;
+}
+
+.account-dashboard-sidebar {
+  border-color: #e2e6eb;
+  background: rgb(255 255 255 / 97%);
+  box-shadow: 8px 0 28px rgb(42 53 67 / 6%);
+  backdrop-filter: blur(16px);
+}
+
+.account-dashboard-sidebar > div,
+.account-dashboard-sidebar nav > div {
+  border-color: #e8ebef;
+}
+
+.account-dashboard-sidebar-link {
+  color: #626b78;
+}
+
+.account-dashboard-sidebar-link:hover {
+  background: #f2f8ee;
+  color: #3f8e0d;
+}
+
+.account-dashboard-sidebar-link.is-active {
+  border-color: #c5eca9;
+  background: #eafadb;
+  color: #347b08;
+  box-shadow: inset 3px 0 0 #58cc02;
+}
+
+.account-dashboard-sidebar-action:hover {
+  background: #f1f4f7;
+  color: #343b46;
+}
+
+.account-dashboard-nav {
+  scrollbar-color: #c8ced7 transparent;
+  scrollbar-width: thin;
+}
+
+html.dark .account-dashboard-shell {
+  background:
+    radial-gradient(circle at 90% 0%, rgb(28 176 246 / 8%), transparent 27%),
+    #101a2b;
+}
+
+html.dark .account-dashboard-sidebar {
+  border-color: #2f4059;
+  background: rgb(10 19 33 / 97%);
+  box-shadow: 10px 0 36px rgb(0 0 0 / 24%);
+}
+
+html.dark .account-dashboard-sidebar > div,
+html.dark .account-dashboard-sidebar nav > div {
+  border-color: #2b3b52;
+}
+
+html.dark .account-dashboard-sidebar-link {
+  color: #aeb9c9;
+}
+
+html.dark .account-dashboard-sidebar-link:hover {
+  border-color: #3c506c;
+  background: #17263c;
+  color: #f2f6fb;
+}
+
+html.dark .account-dashboard-sidebar-link.is-active {
+  border-color: #8aeb48;
+  background: #78df31;
+  color: #102006;
+  box-shadow: inset 3px 0 0 #3d920e, 0 8px 22px rgb(72 180 10 / 14%);
+}
+
+html.dark .account-dashboard-sidebar-action {
+  color: #aeb9c9;
+}
+
+html.dark .account-dashboard-sidebar-action:hover {
+  background: #17263c;
+  color: #65d1ff;
+}
+
+html.dark .account-dashboard-nav {
+  scrollbar-color: #40526d transparent;
+}
+
+.account-weekly-chart .activity-chart-value {
+  fill: #334155;
+}
+
+.account-weekly-chart .activity-chart-label {
+  fill: #64748b;
+}
+
+html.dark .account-weekly-chart .activity-chart-value {
+  fill: #f1f5f9;
+}
+
+html.dark .account-weekly-chart .activity-chart-label {
+  fill: #cbd5e1;
+}
+
+html.dark .account-weekly-chart .text-slate-900 {
+  color: #f1f5f9;
+}
+
+html.dark .account-weekly-chart .text-slate-500 {
+  color: #b8c4d4;
+}
+
+html.dark .account-weekly-chart {
+  border-color: #40516a;
+}
+
+html.dark .account-weekly-chart > div:first-child {
+  border-color: #33445c;
 }
 
 /* Личный кабинет: навигация и действия должны хорошо отделяться от тёмной
@@ -494,6 +613,15 @@ html.dark .post-rich-editor code {
   .prometheus-scene-panel {
     padding-left: clamp(64px, 5.8vw, 112px);
     padding-right: clamp(64px, 5.8vw, 112px);
+    padding-top: clamp(72px, 10.5vh, 113px);
+    padding-bottom: clamp(32px, 4.5vh, 52px);
+  }
+
+  .prometheus-scene-copy {
+    width: 100%;
+    max-width: 680px;
+    margin-right: auto;
+    margin-left: auto;
   }
 }
 
@@ -503,6 +631,145 @@ html.dark .post-rich-editor code {
     font-size: 17px;
     line-height: 1.45;
   }
+}
+
+/* Полноэкранная игровая область историй. */
+.quest-game-workspace {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100dvh;
+  border: 0;
+  border-radius: 0;
+  padding: clamp(14px, 2vw, 28px);
+  box-shadow: none;
+}
+
+.prometheus-quest-workspace {
+  background-image:
+    linear-gradient(90deg, rgb(3 10 17 / 36%), rgb(3 10 17 / 20%)),
+    url("/quests/prometheus/background-lesson.png");
+}
+
+.midnight-quest-workspace {
+  background-image:
+    linear-gradient(90deg, rgb(3 10 17 / 46%), rgb(3 10 17 / 28%)),
+    url("/quests/midnight-express/bacground-lesson.png");
+}
+
+.quest-game-workspace .text-charcoal,
+.quest-game-workspace .text-pencil-gray {
+  color: #f3f7fb;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 80%);
+}
+
+.quest-game-workspace .text-faded-gray {
+  color: #aebdca;
+}
+
+.quest-game-workspace .bg-storybook-green {
+  border: 1px solid rgb(120 223 49 / 48%);
+  background: rgb(19 61 38 / 88%);
+  box-shadow: 0 10px 26px rgb(0 0 0 / 18%);
+}
+
+.quest-game-workspace details {
+  background: rgb(5 16 27 / 88%);
+  box-shadow: 0 10px 26px rgb(0 0 0 / 16%);
+}
+
+.quest-game-workspace details summary[class*="bg-[#e7f6fe]"] {
+  background: rgb(15 58 79 / 94%);
+  color: #65d1ff;
+}
+
+.quest-game-workspace details summary[class*="bg-[#f4f4f4]"] {
+  background: rgb(24 36 51 / 96%);
+  color: #8dddff;
+}
+
+.quest-game-workspace details > div {
+  color: #edf4fa;
+}
+
+.quest-game-workspace button[class*="border-faded-gray"] {
+  border-color: #60758b;
+  background: rgb(5 16 27 / 76%);
+}
+
+@media (min-width: 768px) {
+  .quest-game-workspace {
+    min-height: 100dvh;
+  }
+}
+
+.lesson-card-grid {
+  margin-inline: auto;
+}
+
+.lesson-card-grid .lesson-preview-card {
+  min-width: min(100%, 270px);
+  max-width: 310px;
+  flex: 0 1 310px;
+}
+
+.lesson-preview-card {
+  border-color: #dce1e7;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgb(16 24 40 / 8%);
+}
+
+.lesson-preview-card.is-done {
+  border-color: #75d930;
+}
+
+.lesson-preview-card.is-active {
+  border-color: #35bdf8;
+  box-shadow: 0 0 0 3px rgb(28 176 246 / 16%),
+    0 12px 32px rgb(16 24 40 / 10%);
+}
+
+.lesson-preview-card.is-locked {
+  border-color: #cfd5dd;
+  opacity: 0.72;
+}
+
+.lesson-preview-placeholder {
+  background:
+    radial-gradient(circle at 50% 25%, rgb(53 189 248 / 15%), transparent 42%),
+    linear-gradient(145deg, #111c2b, #080f19);
+  color: #73859a;
+}
+
+.quest-game-workspace .lesson-preview-card,
+html.dark .lesson-preview-card {
+  border-color: #40566b;
+  background: rgb(6 17 28 / 92%);
+  box-shadow: 0 14px 34px rgb(0 0 0 / 30%);
+}
+
+.quest-game-workspace .lesson-preview-card.is-done,
+html.dark .lesson-preview-card.is-done {
+  border-color: #78df31;
+}
+
+.quest-game-workspace .lesson-preview-card.is-active,
+html.dark .lesson-preview-card.is-active {
+  border-color: #55c9ff;
+  box-shadow: 0 0 0 3px rgb(53 189 248 / 18%),
+    0 14px 34px rgb(0 0 0 / 32%);
+}
+
+.quest-game-workspace .lesson-preview-card.is-locked,
+html.dark .lesson-preview-card.is-locked {
+  border-color: #34475b;
+}
+
+.quest-game-workspace:fullscreen {
+  min-height: 100vh;
+  border: 0;
+  border-radius: 0;
+  padding: clamp(16px, 2vw, 30px);
 }
 
 /* CodeMirror подключает базовую светлую тему отдельно от расширений.

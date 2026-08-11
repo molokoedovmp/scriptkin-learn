@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/Button";
 
 export const metadata: Metadata = {
-  title: "FAQ — Скрипткин",
+  title: "Вопросы об обучении SQL в Скрипткине",
   description:
-    "Ответы на частые вопросы о Скрипткине: сколько стоит, нужен ли опыт, какой диалект SQL и как сохраняется прогресс.",
+    "Ответы о занятиях в Скрипткине: нужен ли опыт, какой SQL используется, безопасны ли запросы, сколько стоит обучение и как сохраняется прогресс.",
+  alternates: { canonical: "/faq" },
 };
 
 const faq = [
@@ -50,8 +52,15 @@ export default function FaqPage() {
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-[800px] px-6 py-16">
+          <Breadcrumbs
+            className="mb-6"
+            items={[
+              { name: "Главная", path: "/" },
+              { name: "Вопросы об обучении SQL", path: "/faq" },
+            ]}
+          />
           <h1 className="mb-4 font-feather text-heading font-extrabold text-eager-green">
-            частые вопросы
+            вопросы об обучении SQL в Скрипткине
           </h1>
           <p className="mb-12 text-body font-medium text-pencil-gray">
             Всё, что обычно спрашивают перед тем, как написать первый SELECT.
@@ -81,7 +90,7 @@ export default function FaqPage() {
               Лучший способ понять Скрипткин — открыть первую историю и
               написать SELECT * FROM passengers.
             </p>
-            <Button href="/quests/midnight-express">Попробовать</Button>
+            <Button href="/account/quests/midnight-express">Попробовать</Button>
           </div>
         </div>
       </main>

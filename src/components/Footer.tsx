@@ -6,8 +6,9 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "Истории", href: "/quests" },
       { label: "Банк заданий", href: "/practice" },
+      { label: "Статьи", href: "/articles" },
       { label: "Сообщество", href: "/community" },
-      { label: "Как это работает", href: "/how-it-works" },
+      { label: "Как это работает", href: "/#quest" },
       { label: "О проекте", href: "/about" },
       { label: "FAQ", href: "/faq" },
       { label: "Обратная связь", href: "/feedback" },
@@ -16,10 +17,9 @@ const columns: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Истории",
     links: [
-      { label: "Полночный экспресс", href: "/quests/midnight-express" },
-      { label: "Крушение подлодки", href: "/quests/submarine-crash" },
-      { label: "Ограбление галереи", href: "/quests/midnight-heist" },
-      { label: "Станция «Арес-9»", href: "/quests/mars-station" },
+      { label: "Полночный экспресс", href: "/stories/midnight-express" },
+      { label: "Прометей · Новичок", href: "/stories/prometheus-beginner" },
+      { label: "Прометей", href: "/stories/prometheus" },
     ],
   },
   {

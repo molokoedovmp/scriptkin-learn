@@ -43,7 +43,7 @@ export function AccountDashboard({
                 </p>
               </div>
               <Link
-                href={`/quests/${currentQuest.questSlug}`}
+                href={`/account/quests/${currentQuest.questSlug}`}
                 className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-eager-green px-4 py-2.5 text-caption font-extrabold uppercase text-paper-white hover:bg-[#4cb002]"
               >
                 Открыть
@@ -55,7 +55,7 @@ export function AccountDashboard({
                 Начни первую SQL-историю
               </p>
               <Link
-                href="/quests/midnight-express"
+                href="/account/quests/midnight-express"
                 className="font-extrabold text-spark-blue"
               >
                 Начать →
@@ -80,7 +80,7 @@ export function AccountDashboard({
               </p>
             </div>
             <Link
-              href="/practice"
+              href="/account/practice"
               className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-eager-green px-4 py-2.5 text-caption font-extrabold uppercase text-paper-white hover:bg-[#4cb002]"
             >
               Открыть

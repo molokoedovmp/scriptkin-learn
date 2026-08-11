@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AuthForm } from "@/components/AuthForm";
+import { PRIVATE_ROBOTS } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Вход — Скрипткин",
+  robots: PRIVATE_ROBOTS,
 };
 
 export default async function LoginPage({

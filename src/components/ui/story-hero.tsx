@@ -81,7 +81,7 @@ export function StoryHero({
         <div className="flex flex-col items-center gap-4">
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
-              href="/quests/midnight-express"
+              href="/stories/midnight-express"
               className="hero-primary-cta inline-flex min-h-12 items-center justify-center rounded-xl bg-eager-green px-7 py-3 text-nav-label font-extrabold uppercase text-paper-white shadow-[0_5px_0_#3e9900] transition-transform hover:-translate-y-0.5"
             >
               Начать историю
@@ -183,7 +183,7 @@ function StoryFanCard({
   );
 
   return story.status === "available" ? (
-    <Link href={`/quests/${story.slug}`} className="contents">
+    <Link href={`/stories/${story.slug}`} className="contents">
       {card}
     </Link>
   ) : (

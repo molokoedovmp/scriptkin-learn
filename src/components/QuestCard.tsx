@@ -15,6 +15,7 @@ export function QuestCard({ quest }: { quest: Quest }) {
 
   const card = (
     <article
+      id={`story-${quest.slug}`}
       className="group relative isolate min-h-[470px] overflow-hidden rounded-[24px] bg-night-ink shadow-[0_16px_45px_rgba(15,23,42,0.16)] ring-1 ring-black/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(15,23,42,0.24)]"
     >
       {quest.previewUrl ? (
@@ -107,7 +108,7 @@ export function QuestCard({ quest }: { quest: Quest }) {
     return card;
   }
   return (
-    <Link href={`/quests/${quest.slug}`} className="block h-full">
+    <Link href={`/stories/${quest.slug}`} className="block h-full">
       {card}
     </Link>
   );

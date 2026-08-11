@@ -42,7 +42,13 @@ export async function POST(req: Request) {
       id: string;
       name: string;
       password_hash: string;
-    }>(`SELECT id, name, password_hash FROM users WHERE email = $1`, [email]);
+      email_verified_at: string | null;
+    }>(
+      `SELECT id, name, password_hash, email_verified_at
+         FROM users
+        WHERE email = $1`,
+      [email]
+    );
 
     const valid =
       rows.length > 0 && (await verifyPassword(password, rows[0].password_hash));
@@ -50,6 +56,17 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { ok: false, error: "Неверный email или пароль." },
         { status: 401 }
+      );
+    }
+
+    if (!rows[0].email_verified_at) {
+      return NextResponse.json(
+        {
+          ok: false,
+          code: "EMAIL_NOT_VERIFIED",
+          error: "Сначала подтверди email по ссылке из письма.",
+        },
+        { status: 403 }
       );
     }
 

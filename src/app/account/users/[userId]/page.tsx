@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
+import { AccountShell } from "@/components/AccountShell";
 import { ProfileFriendAction } from "@/components/ProfileFriendAction";
 import { PostTags } from "@/components/PostTags";
 import { RichPostContent } from "@/components/RichPostContent";
@@ -27,10 +26,8 @@ export default async function UserProfilePage({
   const completed = profile.progress.filter((quest) => quest.completedAt).length;
 
   return (
-    <>
-      <Header />
-      <main className="flex-1 bg-[#f7f8fa]">
-        <div className="mx-auto max-w-[1120px] px-4 py-8 sm:px-6 sm:py-10">
+    <AccountShell>
+        <div className="mx-auto max-w-[1120px]">
           <Link
             href="/account/friends"
             className="mb-5 inline-flex text-caption font-extrabold uppercase text-spark-blue hover:underline"
@@ -181,9 +178,7 @@ export default async function UserProfilePage({
             </aside>
           </div>
         </div>
-      </main>
-      <Footer />
-    </>
+    </AccountShell>
   );
 }
 

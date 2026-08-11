@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Breadcrumbs } from "./Breadcrumbs";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 
@@ -9,16 +10,25 @@ import { Footer } from "./Footer";
 export function LegalLayout({
   title,
   updated,
+  canonicalPath,
   children,
 }: {
   title: string;
   updated: string;
+  canonicalPath: string;
   children: ReactNode;
 }) {
   return (
     <>
       <Header />
       <main className="mx-auto max-w-[800px] px-6 py-14">
+        <Breadcrumbs
+          className="mb-6"
+          items={[
+            { name: "Главная", path: "/" },
+            { name: title, path: canonicalPath },
+          ]}
+        />
         <h1 className="mb-2 font-feather text-heading font-extrabold lowercase text-eager-green">
           {title}
         </h1>

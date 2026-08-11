@@ -8,11 +8,18 @@ import {
 
 export const metadata: Metadata = {
   title: "Пользовательское соглашение — Скрипткин",
+  description:
+    "Условия использования платформы Скрипткин: правила аккаунта, доступ к SQL-историям, права пользователя и ответственность сторон.",
+  alternates: { canonical: "/legal/terms" },
 };
 
 export default function TermsPage() {
   return (
-    <LegalLayout title="пользовательское соглашение" updated="05.08.2026">
+    <LegalLayout
+      title="пользовательское соглашение"
+      updated="05.08.2026"
+      canonicalPath="/legal/terms"
+    >
       <LegalSection number="1" title="Общие положения">
         <p>
           Настоящее Пользовательское соглашение (далее — «Соглашение»)

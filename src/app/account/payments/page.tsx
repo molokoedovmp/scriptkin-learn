@@ -3,8 +3,6 @@ import { redirect } from "next/navigation";
 import { AccountSectionHeader } from "@/components/AccountChrome";
 import { AccountPaymentsView } from "@/components/AccountPaymentsView";
 import { AccountShell } from "@/components/AccountShell";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
 import { getAccountPayments } from "@/lib/account";
 import { getSessionUser } from "@/lib/auth";
 
@@ -22,18 +20,12 @@ export default async function AccountPaymentsPage() {
   const payments = await getAccountPayments(user.id);
 
   return (
-    <>
-      <Header />
-      <main className="flex-1 bg-[#f7f8fa]">
-        <AccountShell>
+    <AccountShell>
           <AccountSectionHeader
             title="Покупки и оплаты"
             description="Купленные истории, история операций, электронные чеки и возвраты в одном месте."
           />
           <AccountPaymentsView payments={payments} />
-        </AccountShell>
-      </main>
-      <Footer />
-    </>
+    </AccountShell>
   );
 }

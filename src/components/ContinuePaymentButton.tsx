@@ -25,7 +25,7 @@ export function ContinuePaymentButton({ paymentId }: { paymentId: string }) {
         return;
       }
       if (data.status === "paid" && data.questSlug) {
-        window.location.assign(`/quests/${data.questSlug}`);
+        window.location.assign(`/account/quests/${data.questSlug}`);
         return;
       }
       if (!data.confirmationUrl) {

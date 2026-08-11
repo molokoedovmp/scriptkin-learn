@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
   if (!practiceTask && body.questSlug && isDatabaseConfigured()) {
     const user = await getSessionUser();
-    const access = await getQuestAccess(user?.id, body.questSlug);
+    const access = await getQuestAccess(user?.id, body.questSlug, user?.email);
     if (!access.allowed) {
       return json(
         { ok: false, error: "Сначала оплати эту историю в своём аккаунте." },

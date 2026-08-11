@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PostTags } from "@/components/PostTags";
@@ -9,8 +10,10 @@ import { POST_TAGS } from "@/lib/post-tags";
 import { getCommunityPosts } from "@/lib/social";
 
 export const metadata: Metadata = {
-  title: "Сообщество — Скрипткин",
-  description: "Публикации пользователей Скрипткина: решения, вопросы, SQL и учебный прогресс.",
+  title: "Сообщество изучающих SQL — Скрипткин",
+  description:
+    "Обсуждайте изучение SQL, задавайте вопросы, делитесь решениями задач и следите за учебным прогрессом участников сообщества Скрипткина.",
+  alternates: { canonical: "/community" },
 };
 export const dynamic = "force-dynamic";
 
@@ -27,7 +30,15 @@ export default async function CommunityPage({
     <>
       <Header />
       <main className="flex-1 bg-[#f7f8fa]">
+        <h1 className="sr-only">Сообщество изучающих SQL</h1>
         <div className="mx-auto grid min-w-0 max-w-[1040px] items-start gap-4 px-4 py-5 sm:px-6 sm:py-8 lg:grid-cols-[230px_minmax(0,760px)] lg:gap-6">
+          <Breadcrumbs
+            className="lg:col-span-2"
+            items={[
+              { name: "Главная", path: "/" },
+              { name: "Сообщество изучающих SQL", path: "/community" },
+            ]}
+          />
           <aside className="min-w-0 overflow-hidden rounded-[16px] border-2 border-[#e6e7eb] bg-paper-white p-2.5 lg:sticky lg:top-[90px] lg:p-3">
             <div className="flex w-full min-w-0 flex-nowrap gap-2 overflow-x-auto px-0.5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0">
               <Link

@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const access = await getQuestAccess(user.id, questSlug);
+  const access = await getQuestAccess(user.id, questSlug, user.email);
   if (!access.allowed) {
     return NextResponse.json(
       { ok: false, error: "История не оплачена." },

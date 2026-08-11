@@ -178,9 +178,9 @@ export function PracticeWorkspace({
               <p className="mb-1 text-caption font-bold uppercase tracking-wide text-faded-gray">
                 База из истории
               </p>
-              <h2 className="text-subheading font-extrabold text-charcoal">
-                {database.title}
-              </h2>
+              <h1 className="text-subheading font-extrabold text-charcoal">
+                Практика SQL на базе «{database.title}»
+              </h1>
               <p className="mt-1 max-w-[720px] text-[15px] font-medium leading-relaxed text-pencil-gray">
                 {database.description}
               </p>
@@ -264,9 +264,9 @@ export function PracticeWorkspace({
             <p className="mb-2 text-caption font-extrabold uppercase tracking-wide text-spark-blue">
               О базе данных
             </p>
-            <h3 className="text-subheading font-extrabold text-charcoal">
+            <h2 className="text-subheading font-extrabold text-charcoal">
               Как устроена база «{database.title}»
-            </h3>
+            </h2>
             <div className="mt-3 max-w-[900px] space-y-3">
               {database.schemaDescription.split("\n\n").map((paragraph) => (
                 <p
@@ -326,8 +326,8 @@ export function PracticeWorkspace({
                   key={task.id}
                   type="button"
                   onClick={() => selectTask(task)}
-                  className={`flex w-full items-center gap-3 rounded-xl p-3 text-left transition-colors ${
-                    active ? "bg-[#efffdf]" : "hover:bg-[#f7f7f7]"
+                  className={`practice-task-option flex w-full items-center gap-3 rounded-xl p-3 text-left transition-colors ${
+                    active ? "is-active bg-[#efffdf]" : "hover:bg-[#f7f7f7]"
                   }`}
                 >
                   <span

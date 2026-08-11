@@ -159,7 +159,7 @@ function PaymentCard({ payment }: { payment: StoryPaymentEntry }) {
 
 function PaymentTitle({ payment }: { payment: StoryPaymentEntry }) {
   if (!payment.questSlug) return <span className="font-extrabold">{payment.questTitle}</span>;
-  return <Link href={`/quests/${payment.questSlug}`} className="font-extrabold hover:text-spark-blue">{payment.questTitle}</Link>;
+  return <Link href={`/account/quests/${payment.questSlug}`} className="font-extrabold hover:text-spark-blue">{payment.questTitle}</Link>;
 }
 
 function StatusBadge({ status }: { status: StoryPaymentStatus }) {

@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AuthForm } from "@/components/AuthForm";
+import { PRIVATE_ROBOTS } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Регистрация — Скрипткин",
+  robots: PRIVATE_ROBOTS,
 };
 
 export default function RegisterPage() {
@@ -17,8 +19,8 @@ export default function RegisterPage() {
             создай аккаунт
           </h1>
           <p className="mx-auto mb-10 max-w-[400px] text-center text-body font-medium text-pencil-gray">
-            Аккаунт сохраняет прогресс по историям — сможешь вернуться к
-            истории с любого устройства.
+            После регистрации подтверди email по ссылке из письма. Затем
+            прогресс по историям будет сохраняться на всех устройствах.
           </p>
           <AuthForm mode="register" />
         </div>

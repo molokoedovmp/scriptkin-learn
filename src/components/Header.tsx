@@ -28,10 +28,10 @@ export function Header() {
               Банк заданий
             </Link>
             <Link
-              href="/community"
+              href="/articles"
               className="rounded-xl px-3 py-2.5 text-nav-label font-bold uppercase text-pencil-gray hover:text-charcoal"
             >
-              Сообщество
+              Статьи
             </Link>
             <ThemeToggle />
             <AuthNav />

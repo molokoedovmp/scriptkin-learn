@@ -4,9 +4,11 @@ import { getPostTag } from "@/lib/post-tags";
 export function PostTags({
   tags,
   linked = false,
+  basePath = "/community",
 }: {
   tags: string[];
   linked?: boolean;
+  basePath?: string;
 }) {
   if (!tags.length) return null;
   return (
@@ -16,7 +18,7 @@ export function PostTags({
         if (!tag) return null;
         const className = `rounded-full px-3 py-1 text-caption font-extrabold ${tag.className}`;
         return linked ? (
-          <Link key={id} href={`/community?tag=${id}`} className={`${className} hover:opacity-75`}>
+          <Link key={id} href={`${basePath}?tag=${id}`} className={`${className} hover:opacity-75`}>
             #{tag.label}
           </Link>
         ) : (

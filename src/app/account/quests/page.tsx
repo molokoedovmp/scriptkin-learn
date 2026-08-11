@@ -3,8 +3,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AccountSectionHeader } from "@/components/AccountChrome";
 import { AccountShell } from "@/components/AccountShell";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
 import { getAccountProgress, getAvailableQuestsCount } from "@/lib/account";
 import { getSessionUser } from "@/lib/auth";
 
@@ -21,10 +19,7 @@ export default async function AccountQuestsPage() {
   ]);
 
   return (
-    <>
-      <Header />
-      <main className="flex-1 bg-[#f7f8fa]">
-        <AccountShell>
+    <AccountShell>
           <AccountSectionHeader
             title="Мои истории"
             description="Все начатые расследования, открытые главы и завершённые истории."
@@ -65,7 +60,7 @@ export default async function AccountQuestsPage() {
                 return (
                   <Link
                     key={entry.questSlug}
-                    href={`/quests/${entry.questSlug}`}
+                    href={`/account/quests/${entry.questSlug}`}
                     className="group flex items-center gap-5 rounded-[20px] border-2 border-[#e6e7eb] bg-paper-white p-5 hover:border-eager-green"
                   >
                     <span className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#f3f4f6] text-4xl">
@@ -100,9 +95,6 @@ export default async function AccountQuestsPage() {
               })}
             </div>
           )}
-        </AccountShell>
-      </main>
-      <Footer />
-    </>
+    </AccountShell>
   );
 }

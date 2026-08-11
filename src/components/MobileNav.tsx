@@ -3,7 +3,6 @@
 import type { ComponentType, SVGProps } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "./ThemeToggle";
 
 type Icon = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -32,10 +31,10 @@ const items: {
     active: (pathname) => pathname.startsWith("/practice"),
   },
   {
-    href: "/community",
-    label: "Лента",
-    icon: CommunityIcon,
-    active: (pathname) => pathname.startsWith("/community"),
+    href: "/articles",
+    label: "Статьи",
+    icon: ArticleIcon,
+    active: (pathname) => pathname.startsWith("/articles"),
   },
   {
     href: "/account",
@@ -58,7 +57,7 @@ export function MobileNav() {
       aria-label="Основная мобильная навигация"
       className="fixed inset-x-0 bottom-0 z-50 border-t-2 border-[#e5e5e5] bg-paper-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl md:hidden"
     >
-      <div className="mx-auto grid h-[68px] max-w-[560px] grid-cols-6 px-1.5">
+      <div className="mx-auto grid h-[68px] max-w-[560px] grid-cols-5 px-1.5">
         {items.map((item) => {
           const selected = item.active(pathname);
           const Icon = item.icon;
@@ -68,7 +67,7 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               aria-current={selected ? "page" : undefined}
-              className={`group flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 transition-colors ${
+              className={`mobile-nav-link group flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl bg-transparent px-1 transition-colors ${
                 selected
                   ? "text-eager-green"
                   : "text-pencil-gray hover:bg-[#f5f6f7] hover:text-charcoal"
@@ -87,7 +86,6 @@ export function MobileNav() {
             </Link>
           );
         })}
-        <ThemeToggle mobile />
       </div>
     </nav>
   );
@@ -122,11 +120,13 @@ function DatabaseIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function CommunityIcon(props: SVGProps<SVGSVGElement>) {
+function ArticleIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M21 12a8 8 0 0 1-8 8H6l-4 2 1.4-4.2A8.5 8.5 0 1 1 21 12Z" />
-      <path d="M8 12h.01M12 12h.01M16 12h.01" strokeWidth="3" />
+      <path d="M6 3h9l3 3v15H6Z" />
+      <path d="M14 3v4h4" />
+      <path d="M9 11h6" />
+      <path d="M9 15h6" />
     </svg>
   );
 }

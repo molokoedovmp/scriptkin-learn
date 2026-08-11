@@ -110,7 +110,7 @@ export function PostsManager({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href="/community" className="inline-flex items-center rounded-xl border-2 border-[#dedede] px-4 py-3 text-caption font-extrabold uppercase text-spark-blue hover:bg-[#f7f8fa]">
+          <Link href="/account/community" className="inline-flex items-center rounded-xl border-2 border-[#dedede] px-4 py-3 text-caption font-extrabold uppercase text-spark-blue hover:bg-[#f7f8fa]">
             Сообщество
           </Link>
           <button type="button" onClick={openCreate} className="inline-flex items-center gap-2 rounded-xl bg-eager-green px-5 py-3 text-caption font-extrabold uppercase text-paper-white shadow-[0_4px_0_#3f9900]">

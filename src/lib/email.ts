@@ -22,7 +22,7 @@ function getResend(): Resend | null {
 }
 
 const FROM = process.env.EMAIL_FROM ?? "Скрипткин <onboarding@resend.dev>";
-const SITE_URL = process.env.SITE_URL ?? "http://localhost:3000";
+const SITE_URL = (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/+$/, "");
 
 export async function sendEmail({
   to,
@@ -71,6 +71,55 @@ export function sendWelcomeEmail(to: string, name: string): Promise<void> {
       </div>
     `,
   });
+}
+
+/** Одноразовая ссылка подтверждения email, действует 24 часа. */
+export async function sendEmailVerificationEmail(
+  to: string,
+  name: string,
+  token: string
+): Promise<boolean> {
+  const client = getResend();
+  if (!client) {
+    console.warn("RESEND_API_KEY не задан — письмо подтверждения не отправлено.");
+    return false;
+  }
+
+  const verificationUrl = `${SITE_URL}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
+  try {
+    const { error } = await client.emails.send({
+      from: FROM,
+      to,
+      subject: "Подтверди email — Скрипткин",
+      html: `
+      <div style="font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; color: #4b4b4b;">
+        <h1 style="color: #58cc02; font-size: 28px;">Подтверди почту</h1>
+        <p style="font-size: 16px; line-height: 1.5; color: #777777;">
+          ${escapeHtml(name)}, остался один шаг: подтверди адрес, чтобы войти в Скрипткин.
+          Ссылка действует 24 часа и используется только один раз.
+        </p>
+        <p style="margin: 24px 0;">
+          <a href="${verificationUrl}"
+             style="background: #58cc02; color: #ffffff; text-decoration: none; font-weight: bold; padding: 12px 24px; border-radius: 12px; display: inline-block;">
+            ПОДТВЕРДИТЬ EMAIL
+          </a>
+        </p>
+        <p style="font-size: 13px; color: #afafaf;">
+          Если ты не создавал аккаунт, просто проигнорируй это письмо.
+        </p>
+      </div>
+    `,
+    });
+
+    if (error) {
+      console.error("Не удалось отправить подтверждение email:", error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error("Не удалось отправить подтверждение email:", error);
+    return false;
+  }
 }
 
 /** Одноразовая ссылка восстановления пароля, действует один час. */

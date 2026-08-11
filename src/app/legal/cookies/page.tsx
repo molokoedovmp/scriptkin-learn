@@ -4,11 +4,18 @@ import { LegalLayout, LegalSection } from "@/components/LegalLayout";
 
 export const metadata: Metadata = {
   title: "Политика использования cookie — Скрипткин",
+  description:
+    "Какие cookie и данные localStorage использует Скрипткин, зачем они нужны для авторизации и прогресса и как отключить их в браузере.",
+  alternates: { canonical: "/legal/cookies" },
 };
 
 export default function CookiesPage() {
   return (
-    <LegalLayout title="политика использования cookie" updated="05.08.2026">
+    <LegalLayout
+      title="политика использования cookie"
+      updated="05.08.2026"
+      canonicalPath="/legal/cookies"
+    >
       <LegalSection number="1" title="Что такое cookie">
         <p>
           Cookie — небольшие текстовые файлы, которые сайт сохраняет в браузере

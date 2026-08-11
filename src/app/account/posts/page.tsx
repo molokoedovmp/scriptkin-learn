@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { AccountSectionHeader } from "@/components/AccountChrome";
 import { AccountShell } from "@/components/AccountShell";
 import { PostsManager } from "@/components/PostsManager";
@@ -14,5 +12,5 @@ export const dynamic = "force-dynamic";
 export default async function AccountPostsPage() {
   const user = await getSessionUser(); if (!user) redirect("/login");
   const social = await getSocialDashboard(user.id);
-  return <><Header /><main className="flex-1 bg-[#f7f8fa]"><AccountShell><AccountSectionHeader title="Публикации" description="Рассказывай о прогрессе и читай посты друзей." /><PostsManager user={user} initialPosts={social.posts} /></AccountShell></main><Footer /></>;
+  return <AccountShell><AccountSectionHeader title="Публикации" description="Рассказывай о прогрессе и читай посты друзей." /><PostsManager user={user} initialPosts={social.posts} /></AccountShell>;
 }

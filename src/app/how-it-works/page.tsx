@@ -5,10 +5,20 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SoftwareApplicationJsonLd } from "@/components/seo/JsonLd";
 import { StoryHero, type HeroStory } from "@/components/ui/story-hero";
 import { DEMO_QUESTS } from "@/lib/quests";
 
-const HERO_STORY_SLUGS = ["midnight-express", "prometheus", "mars-station"];
+const HERO_STORY_SLUGS = [
+  "midnight-express",
+  "prometheus-beginner",
+  "prometheus",
+];
+const HERO_STORY_IMAGES: Record<string, string> = {
+  "midnight-express": "/how-it-works/express.png",
+  "prometheus-beginner": "/quests/prometheus/preview.png",
+  prometheus: "/how-it-works/prometheus.png",
+};
 const HERO_STORIES: HeroStory[] = HERO_STORY_SLUGS.flatMap((slug) => {
   const quest = DEMO_QUESTS.find((entry) => entry.slug === slug);
   if (!quest?.previewUrl) return [];
@@ -16,7 +26,7 @@ const HERO_STORIES: HeroStory[] = HERO_STORY_SLUGS.flatMap((slug) => {
     slug: quest.slug,
     title: quest.title,
     description: quest.tagline,
-    image: quest.previewUrl,
+    image: HERO_STORY_IMAGES[quest.slug] ?? quest.previewUrl,
     difficulty: quest.difficulty,
     stepsCount: quest.stepsCount,
     status: quest.status,
@@ -25,19 +35,21 @@ const HERO_STORIES: HeroStory[] = HERO_STORY_SLUGS.flatMap((slug) => {
 });
 
 export const metadata: Metadata = {
-  title: "Как это работает | Скрипткин",
+  title: "Обучение SQL с нуля через интерактивные истории — Скрипткин",
   description:
-    "Осваивай SQL через сюжетные истории и банк заданий: настоящий PostgreSQL, подсказки, автоматическая проверка и практика от SELECT до оконных функций.",
+    "Изучайте SQL с нуля в интерактивных историях: пишите запросы к PostgreSQL, получайте подсказки и закрепляйте знания в банке заданий.",
+  alternates: { canonical: "/" },
 };
 
 export default function HowItWorksPage() {
   return (
     <>
+      <SoftwareApplicationJsonLd />
       <Header />
       <main className="flex-1 overflow-hidden bg-[#fbfbfb]">
         <StoryHero
           eyebrow="SQL-истории, в которых ты ведёшь расследование"
-          title="Не заучивай SQL."
+          title="Изучай SQL."
           titleLine2="Расследуй"
           titleHighlight="данные."
           description="Выбирай историю, исследуй настоящую базу PostgreSQL и открывай следующую главу правильным запросом. От первого SELECT до сложных оконных функций."
@@ -155,9 +167,9 @@ export default function HowItWorksPage() {
               </ScreenshotFrame>
               <div>
                 <StepLabel number="04" label="Твой прогресс" />
-                <h2 className="mb-4 font-feather text-heading-sm font-black text-charcoal">
+                <h3 className="mb-4 font-feather text-heading-sm font-black text-charcoal">
                   Возвращайся с того же места
-                </h2>
+                </h3>
                 <p className="mb-6 text-body font-medium leading-relaxed text-pencil-gray">
                   С аккаунтом прогресс историй хранится между устройствами. В
                   банке заданий решённые упражнения отмечаются автоматически,
@@ -170,37 +182,41 @@ export default function HowItWorksPage() {
                 ]} />
               </div>
             </article>
-          </div>
-        </section>
 
-        <section id="practice" className="scroll-mt-20 bg-night-ink py-20 text-paper-white sm:py-28">
-          <div className="mx-auto grid max-w-[1400px] items-center gap-10 px-6 lg:grid-cols-[0.72fr_1.28fr] lg:gap-12">
-            <div>
-              <StepLabel number="05" label="Банк заданий" dark />
-              <h2 className="mb-5 font-feather text-heading-sm font-black sm:text-heading">
-                Сюжет закончился
-                <span className="block text-eager-green">практика продолжается</span>
-              </h2>
-              <p className="mb-7 text-body font-medium leading-relaxed text-[#c8ccea]">
-                В банке заданий можно свободно работать с базами уже знакомых
-                историй. Для «Полуночного экспресса» доступно 50 упражнений —
-                от простых фильтров до CTE и оконных функций.
-              </p>
-              <Link
-                href="/practice"
-                className="inline-flex items-center justify-center rounded-xl bg-eager-green px-6 py-3 text-nav-label font-extrabold uppercase text-paper-white transition-colors hover:bg-[#4cb002]"
-              >
-                Выбрать базу →
-              </Link>
-            </div>
-            <Image
-              src="/bank-prew.png"
-              alt="Банк заданий Скрипткина"
-              width={1920}
-              height={1440}
-              sizes="(max-width: 1023px) 100vw, 64vw"
-              className="h-auto w-full"
-            />
+            <article id="practice" className="grid scroll-mt-24 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+              <div className="order-2 lg:order-1">
+                <StepLabel number="05" label="Банк заданий" />
+                <h3 className="mb-4 font-feather text-heading-sm font-black text-charcoal">
+                  Сюжет закончился — практика продолжается
+                </h3>
+                <p className="mb-6 text-body font-medium leading-relaxed text-pencil-gray">
+                  В банке заданий можно свободно работать с базами уже знакомых
+                  историй. Для «Полуночного экспресса» доступно 50 упражнений —
+                  от простых фильтров до CTE и оконных функций.
+                </p>
+                <FeatureList items={[
+                  "Задания разделены по сложности",
+                  "Можно сразу перейти к нужной теме",
+                  "Решённые упражнения сохраняются в профиле",
+                ]} />
+                <Link
+                  href="/practice"
+                  className="mt-7 inline-flex items-center justify-center rounded-xl bg-eager-green px-6 py-3 text-nav-label font-extrabold uppercase text-paper-white transition-colors hover:bg-[#4cb002]"
+                >
+                  Выбрать базу →
+                </Link>
+              </div>
+              <div className="order-1 lg:order-2">
+                <Image
+                  src="/bank-prew.png"
+                  alt="Банк заданий Скрипткина"
+                  width={1920}
+                  height={1440}
+                  sizes="(max-width: 1023px) 100vw, 50vw"
+                  className="h-auto w-full object-contain"
+                />
+              </div>
+            </article>
           </div>
         </section>
       </main>

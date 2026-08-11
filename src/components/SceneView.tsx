@@ -277,7 +277,7 @@ export function SceneView({
           )}
 
           <div
-            className={`min-h-0 max-h-[32dvh] overflow-y-auto overscroll-contain pr-1 sm:max-h-[34vh] lg:max-h-none lg:flex-1 lg:pr-3 ${
+            className={`scene-copy-scroll min-h-0 max-h-[32dvh] overflow-y-auto overscroll-contain pr-1 sm:max-h-[34vh] lg:max-h-none lg:flex-1 lg:pr-3 ${
               sceneCopyClassName
             }`}
           >
