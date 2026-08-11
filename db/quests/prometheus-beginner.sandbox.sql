@@ -1354,6 +1354,102 @@ ON CONFLICT (command_id) DO UPDATE SET
   executed_at = EXCLUDED.executed_at,
   was_overridden = EXCLUDED.was_overridden;
 
+-- Этап 19. Данные ангара SHUTTLE-01 для урока NOT IN.
+INSERT INTO escape_pods (
+  pod_id, pod_code, pod_type, sector_id, status,
+  fuel_percent, oxygen_minutes, hull_integrity, launch_lock, capacity
+) VALUES
+  (805, 'SHUTTLE-01', 'emergency_shuttle', 18, 'ready',
+   72.0, 360, 94.0, false, 6)
+ON CONFLICT (pod_id) DO UPDATE SET
+  pod_code = EXCLUDED.pod_code,
+  pod_type = EXCLUDED.pod_type,
+  sector_id = EXCLUDED.sector_id,
+  status = EXCLUDED.status,
+  fuel_percent = EXCLUDED.fuel_percent,
+  oxygen_minutes = EXCLUDED.oxygen_minutes,
+  hull_integrity = EXCLUDED.hull_integrity,
+  launch_lock = EXCLUDED.launch_lock,
+  capacity = EXCLUDED.capacity;
+
+INSERT INTO medical_scans (
+  scan_id, crew_id, sector_id, heart_rate, oxygen_level,
+  body_temperature, tissue_anomaly, medical_status, scanned_at
+) VALUES
+  (469, 216, 18, 91, 95.8, 37.3, 12.6, 'stable', '2187-09-14 04:39:18'),
+  (470, 231, 18, 102, 92.1, 37.8, 19.4, 'warning', '2187-09-14 04:39:34'),
+  (471, 233, 18, 97, 93.7, 37.5, 16.8, 'warning', '2187-09-14 04:39:51'),
+  (472, 232, 18, 0, 0.0, 29.2, 42.7, 'deceased', '2187-09-14 04:38:44')
+ON CONFLICT (scan_id) DO UPDATE SET
+  crew_id = EXCLUDED.crew_id,
+  sector_id = EXCLUDED.sector_id,
+  heart_rate = EXCLUDED.heart_rate,
+  oxygen_level = EXCLUDED.oxygen_level,
+  body_temperature = EXCLUDED.body_temperature,
+  tissue_anomaly = EXCLUDED.tissue_anomaly,
+  medical_status = EXCLUDED.medical_status,
+  scanned_at = EXCLUDED.scanned_at;
+
+INSERT INTO access_logs (
+  access_id, badge_id, sector_id, access_time,
+  access_result, entry_type, device_id
+) VALUES
+  (1229, 'BDG-216', 18, '2187-09-14 04:40:05', 'granted', 'admin_access', 'SHUTTLE-01-CONTROL'),
+  (1230, 'BDG-231', 18, '2187-09-14 04:40:22', 'granted', 'shuttle_access', 'SHUTTLE-01-DOOR'),
+  (1231, 'BDG-233', 18, '2187-09-14 04:40:31', 'granted', 'shuttle_access', 'SHUTTLE-01-DOOR'),
+  (1232, 'BDG-216', 18, '2187-09-14 04:41:08', 'granted', 'launch_authorization', 'SHUTTLE-01-LAUNCH'),
+  (1233, 'BDG-231', 18, '2187-09-14 04:41:14', 'denied', 'launch_authorization', 'SHUTTLE-01-LAUNCH'),
+  (1234, 'BDG-233', 18, '2187-09-14 04:41:17', 'denied', 'launch_authorization', 'SHUTTLE-01-LAUNCH'),
+  (1235, 'BDG-216', 18, '2187-09-14 04:41:43', 'granted', 'cargo_access', 'SHUTTLE-01-CARGO'),
+  (1236, 'BDG-231', 18, '2187-09-14 04:42:06', 'denied', 'shuttle_access', 'SHUTTLE-01-DOOR'),
+  (1237, 'BDG-233', 18, '2187-09-14 04:42:11', 'denied', 'shuttle_access', 'SHUTTLE-01-DOOR'),
+  (1238, 'BDG-216', 18, '2187-09-14 04:42:36', 'granted', 'launch_sequence', 'SHUTTLE-01-CONTROL')
+ON CONFLICT (access_id) DO UPDATE SET
+  badge_id = EXCLUDED.badge_id,
+  sector_id = EXCLUDED.sector_id,
+  access_time = EXCLUDED.access_time,
+  access_result = EXCLUDED.access_result,
+  entry_type = EXCLUDED.entry_type,
+  device_id = EXCLUDED.device_id;
+
+INSERT INTO communications (
+  message_id, sender_crew_id, sender_type, channel, message_type,
+  message_text, sent_at, voice_signature, is_corrupted
+) VALUES
+  (560, 216, 'crew', 'internal_emergency', 'audio',
+   'Навигация загружена. Проверяю готовность шаттла.',
+   '2187-09-14 04:38:41', 'VOICE-PR-01', false),
+  (561, 231, 'crew', 'internal_emergency', 'audio',
+   'Топливная линия подключена. Давление в норме.',
+   '2187-09-14 04:39:12', 'VOICE-MH-01', false),
+  (562, 233, 'crew', 'internal_emergency', 'audio',
+   'Навигационный пакет принят. Маршрут построен.',
+   '2187-09-14 04:39:46', 'VOICE-CN-01', false),
+  (563, 216, 'crew', 'corporate_secure', 'text',
+   'Шаттл готов. Доставлю живой образец BIO-R9 в корпоративный центр.',
+   '2187-09-14 04:40:54', NULL, false),
+  (564, 231, 'crew', 'internal_emergency', 'audio',
+   'У меня больше нет доступа к запуску. Кто изменил разрешения?',
+   '2187-09-14 04:41:28', 'VOICE-MH-01', false),
+  (565, 233, 'crew', 'internal_emergency', 'audio',
+   'Пол изменил список доступа. Терминал отклоняет мой пропуск.',
+   '2187-09-14 04:41:41', 'VOICE-CN-01', false),
+  (566, 216, 'crew', 'corporate_secure', 'text',
+   'Образец сохранён. Начинаю запуск.',
+   '2187-09-14 04:42:09', NULL, false),
+  (567, 231, 'crew', 'internal_emergency', 'audio',
+   'Герметичная дверь закрывается. Мы остаёмся снаружи!',
+   '2187-09-14 04:42:31', 'VOICE-MH-01', false)
+ON CONFLICT (message_id) DO UPDATE SET
+  sender_crew_id = EXCLUDED.sender_crew_id,
+  sender_type = EXCLUDED.sender_type,
+  channel = EXCLUDED.channel,
+  message_type = EXCLUDED.message_type,
+  message_text = EXCLUDED.message_text,
+  sent_at = EXCLUDED.sent_at,
+  voice_signature = EXCLUDED.voice_signature,
+  is_corrupted = EXCLUDED.is_corrupted;
+
 GRANT USAGE ON SCHEMA prometheus_beginner TO sqlquest_player;
 GRANT SELECT ON ALL TABLES IN SCHEMA prometheus_beginner TO sqlquest_player;
 ALTER DEFAULT PRIVILEGES IN SCHEMA prometheus_beginner
