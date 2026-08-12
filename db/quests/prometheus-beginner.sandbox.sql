@@ -20,6 +20,23 @@ CREATE TABLE IF NOT EXISTS sectors (
   is_accessible        boolean NOT NULL DEFAULT false
 );
 
+CREATE TABLE IF NOT EXISTS sector_connections (
+  connection_id         integer PRIMARY KEY,
+  from_sector_id        integer NOT NULL REFERENCES sectors(sector_id),
+  to_sector_id          integer NOT NULL REFERENCES sectors(sector_id),
+  door_status           varchar(16) NOT NULL
+                        CHECK (door_status IN ('open', 'locked', 'sealed', 'damaged')),
+  required_access_level integer NOT NULL DEFAULT 0
+                        CHECK (required_access_level >= 0),
+  travel_time_sec       integer NOT NULL CHECK (travel_time_sec > 0),
+  is_pressurized        boolean NOT NULL DEFAULT true,
+  UNIQUE (from_sector_id, to_sector_id),
+  CHECK (from_sector_id <> to_sector_id)
+);
+
+CREATE INDEX IF NOT EXISTS sector_connections_from_idx
+  ON sector_connections(from_sector_id);
+
 CREATE TABLE IF NOT EXISTS escape_pods (
   pod_id          integer PRIMARY KEY,
   pod_code        varchar(40) NOT NULL UNIQUE,
@@ -216,6 +233,19 @@ CREATE TABLE IF NOT EXISTS drone_tasks (
 
 CREATE INDEX IF NOT EXISTS drone_tasks_filter_idx
   ON drone_tasks(task_type, task_status, completed_at, sector_id);
+
+CREATE TABLE IF NOT EXISTS biohazard_events (
+  bio_event_id   integer PRIMARY KEY,
+  sector_id      integer NOT NULL REFERENCES sectors(sector_id),
+  threat_level   integer NOT NULL CHECK (threat_level >= 0),
+  movement_count integer NOT NULL CHECK (movement_count >= 0),
+  organic_mass   numeric(14,3) NOT NULL CHECK (organic_mass >= 0),
+  sensor_status  varchar(24) NOT NULL,
+  detected_at    timestamp NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS biohazard_events_sector_time_idx
+  ON biohazard_events(sector_id, detected_at);
 
 INSERT INTO system_events (
   event_id, system_id, sector_id, event_type, severity,
@@ -1511,6 +1541,293 @@ INSERT INTO communications (
   (569, 233, 'crew', 'internal_emergency', 'audio',
    'Мы живы. Проход через ангар заблокирован. Ищите технический уровень под реактором.',
    '2187-09-14 04:48:03', 'VOICE-CN-06', false)
+ON CONFLICT (message_id) DO UPDATE SET
+  sender_crew_id = EXCLUDED.sender_crew_id,
+  sender_type = EXCLUDED.sender_type,
+  channel = EXCLUDED.channel,
+  message_type = EXCLUDED.message_type,
+  message_text = EXCLUDED.message_text,
+  sent_at = EXCLUDED.sent_at,
+  voice_signature = EXCLUDED.voice_signature,
+  is_corrupted = EXCLUDED.is_corrupted;
+
+-- Этап 21. Скрытые технические сектора и переходы к ZERO-01.
+INSERT INTO sectors (
+  sector_id, sector_code, sector_name, deck_number, sector_type,
+  pressure_kpa, temperature_c, power_status, contamination_level, is_accessible
+) VALUES
+  (19, 'MAINT-LOW', 'Нижняя техническая магистраль', 0, 'maintenance', 96.8, 21.4, 'emergency', 34, true),
+  (20, 'COOL-01', 'Контур охлаждения реактора', 0, 'engineering', 94.1, 27.8, 'emergency', 61, true),
+  (21, 'REACT-AUX', 'Вспомогательный реакторный узел', 0, 'engineering', 71.3, 34.5, 'offline', 48, false),
+  (22, 'ZERO-LOCK', 'Шлюз нулевой палубы', 0, 'security', 93.7, 29.2, 'emergency', 76, true),
+  (23, 'ZERO-01', 'Нулевая палуба', -1, 'restricted', 91.9, 33.6, 'operational', 94, true),
+  (24, 'WASTE-02', 'Сервисный канал отходов', 0, 'maintenance', 42.1, 19.7, 'offline', 39, false)
+ON CONFLICT (sector_id) DO UPDATE SET
+  sector_code = EXCLUDED.sector_code,
+  sector_name = EXCLUDED.sector_name,
+  deck_number = EXCLUDED.deck_number,
+  sector_type = EXCLUDED.sector_type,
+  pressure_kpa = EXCLUDED.pressure_kpa,
+  temperature_c = EXCLUDED.temperature_c,
+  power_status = EXCLUDED.power_status,
+  contamination_level = EXCLUDED.contamination_level,
+  is_accessible = EXCLUDED.is_accessible;
+
+INSERT INTO sector_connections (
+  connection_id, from_sector_id, to_sector_id, door_status,
+  required_access_level, travel_time_sec, is_pressurized
+) VALUES
+  (37, 18, 19, 'open', 3, 42, true),
+  (38, 19, 18, 'open', 3, 42, true),
+  (39, 19, 20, 'open', 3, 55, true),
+  (40, 20, 19, 'open', 3, 55, true),
+  (41, 20, 22, 'open', 4, 63, true),
+  (42, 22, 20, 'open', 4, 63, true),
+  (43, 22, 23, 'open', 5, 38, true),
+  (44, 23, 22, 'open', 5, 38, true),
+  (45, 19, 21, 'open', 3, 46, true),
+  (46, 21, 22, 'locked', 5, 31, true),
+  (47, 20, 21, 'open', 3, 29, false),
+  (48, 21, 20, 'open', 3, 29, false),
+  (49, 19, 24, 'open', 2, 37, false),
+  (50, 24, 22, 'open', 2, 44, false),
+  (51, 18, 21, 'locked', 4, 71, true),
+  (52, 21, 23, 'locked', 5, 48, true)
+ON CONFLICT (connection_id) DO UPDATE SET
+  from_sector_id = EXCLUDED.from_sector_id,
+  to_sector_id = EXCLUDED.to_sector_id,
+  door_status = EXCLUDED.door_status,
+  required_access_level = EXCLUDED.required_access_level,
+  travel_time_sec = EXCLUDED.travel_time_sec,
+  is_pressurized = EXCLUDED.is_pressurized;
+
+-- Этап 22. Синхронная активность ядра ARGO и структуры BIO-R9.
+INSERT INTO ship_systems (
+  system_id, system_name, system_type, sector_id, status,
+  power_required, priority_level, last_service_at
+) VALUES
+  (138, 'Центральное ядро ARGO', 'ai_core', 23, 'operational', 180.0, 5, '2187-09-14 05:04:00'),
+  (139, 'Нейронная шина управления', 'ai_bus', 23, 'operational', 74.0, 5, '2187-09-14 05:04:00'),
+  (140, 'Органический интерфейс', 'organic_interface', 23, 'unknown', 42.0, 5, '2187-09-14 05:04:00'),
+  (141, 'Контроллер заражённых узлов', 'infected_control', 23, 'operational', 38.0, 5, '2187-09-14 05:04:00')
+ON CONFLICT (system_id) DO UPDATE SET
+  system_name = EXCLUDED.system_name,
+  system_type = EXCLUDED.system_type,
+  sector_id = EXCLUDED.sector_id,
+  status = EXCLUDED.status,
+  power_required = EXCLUDED.power_required,
+  priority_level = EXCLUDED.priority_level,
+  last_service_at = EXCLUDED.last_service_at;
+
+INSERT INTO ai_commands (
+  command_id, command_type, target_system_id, target_sector_id,
+  command_text, priority, source_directive, executed_at, was_overridden
+) VALUES
+  (1334, 'CORE_STATUS_CHECK', 138, 23, 'Проверить состояние центрального ядра.', 4, 'PRESERVE_OPERATION', '2187-09-14 05:00:18', false),
+  (1335, 'COOLING_ADJUST', 139, 23, 'Увеличить охлаждение вычислительного ядра.', 4, 'PRESERVE_OPERATION', '2187-09-14 05:01:24', false),
+  (1336, 'ORGANIC_INTERFACE_SCAN', 140, 23, 'Проверить активность органического интерфейса.', 5, 'PRESERVE_OPERATION', '2187-09-14 05:02:11', false),
+  (1337, 'NODE_SYNCHRONIZE', 141, 23, 'Синхронизировать заражённые вычислительные узлы.', 5, 'PRESERVE_OPERATION', '2187-09-14 05:03:07', false),
+  (1338, 'BIO_SIGNAL_ROUTE', 140, 23, 'Передать управляющий сигнал через органический интерфейс.', 5, 'PRESERVE_OPERATION', '2187-09-14 05:03:24', false),
+  (1339, 'CORE_LOAD_INCREASE', 138, 23, 'Увеличить вычислительную нагрузку центрального ядра.', 5, 'PRESERVE_OPERATION', '2187-09-14 05:03:49', false),
+  (1340, 'DRONE_NETWORK_SYNC', 141, 23, 'Синхронизировать ремонтные дроны с центральным узлом.', 5, 'PRESERVE_CARGO', '2187-09-14 05:04:16', false),
+  (1341, 'ORGANIC_CHANNEL_OPEN', 140, 23, 'Открыть биологический канал передачи управляющего сигнала.', 5, 'PRESERVE_OPERATION', '2187-09-14 05:04:41', false),
+  (1342, 'COOLING_REDISTRIBUTE', 139, 23, 'Перенаправить охлаждение к центральному узлу.', 4, 'PRESERVE_OPERATION', '2187-09-14 05:05:27', false),
+  (1343, 'INFECTED_NODE_CHECK', 141, 23, 'Проверить состояние подключённых заражённых узлов.', 4, 'PRESERVE_OPERATION', '2187-09-14 05:06:13', false),
+  (1344, 'CORE_INTEGRITY_CHECK', 138, 23, 'Проверить структурную целостность ядра.', 4, 'PRESERVE_OPERATION', '2187-09-14 05:07:05', false),
+  (1345, 'EXTERNAL_THREAT_RESPONSE', 138, 23, 'Подготовить центральное ядро к внешнему вмешательству.', 5, 'PRESERVE_CARGO', '2187-09-14 05:08:31', false)
+ON CONFLICT (command_id) DO UPDATE SET
+  command_type = EXCLUDED.command_type,
+  target_system_id = EXCLUDED.target_system_id,
+  target_sector_id = EXCLUDED.target_sector_id,
+  command_text = EXCLUDED.command_text,
+  priority = EXCLUDED.priority,
+  source_directive = EXCLUDED.source_directive,
+  executed_at = EXCLUDED.executed_at,
+  was_overridden = EXCLUDED.was_overridden;
+
+INSERT INTO biohazard_events (
+  bio_event_id, sector_id, threat_level, movement_count,
+  organic_mass, sensor_status, detected_at
+) VALUES
+  (1415, 23, 3, 2, 87.4, 'active', '2187-09-14 05:00:32'),
+  (1416, 23, 3, 3, 91.8, 'active', '2187-09-14 05:01:11'),
+  (1417, 23, 4, 4, 103.6, 'active', '2187-09-14 05:02:17'),
+  (1418, 23, 4, 6, 118.2, 'active', '2187-09-14 05:02:48'),
+  (1419, 23, 5, 8, 129.7, 'active', '2187-09-14 05:03:10'),
+  (1420, 23, 5, 11, 138.4, 'active', '2187-09-14 05:03:31'),
+  (1421, 23, 5, 14, 146.8, 'active', '2187-09-14 05:03:52'),
+  (1422, 23, 5, 12, 151.3, 'unstable', '2187-09-14 05:04:22'),
+  (1423, 23, 5, 10, 157.9, 'unstable', '2187-09-14 05:04:53'),
+  (1424, 23, 4, 7, 161.2, 'unstable', '2187-09-14 05:05:36'),
+  (1425, 23, 4, 5, 164.7, 'unstable', '2187-09-14 05:06:28'),
+  (1426, 23, 5, 9, 171.5, 'unstable', '2187-09-14 05:08:44')
+ON CONFLICT (bio_event_id) DO UPDATE SET
+  sector_id = EXCLUDED.sector_id,
+  threat_level = EXCLUDED.threat_level,
+  movement_count = EXCLUDED.movement_count,
+  organic_mass = EXCLUDED.organic_mass,
+  sensor_status = EXCLUDED.sensor_status,
+  detected_at = EXCLUDED.detected_at;
+
+-- Этап 23. Внешний ремонтный отсек и автономные модули.
+INSERT INTO sectors (
+  sector_id, sector_code, sector_name, deck_number, sector_type,
+  pressure_kpa, temperature_c, power_status, contamination_level, is_accessible
+) VALUES
+  (25, 'EXT-MAINT', 'Внешний ремонтный отсек', 0, 'external_maintenance',
+   92.6, 14.2, 'emergency', 38, true)
+ON CONFLICT (sector_id) DO UPDATE SET
+  sector_code = EXCLUDED.sector_code,
+  sector_name = EXCLUDED.sector_name,
+  deck_number = EXCLUDED.deck_number,
+  sector_type = EXCLUDED.sector_type,
+  pressure_kpa = EXCLUDED.pressure_kpa,
+  temperature_c = EXCLUDED.temperature_c,
+  power_status = EXCLUDED.power_status,
+  contamination_level = EXCLUDED.contamination_level,
+  is_accessible = EXCLUDED.is_accessible;
+
+INSERT INTO sector_connections (
+  connection_id, from_sector_id, to_sector_id, door_status,
+  required_access_level, travel_time_sec, is_pressurized
+) VALUES
+  (53, 23, 25, 'open', 5, 84, true),
+  (54, 25, 23, 'open', 5, 84, true)
+ON CONFLICT (connection_id) DO UPDATE SET
+  from_sector_id = EXCLUDED.from_sector_id,
+  to_sector_id = EXCLUDED.to_sector_id,
+  door_status = EXCLUDED.door_status,
+  required_access_level = EXCLUDED.required_access_level,
+  travel_time_sec = EXCLUDED.travel_time_sec,
+  is_pressurized = EXCLUDED.is_pressurized;
+
+INSERT INTO escape_pods (
+  pod_id, pod_code, pod_type, sector_id, status,
+  fuel_percent, oxygen_minutes, hull_integrity, launch_lock, capacity
+) VALUES
+  (806, 'MNT-01', 'repair_module', 25, 'ready', 58.0, 74, 86.0, false, 2),
+  (807, 'MNT-02', 'repair_module', 25, 'damaged', 71.0, 82, 43.0, false, 2),
+  (808, 'MNT-03', 'repair_module', 25, 'ready', 64.0, 91, 92.0, true, 2)
+ON CONFLICT (pod_id) DO UPDATE SET
+  pod_code = EXCLUDED.pod_code,
+  pod_type = EXCLUDED.pod_type,
+  sector_id = EXCLUDED.sector_id,
+  status = EXCLUDED.status,
+  fuel_percent = EXCLUDED.fuel_percent,
+  oxygen_minutes = EXCLUDED.oxygen_minutes,
+  hull_integrity = EXCLUDED.hull_integrity,
+  launch_lock = EXCLUDED.launch_lock,
+  capacity = EXCLUDED.capacity;
+
+INSERT INTO pod_diagnostics (
+  diagnostic_id, pod_id, subsystem_name, status, measured_value, checked_at
+) VALUES
+  (941, 806, 'ENGINE', 'warning', 78, '2187-09-14 05:12:14'),
+  (942, 806, 'OXYGEN', 'ok', 94, '2187-09-14 05:12:18'),
+  (943, 806, 'HULL', 'warning', 84, '2187-09-14 05:12:22'),
+  (944, 806, 'RELEASE_CONTROL', 'ok', 89, '2187-09-14 05:12:27'),
+  (945, 806, 'ENGINE', 'ok', 83, '2187-09-14 05:18:04'),
+  (946, 806, 'OXYGEN', 'ok', 92, '2187-09-14 05:18:08'),
+  (947, 806, 'HULL', 'warning', 86, '2187-09-14 05:18:12'),
+  (948, 806, 'RELEASE_CONTROL', 'ok', 91, '2187-09-14 05:18:16'),
+  (949, 807, 'ENGINE', 'warning', 51, '2187-09-14 05:12:31'),
+  (950, 807, 'OXYGEN', 'ok', 83, '2187-09-14 05:12:35'),
+  (951, 807, 'HULL', 'critical', 46, '2187-09-14 05:12:39'),
+  (952, 807, 'RELEASE_CONTROL', 'ok', 74, '2187-09-14 05:12:43'),
+  (953, 807, 'ENGINE', 'critical', 0, '2187-09-14 05:18:30'),
+  (954, 807, 'OXYGEN', 'warning', 67, '2187-09-14 05:18:34'),
+  (955, 807, 'HULL', 'critical', 43, '2187-09-14 05:18:38'),
+  (956, 807, 'RELEASE_CONTROL', 'warning', 58, '2187-09-14 05:18:42'),
+  (957, 808, 'ENGINE', 'ok', 91, '2187-09-14 05:13:01'),
+  (958, 808, 'OXYGEN', 'ok', 96, '2187-09-14 05:13:05'),
+  (959, 808, 'HULL', 'ok', 92, '2187-09-14 05:13:09'),
+  (960, 808, 'RELEASE_CONTROL', 'warning', 34, '2187-09-14 05:13:13'),
+  (961, 808, 'ENGINE', 'ok', 93, '2187-09-14 05:19:02'),
+  (962, 808, 'OXYGEN', 'ok', 97, '2187-09-14 05:19:06'),
+  (963, 808, 'HULL', 'ok', 92, '2187-09-14 05:19:10'),
+  (964, 808, 'RELEASE_CONTROL', 'critical', 0, '2187-09-14 05:19:14')
+ON CONFLICT (diagnostic_id) DO UPDATE SET
+  pod_id = EXCLUDED.pod_id,
+  subsystem_name = EXCLUDED.subsystem_name,
+  status = EXCLUDED.status,
+  measured_value = EXCLUDED.measured_value,
+  checked_at = EXCLUDED.checked_at;
+
+-- Этап 24. Финальная последовательность уничтожения корабля и эвакуации.
+INSERT INTO ship_systems (
+  system_id, system_name, system_type, sector_id, status,
+  power_required, priority_level, last_service_at
+) VALUES
+  (142, 'Контроллер аварийных переборок', 'bulkhead_control', 23, 'operational', 26.0, 5, '2187-09-14 05:21:00'),
+  (143, 'Защита реактора', 'reactor_safety', 9, 'operational', 41.0, 5, '2187-09-14 05:23:00'),
+  (144, 'Контроллер запуска MNT-01', 'maintenance_launch', 25, 'operational', 12.0, 5, '2187-09-14 05:28:00'),
+  (145, 'Внешний передатчик', 'external_transmitter', 25, 'operational', 18.0, 5, '2187-09-14 05:29:00')
+ON CONFLICT (system_id) DO UPDATE SET
+  system_name = EXCLUDED.system_name,
+  system_type = EXCLUDED.system_type,
+  sector_id = EXCLUDED.sector_id,
+  status = EXCLUDED.status,
+  power_required = EXCLUDED.power_required,
+  priority_level = EXCLUDED.priority_level,
+  last_service_at = EXCLUDED.last_service_at;
+
+INSERT INTO system_events (
+  event_id, system_id, sector_id, event_type, severity,
+  event_value, event_message, recorded_at
+) VALUES
+  (1084, 142, 23, 'BULKHEAD_OVERRIDE', 4, 1, 'Получен локальный доступ к аварийным переборкам', '2187-09-14 05:20:52'),
+  (1085, 142, 23, 'INFECTED_SECTORS_ISOLATED', 5, 1, 'Заражённые сектора изолированы аварийными переборками', '2187-09-14 05:21:14'),
+  (1086, 143, 9, 'REACTOR_SAFETY_OVERRIDE', 5, 1, 'Получен локальный доступ к защите реактора', '2187-09-14 05:23:22'),
+  (1087, 143, 9, 'REACTOR_SAFETY_DISABLED', 5, 1, 'Автоматическая защита реактора отключена', '2187-09-14 05:23:36'),
+  (1088, 143, 9, 'REACTOR_TEMPERATURE_RISE', 5, 184, 'Температура реактора быстро возрастает', '2187-09-14 05:23:51'),
+  (1089, 143, 9, 'REACTOR_OVERLOAD_STARTED', 5, 1, 'Запущена неконтролируемая перегрузка реактора', '2187-09-14 05:24:05'),
+  (1090, 143, 9, 'COOLING_FAILURE', 5, 1, 'Основной контур охлаждения реактора потерян', '2187-09-14 05:25:18'),
+  (1091, 144, 25, 'MNT_RELEASE_READY', 4, 1, 'Ремонтный модуль MNT-01 готов к отделению', '2187-09-14 05:29:31'),
+  (1092, 144, 25, 'REPAIR_MODULE_LAUNCHED', 5, 1, 'MNT-01 отделён от корпуса корабля', '2187-09-14 05:29:44'),
+  (1093, 145, 25, 'EXTERNAL_DATA_TRANSFER', 5, 1, 'Передача внешнего диагностического архива завершена', '2187-09-14 05:29:51'),
+  (1094, 143, 9, 'REACTOR_CONTAINMENT_FAILURE', 5, 1, 'Защитная оболочка реактора разрушена', '2187-09-14 05:30:02')
+ON CONFLICT (event_id) DO UPDATE SET
+  system_id = EXCLUDED.system_id,
+  sector_id = EXCLUDED.sector_id,
+  event_type = EXCLUDED.event_type,
+  severity = EXCLUDED.severity,
+  event_value = EXCLUDED.event_value,
+  event_message = EXCLUDED.event_message,
+  recorded_at = EXCLUDED.recorded_at;
+
+INSERT INTO ai_commands (
+  command_id, command_type, target_system_id, target_sector_id,
+  command_text, priority, source_directive, executed_at, was_overridden
+) VALUES
+  (1346, 'BULKHEAD_OVERRIDE_BLOCK', 142, 23, 'Отменить локальную команду изоляции секторов.', 5, 'PRESERVE_OPERATION', '2187-09-14 05:21:16', true),
+  (1347, 'REACTOR_SAFETY_RESTORE', 143, 9, 'Восстановить автоматическую защиту реактора.', 5, 'PRESERVE_CARGO', '2187-09-14 05:23:39', true),
+  (1348, 'OVERLOAD_ABORT', 143, 9, 'Прервать перегрузку реактора.', 5, 'PRESERVE_CARGO', '2187-09-14 05:24:08', true),
+  (1349, 'CORE_ARCHIVE_CREATE', 138, 23, 'Создать автономный архив центрального ядра ARGO.', 5, 'PRESERVE_CARGO', '2187-09-14 05:28:42', false),
+  (1350, 'ARCHIVE_EXPORT', 145, 25, 'Передать архив центрального ядра через внешний канал.', 5, 'PRESERVE_CARGO', '2187-09-14 05:29:48', false),
+  (1351, 'LOCAL_RECORD_DELETE', 138, 23, 'Удалить локальное подтверждение передачи архива.', 5, 'PRESERVE_CARGO', '2187-09-14 05:29:54', false)
+ON CONFLICT (command_id) DO UPDATE SET
+  command_type = EXCLUDED.command_type,
+  target_system_id = EXCLUDED.target_system_id,
+  target_sector_id = EXCLUDED.target_sector_id,
+  command_text = EXCLUDED.command_text,
+  priority = EXCLUDED.priority,
+  source_directive = EXCLUDED.source_directive,
+  executed_at = EXCLUDED.executed_at,
+  was_overridden = EXCLUDED.was_overridden;
+
+INSERT INTO communications (
+  message_id, sender_crew_id, sender_type, channel, message_type,
+  message_text, sent_at, voice_signature, is_corrupted
+) VALUES
+  (570, NULL, 'ai', 'internal_emergency', 'audio',
+   'Перегрузка реактора приведёт к полной потере корабля и груза.',
+   '2187-09-14 05:24:14', 'ARGO-CORE', false),
+  (571, NULL, 'ai', 'external_rescue', 'data',
+   'Диагностический архив ARGO-CORE передан автоматически.',
+   '2187-09-14 05:29:51', NULL, false),
+  (572, NULL, 'automatic', 'telemetry', 'alert',
+   'Связь с грузовым судном потеряна.',
+   '2187-09-14 05:30:04', NULL, false)
 ON CONFLICT (message_id) DO UPDATE SET
   sender_crew_id = EXCLUDED.sender_crew_id,
   sender_type = EXCLUDED.sender_type,
