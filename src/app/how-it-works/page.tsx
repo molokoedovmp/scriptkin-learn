@@ -347,9 +347,12 @@ function ProgressMockup() {
             {value}
           </div>
         ))}
+        
       </div>
       <div className="mt-7 h-2 overflow-hidden rounded-full bg-[#dfdfdf]"><div className="h-full w-1/2 rounded-full bg-eager-green" /></div>
       <p className="mt-2 text-right text-caption font-bold text-pencil-gray">3 из 8 улик найдено</p>
     </div>
   );
 }
+
+
