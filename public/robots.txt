@@ -1,0 +1,28 @@
+User-agent: Yandex
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /payments/
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&from&ref /
+Clean-param: tag /community
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /payments/
+
+Host: scriptkin.ru
+Sitemap: https://scriptkin.ru/sitemap.xml
