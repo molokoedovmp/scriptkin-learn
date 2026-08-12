@@ -21,6 +21,7 @@ import {
   Users,
 } from "lucide-react";
 import type { SessionUser } from "@/lib/types";
+import { UserAvatar } from "@/components/UserAvatar";
 
 const THEME_STORAGE_KEY = "skriptkin-theme";
 
@@ -98,9 +99,11 @@ export function AccountCollapsibleSidebar({ user }: { user: SessionUser | null }
           aria-label={`${user?.name ?? "Пользователь"} — личный кабинет`}
           className="flex min-w-0 items-center gap-3 rounded-xl"
         >
-          <span className="grid h-10 w-10 shrink-0 place-content-center rounded-xl bg-gradient-to-br from-eager-green to-[#36a900] text-[15px] font-black text-white shadow-[0_4px_0_#2f8500]">
-            {getInitials(user?.name)}
-          </span>
+          {user ? (
+            <UserAvatar user={user} className="h-10 w-10 border border-eager-green shadow-[0_3px_0_#2f8500]" />
+          ) : (
+            <span className="grid h-10 w-10 shrink-0 place-content-center rounded-xl bg-eager-green font-black text-white">?</span>
+          )}
           <span
             className={`hidden min-w-0 transition-opacity lg:block ${
               open ? "opacity-100" : "pointer-events-none opacity-0"
@@ -180,17 +183,6 @@ export function AccountCollapsibleSidebar({ user }: { user: SessionUser | null }
         </button>
       </div>
     </aside>
-  );
-}
-
-function getInitials(name: string | null | undefined) {
-  return (
-    name
-      ?.trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase())
-      .join("") || "?"
   );
 }
 

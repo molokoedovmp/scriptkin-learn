@@ -79,13 +79,17 @@ CREATE TABLE IF NOT EXISTS users (
   email         text NOT NULL UNIQUE,
   name          text NOT NULL,
   bio           text,
-  password_hash text NOT NULL,
+  -- OAuth-пользователь может не иметь локального пароля.
+  password_hash text,
+  avatar_url    text,
   -- Момент согласия на обработку персональных данных (152-ФЗ)
   pd_consent_at timestamptz,
   created_at    timestamptz NOT NULL DEFAULT now()
 );
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS bio text;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url text;
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
 
 -- При первом добавлении колонки существующие аккаунты считаются подтверждёнными.
 -- После удаления DEFAULT все новые аккаунты создаются неподтверждёнными.
@@ -144,6 +148,20 @@ CREATE TABLE IF NOT EXISTS sessions (
 );
 
 CREATE INDEX IF NOT EXISTS sessions_user_id_idx ON sessions(user_id);
+
+-- Внешние способы входа. OAuth-токены намеренно не сохраняются.
+CREATE TABLE IF NOT EXISTS oauth_accounts (
+  provider         text NOT NULL,
+  provider_user_id text NOT NULL,
+  user_id          uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at       timestamptz NOT NULL DEFAULT now(),
+  updated_at       timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (provider, provider_user_id),
+  UNIQUE (provider, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS oauth_accounts_user_id_idx
+  ON oauth_accounts(user_id);
 
 -- Одноразовые ссылки восстановления пароля. В базе хранится только SHA-256
 -- токена из письма; после смены пароля все старые сессии отзываются.

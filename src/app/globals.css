@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Тёмная тема управляется переключателем сайта, а не системной темой браузера. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Colors */
   --color-eager-green: #58cc02;

@@ -1,4 +1,5 @@
 import type { SessionUser } from "@/lib/types";
+import { UserAvatar } from "./UserAvatar";
 
 export function AccountHero({ user }: { user: SessionUser }) {
   return (
@@ -7,9 +8,7 @@ export function AccountHero({ user }: { user: SessionUser }) {
       <div className="absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-eager-green/15 blur-3xl" />
       <div className="relative flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
         <div className="flex items-center gap-5">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[20px] bg-eager-green font-feather text-heading font-black shadow-[0_8px_0_#3e9900]">
-            {initials(user.name)}
-          </div>
+          <UserAvatar user={user} className="h-20 w-20 border-2 border-eager-green shadow-[0_6px_0_#3e9900]" />
           <div>
             <p className="mb-1 text-caption font-extrabold uppercase tracking-[0.12em] text-fresh-leaf">
               Личный кабинет
@@ -31,7 +30,6 @@ export function AccountHero({ user }: { user: SessionUser }) {
     </section>
   );
 }
-
 export function AccountSectionHeader({
   title,
   description,
@@ -47,8 +45,4 @@ export function AccountSectionHeader({
       </div>
     </div>
   );
-}
-
-function initials(name: string) {
-  return name.trim().split(/\s+/).slice(0, 2).map((part) => part.charAt(0).toUpperCase()).join("") || "?";
 }

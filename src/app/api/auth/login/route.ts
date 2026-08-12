@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     const { rows } = await getAppPool().query<{
       id: string;
       name: string;
-      password_hash: string;
+      password_hash: string | null;
       email_verified_at: string | null;
     }>(
       `SELECT id, name, password_hash, email_verified_at
@@ -51,7 +51,9 @@ export async function POST(req: Request) {
     );
 
     const valid =
-      rows.length > 0 && (await verifyPassword(password, rows[0].password_hash));
+      rows.length > 0 &&
+      Boolean(rows[0].password_hash) &&
+      (await verifyPassword(password, rows[0].password_hash!));
     if (!valid) {
       return NextResponse.json(
         { ok: false, error: "Неверный email или пароль." },

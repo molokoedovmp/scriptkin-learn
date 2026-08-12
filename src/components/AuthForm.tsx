@@ -6,24 +6,26 @@ import Link from "next/link";
 import { Button } from "./Button";
 
 const inputCls =
-  "w-full rounded-xl border-2 border-faded-gray px-4 py-3 text-body font-medium text-charcoal outline-none placeholder:text-faded-gray focus:border-spark-blue";
+  "w-full rounded-xl border-2 border-[#d9dee6] bg-white px-4 py-3 text-body font-medium text-charcoal outline-none placeholder:text-faded-gray focus:border-spark-blue dark:border-[#34445c] dark:bg-[#0b1628] dark:text-white dark:placeholder:text-[#718098]";
 
 const labelCls =
-  "mb-1.5 block text-caption font-bold uppercase tracking-wide text-pencil-gray";
+  "mb-1.5 block text-caption font-bold uppercase tracking-wide text-pencil-gray dark:text-[#aeb9ca]";
 
 export function AuthForm({
   mode,
   returnTo,
+  oauthError,
 }: {
   mode: "login" | "register";
   returnTo?: string;
+  oauthError?: string;
 }) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [consent, setConsent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(oauthErrorMessage(oauthError));
   const [loading, setLoading] = useState(false);
   const [verificationPending, setVerificationPending] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState("");
@@ -158,7 +160,7 @@ export function AuthForm({
   }
 
   return (
-    <form onSubmit={submit} className="mx-auto w-full max-w-[400px]">
+    <form onSubmit={submit} className="w-full">
       {mode === "register" && (
         <div className="mb-4">
           <label htmlFor="name" className={labelCls}>
@@ -248,6 +250,46 @@ export function AuthForm({
         <p className="mb-4 text-body font-bold text-[#ea2b2b]">{error}</p>
       )}
 
+      {mode === "register" && (
+        <p className="mb-3 text-center text-caption font-medium text-pencil-gray">
+          Для регистрации через Яндекс сначала прими условия выше.
+        </p>
+      )}
+
+      {mode === "login" || consent ? (
+        <div className="mb-5">
+          <a
+            href={`/api/auth/yandex/start?returnTo=${encodeURIComponent(
+              returnTo?.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/account"
+            )}`}
+            className="relative flex h-14 w-full items-center justify-center rounded-xl border border-black bg-black px-14 text-[16px] font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffcc00] focus-visible:ring-offset-2"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/Yandex_icon.svg.webp" alt="" className="absolute left-4 h-8 w-8" />
+            {mode === "register" ? "Зарегистрироваться с Яндекс ID" : "Войти с Яндекс ID"}
+          </a>
+          {mode === "login" && (
+            <p className="mt-2 text-center text-[12px] font-medium leading-relaxed text-pencil-gray">
+              При первом входе будет создан аккаунт. Продолжая, ты принимаешь{" "}
+              <Link href="/legal/terms" target="_blank" className="font-bold text-spark-blue">условия</Link>{" "}
+              и <Link href="/legal/privacy" target="_blank" className="font-bold text-spark-blue">политику данных</Link>.
+            </p>
+          )}
+        </div>
+      ) : (
+        <span className="relative mb-5 flex h-14 w-full cursor-not-allowed items-center justify-center rounded-xl border border-black bg-black px-14 text-[16px] font-bold text-white opacity-35">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/Yandex_icon.svg.webp" alt="" className="absolute left-4 h-8 w-8" />
+          Зарегистрироваться с Яндекс ID
+        </span>
+      )}
+
+      <div className="mb-5 flex items-center gap-3" aria-hidden>
+        <span className="h-px flex-1 bg-[#e2e3e7]" />
+        <span className="text-caption font-bold uppercase text-faded-gray">или по email</span>
+        <span className="h-px flex-1 bg-[#e2e3e7]" />
+      </div>
+
       <Button
         type="submit"
         disabled={loading || (mode === "register" && !consent)}
@@ -279,4 +321,16 @@ export function AuthForm({
       </p>
     </form>
   );
+}
+
+function oauthErrorMessage(code?: string) {
+  if (!code) return null;
+  const messages: Record<string, string> = {
+    denied: "Вход через Яндекс отменён.",
+    invalid_state: "Сессия входа через Яндекс истекла. Попробуй ещё раз.",
+    profile: "Яндекс не передал email. Разреши приложению доступ к адресу электронной почты.",
+    not_configured: "Вход через Яндекс пока не настроен на сервере.",
+    database: "База данных временно недоступна.",
+  };
+  return messages[code] ?? "Не удалось войти через Яндекс. Попробуй ещё раз.";
 }

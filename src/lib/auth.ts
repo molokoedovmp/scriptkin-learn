@@ -78,7 +78,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 
   try {
     const { rows } = await getAppPool().query<SessionUser>(
-      `SELECT u.id, u.email, u.name, u.bio
+      `SELECT u.id, u.email, u.name, u.bio, u.avatar_url AS "avatarUrl"
         FROM sessions s
          JOIN users u ON u.id = s.user_id
         WHERE s.token = $1

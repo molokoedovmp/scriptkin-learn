@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import type { SessionUser } from "@/lib/types";
+import { UserAvatar } from "./UserAvatar";
 
 export function ProfileEditorForm({ user }: { user: SessionUser }) {
   const [name, setName] = useState(user.name);
@@ -32,14 +33,10 @@ export function ProfileEditorForm({ user }: { user: SessionUser }) {
     }
   }
 
-  const initials = name.trim().split(/\s+/).slice(0, 2).map((part) => part.charAt(0).toUpperCase()).join("") || "?";
-
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
       <aside className="rounded-[20px] bg-night-ink p-6 text-center text-paper-white lg:sticky lg:top-[90px]">
-        <span className="mx-auto flex h-24 w-24 items-center justify-center rounded-[24px] bg-eager-green font-feather text-heading font-black shadow-[0_8px_0_#3e9900]">
-          {initials}
-        </span>
+        <UserAvatar user={{ name, avatarUrl: user.avatarUrl }} className="mx-auto h-24 w-24 border-2 border-eager-green shadow-[0_6px_0_#3e9900]" />
         <p className="mt-5 text-subheading font-black">{name.trim() || "Ваш никнейм"}</p>
         <p className="mt-1 break-all text-caption font-medium text-[#aeb5dc]">{user.email}</p>
         <p className="mt-5 rounded-xl bg-paper-white/5 p-3 text-[13px] font-medium leading-relaxed text-[#cbd0ec]">

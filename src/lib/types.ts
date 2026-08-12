@@ -109,6 +109,7 @@ export interface SessionUser {
   email: string;
   name: string;
   bio: string | null;
+  avatarUrl: string | null;
 }
 
 export interface QuestProgressEntry {

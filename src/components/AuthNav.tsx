@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "./Button";
 import type { SessionUser } from "@/lib/types";
+import { UserAvatar } from "./UserAvatar";
 
 /**
  * Правая часть шапки: показывает «Войти / Начать» гостю
@@ -34,9 +35,7 @@ export function AuthNav() {
         aria-label={`Открыть личный кабинет пользователя ${user.name}`}
         className="flex h-[44px] max-w-[170px] items-center gap-2 rounded-full border-2 border-[#dfe1e6] bg-paper-white p-1.5 pr-2.5 text-left hover:border-spark-blue hover:bg-[#f7fbff] sm:min-w-[135px]"
       >
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-eager-green text-caption font-black uppercase text-paper-white">
-          {user.name.trim().charAt(0) || "?"}
-        </span>
+        <UserAvatar user={user} className="h-8 w-8 text-caption" />
         <span className="hidden min-w-0 grow sm:block">
           <span className="block text-[10px] font-extrabold uppercase leading-none tracking-wide text-faded-gray">
             Кабинет

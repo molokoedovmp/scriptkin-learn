@@ -28,6 +28,7 @@ await migrateDatabase(mainDatabaseUrl, "основная база", [
   ["008-prometheus-beginner-quest", "db/quests/prometheus-beginner.quest.sql"],
   ["009-prometheus-beginner-steps", "db/quests/prometheus-beginner.steps.sql"],
   ["010-prometheus-beginner-scenes", "db/quests/prometheus-beginner.scenes.sql"],
+  ["011-yandex-oauth", "db/migrations/011-yandex-oauth.sql"],
 ]);
 
 const sandboxClient = new Client({ connectionString: sandboxAdminDatabaseUrl });
