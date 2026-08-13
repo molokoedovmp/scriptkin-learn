@@ -91,8 +91,8 @@ export function PracticeCatalog({
                   alt={`Обложка базы заданий «${database.title}»`}
                   fill
                   sizes="(min-width: 1024px) 380px, (min-width: 768px) 50vw, 100vw"
-                  quality={76}
-                  priority={index < 2}
+                  unoptimized
+                  priority={index < 3}
                   className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 />
                 </span>
@@ -142,7 +142,8 @@ export function PracticeCatalog({
           Новые базы появятся вместе с историями
         </p>
         <p className="mt-1 text-[15px] font-medium text-pencil-gray">
-          «Крушение подлодки», «Ограбление галереи» и «Арес-9» уже в плане.
+          База «Крушения подлодки» уже доступна. Следующими появятся
+          «Ограбление галереи» и «Арес-9».
         </p>
       </div>
     </section>

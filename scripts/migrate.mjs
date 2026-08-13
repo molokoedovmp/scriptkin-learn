@@ -29,6 +29,10 @@ await migrateDatabase(mainDatabaseUrl, "основная база", [
   ["009-prometheus-beginner-steps", "db/quests/prometheus-beginner.steps.sql"],
   ["010-prometheus-beginner-scenes", "db/quests/prometheus-beginner.scenes.sql"],
   ["011-yandex-oauth", "db/migrations/011-yandex-oauth.sql"],
+  ["012-submarine-crash-quest", "db/quests/submarine-crash.quest.sql"],
+  ["013-submarine-crash-steps", "db/quests/submarine-crash.steps.sql"],
+  ["014-submarine-crash-scenes", "db/quests/submarine-crash.scenes.sql"],
+  ["015-quest-choices", "db/migrations/015-quest-choices.sql"],
 ]);
 
 const sandboxClient = new Client({ connectionString: sandboxAdminDatabaseUrl });
@@ -43,6 +47,7 @@ try {
     ],
     ["002-prometheus-sandbox", "db/quests/prometheus.sandbox.sql"],
     ["003-prometheus-beginner-sandbox", "db/quests/prometheus-beginner.sandbox.sql"],
+    ["004-submarine-crash-sandbox", "db/quests/submarine-crash.sandbox.sql"],
   ]);
 } finally {
   await sandboxClient.end();

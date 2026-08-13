@@ -65,6 +65,7 @@ export interface ExecuteResponse {
   checkHint?: string;
   /** Сюжет, который открывается при правильном ответе */
   storyUnlocked?: string;
+  choiceKey?: string;
   error?: string;
 }
 

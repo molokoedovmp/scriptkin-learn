@@ -5,7 +5,11 @@ import { QuestPlayer } from "@/components/QuestPlayer";
 import { getSessionUser } from "@/lib/auth";
 import { getQuestAccess, hasQuestTesterAccess } from "@/lib/quest-access";
 import { COMING_SOON_PRICE_RUB } from "@/lib/quests";
-import { getQuestWithSteps, getUserQuestProgress } from "@/lib/quests-db";
+import {
+  getQuestWithSteps,
+  getUserQuestChoice,
+  getUserQuestProgress,
+} from "@/lib/quests-db";
 import { DIFFICULTY_LABELS } from "@/lib/types";
 
 export async function AccountQuestWorkspace({ slug }: { slug: string }) {
@@ -21,6 +25,10 @@ export async function AccountQuestWorkspace({ slug }: { slug: string }) {
 
   const { quest, steps, scenes } = data;
   const progress = await getUserQuestProgress(user.id, quest.slug);
+  const finalChoice =
+    quest.slug === "submarine-crash"
+      ? await getUserQuestChoice(user.id, quest.slug, 20)
+      : undefined;
   const canAccessAllSteps = hasQuestTesterAccess(user.email);
   const access =
     quest.priceKopecks === 0
@@ -35,17 +43,23 @@ export async function AccountQuestWorkspace({ slug }: { slug: string }) {
       ? "quest-game-workspace prometheus-quest-workspace"
       : quest.slug === "midnight-express"
         ? "quest-game-workspace midnight-quest-workspace"
+        : quest.slug === "submarine-crash"
+          ? "quest-game-workspace submarine-quest-workspace"
         : ""
     : "";
   const lessonBackgroundUrl = quest.slug.startsWith("prometheus")
-    ? "/quests/prometheus/background-lesson.webp"
+    ? "/quests/prometheus/background-lesson.png"
     : quest.slug === "midnight-express"
-      ? "/quests/midnight-express/bacground-lesson.webp"
+      ? "/quests/midnight-express/bacground-lesson.png"
+      : quest.slug === "submarine-crash"
+        ? "/quests/submarine-crash/ackground-for-lesson.png"
       : null;
   const sceneBackgroundUrl = quest.slug.startsWith("prometheus")
     ? "/quests/prometheus/background.webp"
     : quest.slug === "midnight-express"
       ? "/quests/midnight-express/background.webp"
+      : quest.slug === "submarine-crash"
+        ? "/quests/submarine-crash/backgound-for-text.png"
       : null;
 
   return (
@@ -55,7 +69,7 @@ export async function AccountQuestWorkspace({ slug }: { slug: string }) {
           rel="preload"
           as="image"
           href={lessonBackgroundUrl}
-          type="image/webp"
+          type="image/png"
           fetchPriority="high"
         />
       )}
@@ -64,7 +78,6 @@ export async function AccountQuestWorkspace({ slug }: { slug: string }) {
           rel="preload"
           as="image"
           href={sceneBackgroundUrl}
-          type="image/webp"
         />
       )}
       <div
@@ -102,6 +115,7 @@ export async function AccountQuestWorkspace({ slug }: { slug: string }) {
             initiallyCompleted={Boolean(progress?.completedAt)}
             isAuthed
             canAccessAllSteps={canAccessAllSteps}
+            initialChoiceKey={finalChoice}
           />
         ) : requiresPurchase ? (
           <>

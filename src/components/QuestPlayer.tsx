@@ -40,6 +40,7 @@ export function QuestPlayer({
   initiallyCompleted,
   isAuthed,
   canAccessAllSteps,
+  initialChoiceKey,
 }: {
   quest: Quest;
   steps: QuestStep[];
@@ -48,6 +49,7 @@ export function QuestPlayer({
   initiallyCompleted: boolean;
   isAuthed: boolean;
   canAccessAllSteps: boolean;
+  initialChoiceKey?: string;
 }) {
   const total = steps.length;
   const isPrometheusQuest = quest.slug.startsWith("prometheus");
@@ -55,24 +57,33 @@ export function QuestPlayer({
     ? "quest-game-workspace prometheus-quest-workspace"
     : quest.slug === "midnight-express"
       ? "quest-game-workspace midnight-quest-workspace"
+      : quest.slug === "submarine-crash"
+        ? "quest-game-workspace submarine-quest-workspace"
       : "";
   const clamp = (n: number) => Math.min(Math.max(n, 1), total);
   const [current, setCurrent] = useState(clamp(initialStep));
   const [completed, setCompleted] = useState(initiallyCompleted);
   const [view, setView] = useState<View>("map");
   const [solved, setSolved] = useState(false);
+  const [lastChoiceKey, setLastChoiceKey] = useState<string | undefined>(
+    initialChoiceKey
+  );
 
   // --- Сцены визуальной новеллы --------------------------------------------
   // Кадры, сгруппированные по позиции: 0 — пролог, N — после шага N
   const scenesBy = useMemo(() => {
     const map = new Map<number, QuestSceneFrame[]>();
     for (const frame of scenes) {
+      if (quest.slug === "submarine-crash" && frame.afterStep === 20) {
+        const expectedOrder = lastChoiceKey === "view" ? 2 : 1;
+        if (!lastChoiceKey || frame.frameOrder !== expectedOrder) continue;
+      }
       const list = map.get(frame.afterStep) ?? [];
       list.push(frame);
       map.set(frame.afterStep, list);
     }
     return map;
-  }, [scenes]);
+  }, [lastChoiceKey, quest.slug, scenes]);
 
   /** Проигрываемая сейчас сцена и куда перейти после неё */
   const [scenePlaying, setScenePlaying] = useState<{
@@ -245,6 +256,8 @@ export function QuestPlayer({
       className={
         sceneFullscreen
           ? "bg-night-ink"
+          : scenePlaying
+            ? "quest-scene-active min-w-0 bg-night-ink"
           : isFullscreen
             ? `overflow-y-auto bg-paper-white px-4 py-4 md:px-6 ${fullscreenWorkspaceClass}`
             : ""
@@ -265,6 +278,8 @@ export function QuestPlayer({
               ? "/quests/midnight-express/background.webp"
               : isPrometheusQuest
                 ? "/quests/prometheus/background.webp"
+                : quest.slug === "submarine-crash"
+                  ? "/quests/submarine-crash/backgound-for-text.png"
               : undefined
           }
           textStyle={
@@ -272,9 +287,13 @@ export function QuestPlayer({
               ? "midnight"
               : isPrometheusQuest
                 ? "prometheus"
+                : quest.slug === "submarine-crash"
+                  ? "submarine"
                 : "default"
           }
-          hideFrameControls={isPrometheusQuest}
+          hideFrameControls={
+            isPrometheusQuest || quest.slug === "submarine-crash"
+          }
           onToggleFullscreen={toggleFullscreen}
           onFinish={() => {
             const next = scenePlaying.next;
@@ -291,6 +310,8 @@ export function QuestPlayer({
           canAccessAllSteps={canAccessAllSteps}
           scenesBy={scenesBy}
           onOpenStep={openStep}
+          onPlayScene={(afterStep) => playScene(afterStep, "map")}
+          finalChoiceKey={lastChoiceKey}
         />
       ) : (
         <StepView
@@ -298,7 +319,11 @@ export function QuestPlayer({
           step={steps[view - 1]}
           isCurrent={!completed && view === current}
           isCompletedStep={completed || view < current}
-          canRunCheck={canAccessAllSteps || (!completed && view === current)}
+          canRunCheck={
+            canAccessAllSteps ||
+            (!completed && view === current) ||
+            (quest.slug === "submarine-crash" && view === total)
+          }
           solved={solved}
           isLast={view === total}
           maxUnlocked={maxUnlocked}
@@ -306,7 +331,10 @@ export function QuestPlayer({
           isFullscreen={isFullscreen}
           containerRef={containerRef}
           onStartDrag={startDrag}
-          onSolved={() => setSolved(true)}
+          onSolved={(choiceKey) => {
+            setLastChoiceKey(choiceKey);
+            setSolved(true);
+          }}
           onAdvance={advance}
           onNavigate={openStep}
           onBackToMap={() => setView("map")}
@@ -329,6 +357,8 @@ function MapView({
   canAccessAllSteps,
   scenesBy,
   onOpenStep,
+  onPlayScene,
+  finalChoiceKey,
 }: {
   quest: Quest;
   steps: QuestStep[];
@@ -337,7 +367,12 @@ function MapView({
   canAccessAllSteps: boolean;
   scenesBy: Map<number, QuestSceneFrame[]>;
   onOpenStep: (n: number) => void;
+  onPlayScene: (afterStep: number) => void;
+  finalChoiceKey?: string;
 }) {
+  const finalFrames = scenesBy.get(steps.length) ?? [];
+  const finalPreview = finalFrames.find((frame) => Boolean(frame.imageUrl));
+
   return (
     <div className="lesson-map-content mx-auto w-full max-w-[1288px]">
       <div className="mb-5">
@@ -444,6 +479,40 @@ function MapView({
             </button>
           );
         })}
+
+        {completed && finalFrames.length > 0 && (
+          <button
+            type="button"
+            onClick={() => onPlayScene(steps.length)}
+            aria-label="Открыть финал истории"
+            className="lesson-preview-card is-done group w-full cursor-pointer overflow-hidden rounded-[18px] border text-left transition"
+          >
+            <span className="relative block aspect-[16/10] overflow-hidden bg-[#101927]">
+              {finalPreview?.imageUrl && (
+                <Image
+                  src={finalPreview.imageUrl}
+                  alt="Финальная сцена истории"
+                  fill
+                  sizes="(min-width: 1280px) 310px, (min-width: 768px) 33vw, 100vw"
+                  quality={80}
+                  draggable={false}
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                />
+              )}
+              <span className="absolute left-3 top-3 rounded-full border border-white/20 bg-black/65 px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-white backdrop-blur">
+                Финал
+              </span>
+            </span>
+            <span className="block p-4">
+              <span className="block min-h-[52px] text-[18px] font-black leading-snug text-charcoal">
+                {finalChoiceKey === "view" ? "Показания" : "Последний приказ"}
+              </span>
+              <span className="mt-3 inline-flex rounded-full bg-storybook-green px-3 py-1 text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#347b08]">
+                Смотреть финал
+              </span>
+            </span>
+          </button>
+        )}
       </div>
 
       {!completed && (
@@ -481,6 +550,11 @@ function MapView({
                 />
               )}
               <div className="mt-5 flex flex-wrap gap-4">
+                {finalFrames.length > 0 && (
+                  <Button onClick={() => onPlayScene(steps.length)}>
+                    Смотреть финал
+                  </Button>
+                )}
                 <Button href="/account/quests">К другим историям</Button>
                 <Button href="/account" variant="outline">
                   В кабинет
@@ -996,7 +1070,7 @@ function StepView({
   isFullscreen: boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
   onStartDrag: (e: React.PointerEvent) => void;
-  onSolved: () => void;
+  onSolved: (choiceKey?: string) => void;
   onAdvance: () => void;
   onNavigate: (n: number) => void;
   onBackToMap: () => void;
@@ -1025,9 +1099,15 @@ function StepView({
 
         <div className="flex flex-wrap items-center justify-end gap-2">
           {/* Кнопка перехода дальше — появляется после решения текущего шага */}
-          {isCurrent && solved && (
+          {(isCurrent ||
+            (quest.slug === "submarine-crash" && step.stepNumber === 20)) &&
+            solved && (
             <Button onClick={onAdvance}>
-              {isLast ? "Завершить дело 🏆" : "Следующий шаг →"}
+              {quest.slug === "submarine-crash" && step.stepNumber === 20
+                ? "Смотреть концовку →"
+                : isLast
+                  ? "Завершить дело 🏆"
+                  : "Следующий шаг →"}
             </Button>
           )}
 

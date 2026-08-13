@@ -17,7 +17,7 @@ export function SqlRunner({
 }: {
   questSlug: string;
   stepNumber: number;
-  onCorrect?: () => void;
+  onCorrect?: (choiceKey?: string) => void;
 }) {
   const [sql, setSql] = useState("");
   const [result, setResult] = useState<ExecuteResponse | null>(null);
@@ -36,7 +36,7 @@ export function SqlRunner({
       const data = (await res.json()) as ExecuteResponse;
       setResult(data);
       if (data.ok && data.correct) {
-        onCorrect?.();
+        onCorrect?.(data.choiceKey);
       }
     } catch {
       setResult({ ok: false, error: "Не удалось связаться с сервером." });
@@ -63,7 +63,9 @@ export function SqlRunner({
       </div>
       <div className="flex items-center justify-between gap-4 p-4">
         <p className="text-caption font-medium text-pencil-gray">
-          Только SELECT — база доступна в режиме чтения.{" "}
+          {questSlug === "submarine-crash" && stepNumber === 20
+            ? "Выбор этапа: SELECT или условный DELETE. "
+            : "Только SELECT — база доступна в режиме чтения. "}
           <span className="text-faded-gray">⌘/Ctrl + Enter — выполнить</span>
         </p>
         <Button onClick={run} disabled={loading || !sql.trim()}>

@@ -59,6 +59,7 @@ const nextConfig: NextConfig = {
 
     return [
       { source: "/quests/:path*.webp", headers: imageCacheHeaders },
+      { source: "/quests/:path*.png", headers: imageCacheHeaders },
       { source: "/admin/:path*", headers: noIndexHeaders },
       { source: "/account/:path*", headers: noIndexHeaders },
       { source: "/api/:path*", headers: noIndexHeaders },

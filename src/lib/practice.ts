@@ -2,6 +2,7 @@ import "server-only";
 
 import type { PracticeDatabase, PracticeTask } from "./types";
 import { PROMETHEUS } from "./prometheus-practice";
+import { SUBMARINE_CRASH } from "./submarine-practice";
 
 interface ServerPracticeTask extends PracticeTask {
   expectedSql: string;
@@ -846,6 +847,7 @@ const MIDNIGHT_EXPRESS: ServerPracticeDatabase = {
 
 const PRACTICE_DATABASES: ServerPracticeDatabase[] = [
   MIDNIGHT_EXPRESS,
+  SUBMARINE_CRASH,
   PROMETHEUS,
 ];
 

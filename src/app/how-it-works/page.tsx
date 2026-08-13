@@ -12,12 +12,12 @@ import { DEMO_QUESTS } from "@/lib/quests";
 const HERO_STORY_SLUGS = [
   "midnight-express",
   "prometheus-beginner",
-  "prometheus",
+  "submarine-crash",
 ];
 const HERO_STORY_IMAGES: Record<string, string> = {
   "midnight-express": "/how-it-works/express.png",
-  "prometheus-beginner": "/quests/prometheus/preview.webp",
-  prometheus: "/how-it-works/prometheus.png",
+  "prometheus-beginner": "/how-it-works/prometheus.png",
+  "submarine-crash": "/how-it-works/submarine.png",
 };
 const HERO_STORIES: HeroStory[] = HERO_STORY_SLUGS.flatMap((slug) => {
   const quest = DEMO_QUESTS.find((entry) => entry.slug === slug);
@@ -207,14 +207,7 @@ export default function HowItWorksPage() {
                 </Link>
               </div>
               <div className="order-1 lg:order-2">
-                <Image
-                  src="/bank-prew.png"
-                  alt="Банк заданий Скрипткина"
-                  width={1920}
-                  height={1440}
-                  sizes="(max-width: 1023px) 100vw, 50vw"
-                  className="h-auto w-full object-contain"
-                />
+                <PracticeErDiagram />
               </div>
             </article>
           </div>
@@ -254,6 +247,29 @@ function FeatureList({ items }: { items: string[] }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function PracticeErDiagram() {
+  return (
+    <figure className="overflow-hidden rounded-[20px] shadow-[0_18px_55px_rgba(9,18,30,0.12)]">
+      <Image
+        src="/er-white.png"
+        alt="ER-диаграмма базы данных Полночного экспресса"
+        width={1536}
+        height={1024}
+        sizes="(max-width: 1023px) 100vw, 50vw"
+        className="h-auto w-full dark:hidden"
+      />
+      <Image
+        src="/er-black.png"
+        alt="ER-диаграмма базы данных Полночного экспресса в тёмной теме"
+        width={1536}
+        height={1024}
+        sizes="(max-width: 1023px) 100vw, 50vw"
+        className="hidden h-auto w-full dark:block"
+      />
+    </figure>
   );
 }
 

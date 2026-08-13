@@ -64,6 +64,25 @@ export interface UserQuestProgress {
   completedAt: string | null;
 }
 
+export async function getUserQuestChoice(
+  userId: string,
+  questSlug: string,
+  stepNumber: number
+): Promise<string | undefined> {
+  try {
+    const { rows } = await getAppPool().query<{ choiceKey: string }>(
+      `SELECT choice_key AS "choiceKey"
+         FROM quest_choices
+        WHERE user_id = $1 AND quest_slug = $2 AND step_number = $3`,
+      [userId, questSlug, stepNumber]
+    );
+    return rows[0]?.choiceKey;
+  } catch (err) {
+    console.error("Failed to load quest choice:", err);
+    return undefined;
+  }
+}
+
 export async function getUserQuestProgress(
   userId: string,
   questSlug: string

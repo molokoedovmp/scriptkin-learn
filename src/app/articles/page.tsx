@@ -43,8 +43,8 @@ export default function ArticlesPage() {
     <>
       <Header />
       <main className="flex-1">
-        <section className="border-b-2 border-[#e5e5e5] bg-[#f7f8fa]">
-          <div className="mx-auto max-w-[1200px] px-6 py-14 sm:py-20">
+        <section className="articles-hero border-b-2 border-[#e5e5e5]">
+          <div className="mx-auto max-w-[1200px] px-6 py-10 sm:py-14">
             <Breadcrumbs
               className="mb-6"
               items={[

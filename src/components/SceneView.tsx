@@ -27,7 +27,7 @@ export function SceneView({
   frames: QuestSceneFrame[];
   isFullscreen: boolean;
   textBackgroundUrl?: string;
-  textStyle?: "default" | "midnight" | "prometheus";
+  textStyle?: "default" | "midnight" | "prometheus" | "submarine";
   hideFrameControls?: boolean;
   onToggleFullscreen: () => void;
   onFinish: () => void;
@@ -165,6 +165,9 @@ export function SceneView({
   const frameDimensions = frame.imageUrl
     ? imageDimensions.current.get(frame.imageUrl)
     : undefined;
+  const desktopAspectRatioValue = frameDimensions
+    ? (frameDimensions.width * 2) / frameDimensions.height
+    : 16 / 9;
   const desktopAspectRatio = frameDimensions
     ? `${frameDimensions.width * 2} / ${frameDimensions.height}`
     : "16 / 9";
@@ -174,14 +177,19 @@ export function SceneView({
   const sceneCopyClassName =
     textStyle === "midnight"
       ? "midnight-scene-copy"
-      : textStyle === "prometheus"
+      : textStyle === "prometheus" || textStyle === "submarine"
         ? "prometheus-scene-copy"
         : "";
 
   return (
     <div
+      data-fullscreen={isFullscreen ? "true" : "false"}
       className={`relative flex w-full flex-col overflow-hidden bg-night-ink sm:block lg:grid lg:grid-cols-2 ${
         textBackgroundUrl ? "midnight-scene" : ""
+      } ${
+        textStyle === "prometheus" || textStyle === "submarine"
+          ? "cinematic-scene-frame"
+          : ""
       } ${
         isFullscreen
           ? "h-[100dvh]"
@@ -192,6 +200,7 @@ export function SceneView({
           ? ({
               "--scene-desktop-ratio": desktopAspectRatio,
               "--scene-image-ratio": imageAspectRatio,
+              "--scene-desktop-height-width": `${desktopAspectRatioValue * 100}dvh`,
             } as CSSProperties)
           : undefined
       }
@@ -256,7 +265,9 @@ export function SceneView({
         />
         <div
           className={`relative z-10 flex min-h-0 w-full max-w-[900px] flex-col bg-transparent p-4 sm:p-5 md:p-6 lg:h-full lg:max-w-none lg:p-7 ${
-            textStyle === "prometheus" ? "prometheus-scene-panel" : ""
+            textStyle === "prometheus" || textStyle === "submarine"
+              ? "cinematic-scene-panel"
+              : ""
           }`}
         >
           {!hideFrameControls && (

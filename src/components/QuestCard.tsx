@@ -12,22 +12,25 @@ const difficultyStyles: Record<Quest["difficulty"], string> = {
 
 export function QuestCard({
   quest,
+  imageUrl,
   priority = false,
 }: {
   quest: Quest;
+  imageUrl?: string;
   priority?: boolean;
 }) {
   const isAvailable = quest.status === "available";
   const isPaid = quest.priceKopecks > 0;
+  const cardImageUrl = imageUrl ?? quest.previewUrl;
 
   const card = (
     <article
       id={`story-${quest.slug}`}
       className="group relative isolate min-h-[470px] overflow-hidden rounded-[24px] bg-night-ink shadow-[0_16px_45px_rgba(15,23,42,0.16)] ring-1 ring-black/10 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(15,23,42,0.24)]"
     >
-      {quest.previewUrl ? (
+      {cardImageUrl ? (
         <Image
-          src={quest.previewUrl}
+          src={cardImageUrl}
           alt={`Обложка истории «${quest.title}»`}
           fill
           sizes="(min-width: 1024px) 380px, (min-width: 768px) 50vw, 100vw"

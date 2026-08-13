@@ -5,7 +5,7 @@ import { getSessionUser } from "@/lib/auth";
 import { getQuestAccess } from "@/lib/quest-access";
 import type { ExecuteRequest, ExecuteResponse } from "@/lib/types";
 
-const MAX_ROWS = 100;
+const MAX_ROWS = 250;
 const MAX_SQL_LENGTH = 5000;
 
 /**
@@ -68,6 +68,40 @@ export async function POST(req: Request) {
     }
   }
 
+  const submarineDeleteChoice =
+    body.questSlug === "submarine-crash" &&
+    body.stepNumber === 20 &&
+    /^delete\s+from\s+"?readings"?\s+where\s+"?timestamp"?\s*>\s*(?:timestamp\s*)?'1962-06-04(?: 00:00:00)?'$/i.test(
+      sql.replace(/\s+/g, " ")
+    );
+  const submarineViewChoice =
+    body.questSlug === "submarine-crash" &&
+    body.stepNumber === 20 &&
+    /^select\s+\*\s+from\s+"?readings"?$/i.test(sql.replace(/\s+/g, " "));
+
+  if (submarineDeleteChoice) {
+    const user = await getSessionUser();
+    if (!user) {
+      return json({ ok: false, error: "Нужно войти, чтобы сохранить выбор." }, 401);
+    }
+    const { rows: steps } = await getAppPool().query<{ story: string }>(
+      `SELECT story FROM quest_steps
+        WHERE quest_slug = 'submarine-crash' AND step_number = 20`
+    );
+    await saveQuestChoice(user.id, "submarine-crash", 20, "delete");
+    return json(
+      {
+        ok: true,
+        columns: [],
+        rows: [],
+        correct: true,
+        storyUnlocked: steps[0]?.story,
+        choiceKey: "delete",
+      },
+      200
+    );
+  }
+
   // Мир каждого квеста живёт в своей схеме песочницы
   const schema = await getSandboxSchema(body.questSlug);
 
@@ -80,14 +114,29 @@ export async function POST(req: Request) {
     await client.query("BEGIN TRANSACTION READ ONLY");
     await client.query("SET LOCAL statement_timeout = '5s'");
     await client.query(`SET LOCAL search_path = "${schema}"`);
-    const result = await client.query(sql);
-    columns = result.fields.map((f) => f.name);
-    rows = normalizeResultRows(result.rows.slice(0, MAX_ROWS));
+    const result = await client.query({ text: sql, rowMode: "array" });
+    columns = makeUniqueColumnNames(result.fields.map((field) => field.name));
+    rows = normalizeResultRows(
+      result.rows.slice(0, MAX_ROWS).map((row) =>
+        Object.fromEntries(columns.map((column, index) => [column, row[index]]))
+      )
+    );
     if (practiceTask) {
-      const expectedResult = await client.query(practiceTask.expectedSql);
-      practiceExpectedColumns = expectedResult.fields.map((field) => field.name);
+      const expectedResult = await client.query({
+        text: practiceTask.expectedSql,
+        rowMode: "array",
+      });
+      practiceExpectedColumns = makeUniqueColumnNames(
+        expectedResult.fields.map((field) => field.name)
+      );
       practiceExpectedRows = normalizeResultRows(
-        expectedResult.rows.slice(0, MAX_ROWS)
+        expectedResult.rows
+          .slice(0, MAX_ROWS)
+          .map((row) =>
+            Object.fromEntries(
+              practiceExpectedColumns.map((column, index) => [column, row[index]])
+            )
+          )
       );
     }
     await client.query("ROLLBACK");
@@ -103,6 +152,7 @@ export async function POST(req: Request) {
   let correct: boolean | undefined;
   let checkHint: string | undefined;
   let storyUnlocked: string | undefined;
+  let choiceKey: string | undefined;
   if (practiceTask) {
     correct = rowsMatch(
       rows,
@@ -128,9 +178,41 @@ export async function POST(req: Request) {
       );
       if (steps.length > 0 && steps[0].expected_rows != null) {
         const expected = steps[0].expected_rows as Record<string, unknown>[];
-        correct = rowsMatch(rows, expected);
+        correct = submarineViewChoice || rowsMatch(rows, expected);
+        if (
+          correct &&
+          body.questSlug === "submarine-crash" &&
+          (body.stepNumber === 10 || body.stepNumber === 11)
+        ) {
+          correct = rows.every(
+            (row, index) =>
+              index === 0 ||
+              Number(rows[index - 1].weight_kg) <= Number(row.weight_kg)
+          );
+        }
+        if (
+          correct &&
+          body.questSlug === "submarine-crash" &&
+          body.stepNumber === 12
+        ) {
+          correct = rows.every(
+            (row, index) =>
+              index === 0 ||
+              Number(rows[index - 1].total_weight) >= Number(row.total_weight)
+          );
+        }
         if (correct) {
           storyUnlocked = steps[0].story;
+          if (
+            body.questSlug === "submarine-crash" &&
+            body.stepNumber === 20
+          ) {
+            const user = await getSessionUser();
+            if (user) {
+              await saveQuestChoice(user.id, body.questSlug, 20, "view");
+            }
+            choiceKey = "view";
+          }
         } else {
           checkHint = buildCheckHint(
             columns,
@@ -145,7 +227,10 @@ export async function POST(req: Request) {
     }
   }
 
-  return json({ ok: true, columns, rows, correct, checkHint, storyUnlocked }, 200);
+  return json(
+    { ok: true, columns, rows, correct, checkHint, storyUnlocked, choiceKey },
+    200
+  );
 }
 
 function json(body: ExecuteResponse, status: number) {
@@ -313,4 +398,29 @@ function rowsMatch(
   const a = canon(actual);
   const b = canon(expected);
   return a.every((row, i) => row === b[i]);
+}
+
+function makeUniqueColumnNames(names: string[]): string[] {
+  const occurrences = new Map<string, number>();
+  return names.map((name) => {
+    const count = occurrences.get(name) ?? 0;
+    occurrences.set(name, count + 1);
+    return count === 0 ? name : `${name}:${count}`;
+  });
+}
+
+async function saveQuestChoice(
+  userId: string,
+  questSlug: string,
+  stepNumber: number,
+  choiceKey: string
+): Promise<void> {
+  await getAppPool().query(
+    `INSERT INTO quest_choices (user_id, quest_slug, step_number, choice_key)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (user_id, quest_slug, step_number) DO UPDATE SET
+       choice_key = EXCLUDED.choice_key,
+       chosen_at = now()`,
+    [userId, questSlug, stepNumber, choiceKey]
+  );
 }

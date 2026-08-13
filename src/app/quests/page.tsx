@@ -5,6 +5,14 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { QuestCard } from "@/components/QuestCard";
 import { DEMO_QUESTS } from "@/lib/quests";
 
+const STORY_CARD_IMAGES: Record<string, string> = {
+  "midnight-express": "/how-it-works/express.png",
+  "prometheus-beginner": "/how-it-works/prometheus.png",
+  prometheus: "/how-it-works/prometheus.png",
+  "submarine-crash": "/how-it-works/submarine.png",
+  "mars-station": "/how-it-works/mars.png",
+};
+
 export const metadata: Metadata = {
   title: "Интерактивные истории для изучения SQL — Скрипткин",
   description:
@@ -42,6 +50,7 @@ export default function QuestsPage() {
               <QuestCard
                 key={quest.slug}
                 quest={quest}
+                imageUrl={STORY_CARD_IMAGES[quest.slug]}
                 priority={index < 3}
               />
             ))}

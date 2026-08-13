@@ -437,7 +437,7 @@ export function PracticeWorkspace({
             />
             <div className="flex flex-col gap-3 border-t border-[#252951] p-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-caption font-medium text-[#9da3c7]">
-                ⌘/Ctrl + Enter · только чтение · до 100 строк
+                ⌘/Ctrl + Enter · только чтение · до 250 строк
               </p>
               <button
                 type="button"

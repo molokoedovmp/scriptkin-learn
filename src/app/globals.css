@@ -289,6 +289,29 @@ html.dark [class*="text-[#7449bd]"] {
   color: #b99aef;
 }
 
+/* Страница «Крушение подлодки»: единая спокойная поверхность поверх
+   иллюстрации. Явные классы исключают конфликт глобальных dark-правил. */
+.story-detail-panel {
+  border-color: rgb(255 255 255 / 24%);
+  background: rgb(250 252 253 / 96%);
+  color: #20252b;
+  backdrop-filter: blur(10px);
+}
+
+.story-detail-hero {
+  border-bottom: 1px solid #dfe5e9;
+}
+
+html.dark .story-detail-panel {
+  border-color: #29445a;
+  background: rgb(7 18 30 / 96%);
+  color: #edf2f8;
+}
+
+html.dark .story-detail-hero {
+  border-bottom-color: #29445a;
+}
+
 /* Личный кабинет использует собственную полноэкранную оболочку без общей шапки и подвала. */
 .account-dashboard-shell {
   background:
@@ -613,9 +636,10 @@ html.dark .post-rich-editor code {
 }
 
 @media (min-width: 1024px) {
-  .prometheus-scene-panel {
-    padding-left: clamp(64px, 5.8vw, 112px);
-    padding-right: clamp(64px, 5.8vw, 112px);
+  .prometheus-scene-panel,
+  .cinematic-scene-panel {
+    padding-left: clamp(62px, calc(2vw + 38px), 76px);
+    padding-right: clamp(62px, calc(2vw + 38px), 76px);
     padding-top: clamp(72px, 10.5vh, 113px);
     padding-bottom: clamp(32px, 4.5vh, 52px);
   }
@@ -648,16 +672,69 @@ html.dark .post-rich-editor code {
   box-shadow: none;
 }
 
+.articles-hero {
+  background: #f7f8fa;
+}
+
+html.dark .articles-hero {
+  border-color: #2e4054;
+  background: #101a29;
+}
+
 .prometheus-quest-workspace {
   background-image:
     linear-gradient(90deg, rgb(3 10 17 / 36%), rgb(3 10 17 / 20%)),
-    url("/quests/prometheus/background-lesson.webp");
+    url("/quests/prometheus/background-lesson.png");
+}
+
+/* Сцена «Прометея» занимает всю доступную область без внешних зазоров. */
+.prometheus-quest-workspace:has(.quest-scene-active) {
+  min-height: 100dvh;
+  padding: 0;
+}
+
+.submarine-quest-workspace:has(.quest-scene-active) {
+  min-height: 100dvh;
+  padding: 0;
+}
+
+@media (min-width: 1024px) {
+  .prometheus-quest-workspace:has(.quest-scene-active),
+  .submarine-quest-workspace:has(.quest-scene-active) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .prometheus-quest-workspace:has(.quest-scene-active) .quest-scene-active,
+  .submarine-quest-workspace:has(.quest-scene-active) .quest-scene-active {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+    background: transparent;
+  }
+
+  .cinematic-scene-frame[data-fullscreen="false"] {
+    width: min(100%, var(--scene-desktop-height-width));
+    height: 100dvh;
+    max-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    flex: 0 0 auto;
+  }
 }
 
 .midnight-quest-workspace {
   background-image:
     linear-gradient(90deg, rgb(3 10 17 / 46%), rgb(3 10 17 / 28%)),
-    url("/quests/midnight-express/bacground-lesson.webp");
+    url("/quests/midnight-express/bacground-lesson.png");
+}
+
+.submarine-quest-workspace {
+  background-image:
+    linear-gradient(90deg, rgb(2 10 19 / 52%), rgb(2 14 25 / 34%)),
+    url("/quests/submarine-crash/ackground-for-lesson.png");
 }
 
 .quest-game-workspace .text-charcoal,
@@ -702,6 +779,7 @@ html.dark .post-rich-editor code {
 
 @media (min-width: 768px) {
   .quest-game-workspace {
+    background-attachment: fixed;
     min-height: 100dvh;
   }
 }
@@ -769,6 +847,7 @@ html.dark .lesson-preview-card.is-locked {
 }
 
 .quest-game-workspace:fullscreen {
+  background-attachment: scroll;
   min-height: 100vh;
   border: 0;
   border-radius: 0;
