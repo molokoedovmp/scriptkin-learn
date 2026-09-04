@@ -4,6 +4,7 @@ type JsonLdObject = Record<string, unknown>;
 
 const ORGANIZATION_ID = absoluteUrl("/#organization");
 const WEBSITE_ID = absoluteUrl("/#website");
+const RETURN_POLICY_URL = absoluteUrl("/legal/offer#returns");
 
 function JsonLd({ data }: { data: JsonLdObject }) {
   return (
@@ -28,6 +29,10 @@ export function OrganizationJsonLd() {
         logo: absoluteUrl("/logo.png"),
         description:
           "Платформа для изучения SQL через интерактивные истории и практические задания.",
+        hasMerchantReturnPolicy: {
+          "@type": "MerchantReturnPolicy",
+          merchantReturnLink: RETURN_POLICY_URL,
+        },
       }}
     />
   );
@@ -143,6 +148,8 @@ export function ProductJsonLd({
   imagePath: string;
   priceKopecks: number;
 }) {
+  const sku = `story-${path.replace(/^\/stories\//, "")}`;
+
   return (
     <JsonLd
       data={{
@@ -152,6 +159,11 @@ export function ProductJsonLd({
         name,
         description,
         image: absoluteUrl(imagePath),
+        sku,
+        brand: {
+          "@type": "Brand",
+          name: "Скрипткин",
+        },
         category: "Интерактивная история для изучения SQL",
         url: absoluteUrl(path),
         offers: {
@@ -161,6 +173,10 @@ export function ProductJsonLd({
           price: (priceKopecks / 100).toFixed(2),
           availability: "https://schema.org/InStock",
           seller: { "@id": ORGANIZATION_ID },
+          hasMerchantReturnPolicy: {
+            "@type": "MerchantReturnPolicy",
+            merchantReturnLink: RETURN_POLICY_URL,
+          },
         },
       }}
     />
