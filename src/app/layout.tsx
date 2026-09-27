@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Nunito } from "next/font/google";
 import { CookieConsent } from "@/components/CookieConsent";
 import { YandexMetrika } from "@/components/YandexMetrika";
 import {
@@ -7,19 +6,19 @@ import {
   WebSiteJsonLd,
 } from "@/components/seo/JsonLd";
 import { SITE_URL } from "@/lib/site";
+import "@fontsource/nunito/cyrillic-500.css";
+import "@fontsource/nunito/latin-500.css";
+import "@fontsource/nunito/cyrillic-700.css";
+import "@fontsource/nunito/latin-700.css";
+import "@fontsource/nunito/cyrillic-800.css";
+import "@fontsource/nunito/latin-800.css";
+import "@fontsource/nunito/cyrillic-900.css";
+import "@fontsource/nunito/latin-900.css";
+import "@fontsource/cormorant-garamond/cyrillic-600.css";
+import "@fontsource/cormorant-garamond/latin-600.css";
+import "@fontsource/cormorant-garamond/cyrillic-700.css";
+import "@fontsource/cormorant-garamond/latin-700.css";
 import "./globals.css";
-
-const nunito = Nunito({
-  subsets: ["latin", "cyrillic"],
-  weight: ["500", "700", "800", "900"],
-  variable: "--font-nunito",
-});
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin", "cyrillic"],
-  weight: ["600", "700"],
-  variable: "--font-cormorant",
-});
 
 const themeScript = `
 (function () {
@@ -78,7 +77,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${nunito.variable} ${cormorant.variable} flex min-h-screen flex-col pb-[calc(68px+env(safe-area-inset-bottom))] antialiased md:pb-0`}
+        className="flex min-h-screen flex-col pb-[calc(68px+env(safe-area-inset-bottom))] antialiased md:pb-0"
       >
         <OrganizationJsonLd />
         <WebSiteJsonLd />
