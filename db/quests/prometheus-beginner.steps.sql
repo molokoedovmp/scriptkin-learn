@@ -501,7 +501,16 @@ $theory$,
     {"event_type": "CAPSULE_UNLOCK", "event_count": "1"},
     {"event_type": "CAPSULE_OPENED", "event_count": "1"},
     {"event_type": "MANIPULATOR_START", "event_count": "1"},
-    {"event_type": "MANIPULATOR_ERROR", "event_count": "1"}
+    {"event_type": "MANIPULATOR_ERROR", "event_count": "1"},
+    {"event_type": "BIO_R9_ADMINISTERED", "event_count": "1"},
+    {"event_type": "TISSUE_REGENERATION_STARTED", "event_count": "1"},
+    {"event_type": "STRUCTURE_MISMATCH", "event_count": "1"},
+    {"event_type": "FOREIGN_MATERIAL_DETECTED", "event_count": "1"},
+    {"event_type": "MANIPULATOR_RESISTANCE", "event_count": "1"},
+    {"event_type": "CABLE_INTEGRATION", "event_count": "1"},
+    {"event_type": "MANIPULATOR_FUSED", "event_count": "1"},
+    {"event_type": "RESTRAINT_FAILURE", "event_count": "1"},
+    {"event_type": "STERILIZATION_REQUESTED", "event_count": "1"}
   ]'::jsonb
 ), (
   'prometheus-beginner',
