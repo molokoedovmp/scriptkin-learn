@@ -16,8 +16,6 @@
   --color-faded-gray: #afafaf;
 
   /* Typography */
-  --font-nunito: "Nunito";
-  --font-cormorant: "Cormorant Garamond";
   --font-feather: var(--font-nunito), ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-quest-sans: var(--font-nunito), ui-sans-serif, system-ui, -apple-system,

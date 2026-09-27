@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { CookieConsent } from "@/components/CookieConsent";
 import { YandexMetrika } from "@/components/YandexMetrika";
 import {
@@ -6,19 +7,35 @@ import {
   WebSiteJsonLd,
 } from "@/components/seo/JsonLd";
 import { SITE_URL } from "@/lib/site";
-import "@fontsource/nunito/cyrillic-500.css";
-import "@fontsource/nunito/latin-500.css";
-import "@fontsource/nunito/cyrillic-700.css";
-import "@fontsource/nunito/latin-700.css";
-import "@fontsource/nunito/cyrillic-800.css";
-import "@fontsource/nunito/latin-800.css";
-import "@fontsource/nunito/cyrillic-900.css";
-import "@fontsource/nunito/latin-900.css";
-import "@fontsource/cormorant-garamond/cyrillic-600.css";
-import "@fontsource/cormorant-garamond/latin-600.css";
-import "@fontsource/cormorant-garamond/cyrillic-700.css";
-import "@fontsource/cormorant-garamond/latin-700.css";
 import "./globals.css";
+
+const nunito = localFont({
+  src: [
+    { path: "./fonts/nunito-500.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/nunito-700.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/nunito-800.ttf", weight: "800", style: "normal" },
+    { path: "./fonts/nunito-900.ttf", weight: "900", style: "normal" },
+  ],
+  variable: "--font-nunito",
+  display: "swap",
+});
+
+const cormorant = localFont({
+  src: [
+    {
+      path: "./fonts/cormorant-garamond-600.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "./fonts/cormorant-garamond-700.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-cormorant",
+  display: "swap",
+});
 
 const themeScript = `
 (function () {
@@ -77,7 +94,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className="flex min-h-screen flex-col pb-[calc(68px+env(safe-area-inset-bottom))] antialiased md:pb-0"
+        className={`${nunito.variable} ${cormorant.variable} flex min-h-screen flex-col pb-[calc(68px+env(safe-area-inset-bottom))] antialiased md:pb-0`}
       >
         <OrganizationJsonLd />
         <WebSiteJsonLd />
